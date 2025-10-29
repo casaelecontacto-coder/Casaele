@@ -1,0 +1,31 @@
+@import "flag-icons/css/flag-icons.min.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  font-family: 'Zen Maru Gothic', sans-serif;
+}
+
+
+.content-protected {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none; /* Standard syntax */
+  -webkit-touch-callout: none; /* iOS Safari */
+}
+
+/* Apply protection specifically to all images and videos */
+img, video {
+  pointer-events: none; /* Disables click, right-click, and drag */
+  -webkit-user-drag: none; /* Prevents dragging in Safari */
+  -khtml-user-drag: none; /* Konqueror HTML */
+  -moz-user-drag: none; /* Firefox */
+  -o-user-drag: none; /* Opera */
+  -webkit-user-drag: none;
+}
