@@ -1,11 +1,12 @@
 // config/firebaseAdmin.js
 
-import 'dotenv/config'; // <-- This is the main fix!
+import 'dotenv/config'; 
 import admin from 'firebase-admin';
-import fs from 'fs';
-import path from 'path';
 
 let app;
+
+// Get the JSON content directly from the environment variable
+const serviceAccountJSON = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
 
 function initialize() {
   // Prevent re-initialization
@@ -14,21 +15,15 @@ function initialize() {
     return;
   }
 
-  const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
-
-  if (!serviceAccountPath) {
-    console.error('Firebase Admin Error: FIREBASE_SERVICE_ACCOUNT_PATH is not set in your .env file.');
+  if (!serviceAccountJSON) {
+    console.error('Firebase Admin Error: FIREBASE_SERVICE_ACCOUNT_JSON is not set in your environment variables.');
     // Exit gracefully if the config is missing
     return;
   }
 
   try {
-    const absolutePath = path.resolve(process.cwd(), serviceAccountPath);
-    if (!fs.existsSync(absolutePath)) {
-        throw new Error(`Service account file not found at path: ${absolutePath}`);
-    }
-
-    const serviceAccount = JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
+    // Parse the JSON content directly
+    const serviceAccount = JSON.parse(serviceAccountJSON);
 
     app = admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
@@ -38,8 +33,9 @@ function initialize() {
 
   } catch (error) {
     console.error('CRITICAL: Failed to initialize Firebase Admin SDK.');
+    console.error('This often happens if the FIREBASE_SERVICE_ACCOUNT_JSON is not valid JSON.');
     console.error(error.message);
-    // Stop the server if Firebase Admin can't be initialized, as it's a critical dependency.
+    // Stop the server if Firebase Admin can't be initialized
     process.exit(1);
   }
 }
