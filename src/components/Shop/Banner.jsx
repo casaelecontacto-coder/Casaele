@@ -30,14 +30,14 @@ function Banner() {
             </button>
           </div>
 
-          {/* Stats Section */}
-          <div className="flex flex-wrap justify-center lg:justify-start items-center gap-x-8 gap-y-4">
+          {/* Stats Section - Hidden for new brand */}
+          {/* <div className="flex flex-wrap justify-center lg:justify-start items-center gap-x-8 gap-y-4">
             <StatItem value="200+" label="International Brands" />
             <div className="hidden sm:block h-12 w-px bg-gray-200"></div>
             <StatItem value="2,000+" label="High-Quality Products" />
             <div className="hidden sm:block h-12 w-px bg-gray-200"></div>
             <StatItem value="30,000+" label="Happy Customers" />
-          </div>
+          </div> */}
         </div>
       </div>
 
