@@ -13,23 +13,23 @@ export default function Materials() {
     title: '', 
     author: '',
     description: '', 
-    category: '', // Room/Category
-    subCategory: '', // Sub Category
-    theme: '', // Theme/Genre
-    level: '', // Level
-    country: '', // Country
-    fileUrl: '', // This will be the Card Image
+    category: '', 
+    subCategory: '', 
+    theme: '', 
+    level: '', 
+    country: '', 
+    fileUrl: '', 
     tags: '', 
     imageSource: '', 
     embedIds: [],
-    bannerImageUrl: '', // This will be the Banner Image
-    dropdownTitle: '', // <-- ADDED: For custom dropdown title
+    bannerImageUrl: '', 
+    dropdownTitle: '', 
   })
   
   const [embeds, setEmbeds] = useState([])
   const [materialEmbeds, setMaterialEmbeds] = useState([]) 
-  const [uploading, setUploading] = useState(false); // For Card Image
-  const [uploadingBanner, setUploadingBanner] = useState(false); // For Banner Image
+  const [uploading, setUploading] = useState(false); 
+  const [uploadingBanner, setUploadingBanner] = useState(false); 
   const [imgMode, setImgMode] = useState('local');
   const [pinUrl, setPinUrl] = useState('');
   const [pinPreview, setPinPreview] = useState(null);
@@ -41,13 +41,7 @@ export default function Materials() {
       apiGet('/api/materials'),
       apiGet('/api/embeds')
     ]).then(([materialsData, embedsData]) => {
-      console.log('Materials data received:', materialsData);
-      console.log('Embeds data received:', embedsData);
-      
-      // Handle both old format (array) and new format (object with materials property)
       const materials = Array.isArray(materialsData) ? materialsData : materialsData.materials || [];
-      console.log('Processed materials:', materials);
-      
       setItems(materials)
       setEmbeds(embedsData)
     }).catch((error) => {
@@ -63,11 +57,10 @@ export default function Materials() {
     const file = e.target.files[0];
     if (!file) return;
     
-    // Check file size (limit to 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    const maxSize = 10 * 1024 * 1024; 
     if (file.size > maxSize) {
-      alert(`File size too large. Please select a file smaller than 10MB. Current file size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
-      e.target.value = ''; // Clear the input
+      alert(`File size too large. Please select a file smaller than 10MB.`);
+      e.target.value = ''; 
       return;
     }
     
@@ -100,11 +93,10 @@ export default function Materials() {
     const file = e.target.files[0];
     if (!file) return;
     
-    // Check file size (limit to 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    const maxSize = 10 * 1024 * 1024; 
     if (file.size > maxSize) {
-      alert(`File size too large. Please select a file smaller than 10MB. Current file size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
-      e.target.value = ''; // Clear the input
+      alert(`File size too large. Please select a file smaller than 10MB.`);
+      e.target.value = ''; 
       return;
     }
     
@@ -137,13 +129,18 @@ export default function Materials() {
       setErrorMsg('');
       setSaving(true);
       
+      // FIX: Filter out embeds that already have an _id so they aren't created again
+      const newEmbedsToCreate = materialEmbeds.filter(
+        embed => !embed._id && embed.title.trim() && embed.embedCode.trim()
+      );
+
       const payload = {
         ...form,
         tags: form.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
         imageSource: form.imageSource || (imgMode === 'pinterest' ? 'pinterest' : 'local'),
-        embeds: materialEmbeds.filter(embed => embed.title.trim() && embed.embedCode.trim()),
+        embeds: newEmbedsToCreate, // Only send new embeds to be created
         bannerImageUrl: form.bannerImageUrl, 
-        dropdownTitle: form.dropdownTitle || 'Ejercicios', // <-- ADDED: Send to backend, default if empty
+        dropdownTitle: form.dropdownTitle || 'Ejercicios', 
       };
 
       const saved = editing
@@ -158,8 +155,6 @@ export default function Materials() {
     } catch (err) {
       console.error('Save error:', err);
       let msg = 'Failed to save material';
-      
-      // Handle specific error types
       if (err?.message?.includes('request entity too large')) {
         msg = 'File size too large. Please reduce image sizes and try again.';
       } else if (err?.message?.includes('413')) {
@@ -167,7 +162,6 @@ export default function Materials() {
       } else if (err?.message) {
         msg = err.message;
       }
-      
       setErrorMsg(msg);
       alert(msg);
     } finally {
@@ -182,7 +176,7 @@ export default function Materials() {
       author: material.author || '',
       description: material.description || '',
       category: material.category || '',
-      subCategory: material.subCategory || '', // <-- Make sure all fields are loaded
+      subCategory: material.subCategory || '',
       theme: material.theme || '',
       level: material.level || '',
       country: material.country || '',
@@ -191,10 +185,12 @@ export default function Materials() {
       embedIds: material.embedIds?.map(e => e._id) || [],
       imageSource: material.imageSource || '',
       bannerImageUrl: material.bannerImageUrl || '', 
-      dropdownTitle: material.dropdownTitle || '', // <-- ADDED: Load existing title
+      dropdownTitle: material.dropdownTitle || '', 
     });
     
+    // FIX: Include the _id when loading existing embeds so we know they exist
     const existingEmbeds = material.embedIds?.map(embed => ({
+      _id: embed._id, 
       title: embed.title || '',
       type: embed.type || 'AI',
       embedCode: embed.embedCode || ''
@@ -214,13 +210,26 @@ export default function Materials() {
   };
 
   const addMaterialEmbed = () => setMaterialEmbeds(prev => [...prev, { title: '', type: 'AI', embedCode: '' }]);
+  
   const updateMaterialEmbed = (index, field, value) => setMaterialEmbeds(prev => prev.map((embed, i) => i === index ? { ...embed, [field]: value } : embed));
-  const removeMaterialEmbed = (index) => setMaterialEmbeds(prev => prev.filter((_, i) => i !== index));
+  
+  // FIX: If removing an existing embed, ensure it's also removed from the form.embedIds list
+  const removeMaterialEmbed = (index) => {
+    const embedToRemove = materialEmbeds[index];
+    if (embedToRemove && embedToRemove._id) {
+       setForm(prevForm => ({
+         ...prevForm,
+         embedIds: prevForm.embedIds.filter(id => id !== embedToRemove._id)
+       }));
+    }
+    setMaterialEmbeds(prev => prev.filter((_, i) => i !== index));
+  };
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Materials</h1>
       <div className="rounded-xl bg-white shadow-sm border border-gray-200 overflow-hidden">
+        {/* ... (Header and Error handling unchanged) ... */}
         <div className="p-3 border-b flex justify-between items-center">
           <div className="text-sm text-gray-600">Manage learning materials</div>
           <button
@@ -231,16 +240,16 @@ export default function Materials() {
                 author: '',
                 description: '', 
                 category: '', 
-                subCategory: '', // <-- Reset
-                theme: '', // <-- Reset
-                level: '', // <-- Reset
-                country: '', // <-- Reset
+                subCategory: '', 
+                theme: '', 
+                level: '', 
+                country: '', 
                 fileUrl: '', 
                 tags: '',
                 embedIds: [],
                 imageSource: '',
-                bannerImageUrl: '', // Reset
-                dropdownTitle: '', // <-- ADDED: Reset
+                bannerImageUrl: '', 
+                dropdownTitle: '', 
               }); 
               setImgMode('local');
               setPinUrl('');
@@ -261,7 +270,6 @@ export default function Materials() {
               onClick={() => {
                 setError(null);
                 setLoading(true);
-                // Retry loading
                 Promise.all([
                   apiGet('/api/materials'),
                   apiGet('/api/embeds')
@@ -365,7 +373,7 @@ export default function Materials() {
               ))}
 
               
-              {/* Multiple Embeds Section (No change) */}
+              {/* Multiple Embeds Section */}
               <div className="block">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-700">Add Multiple Embeds (AI/H5P Content)</span>
@@ -382,7 +390,7 @@ export default function Materials() {
                     {materialEmbeds.map((embed, index) => (
                       <div key={index} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-semibold text-gray-600">Embed #{index + 1}</span>
+                            <span className="text-xs font-semibold text-gray-600">Embed #{index + 1} {embed._id && '(Existing)'}</span>
                             <button
                             type="button"
                             onClick={() => removeMaterialEmbed(index)}
@@ -399,6 +407,7 @@ export default function Materials() {
                                 onChange={e => updateMaterialEmbed(index, 'title', e.target.value)}
                                 placeholder="e.g., Exercise 1"
                                 className="mt-1 w-full rounded-lg border border-gray-300 bg-white focus:border-red-500 focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400"
+                                disabled={!!embed._id} // Optional: Disable editing if it's an existing embed
                             />
                             </label>
                             <label className="block">
@@ -407,6 +416,7 @@ export default function Materials() {
                                 value={embed.type}
                                 onChange={e => updateMaterialEmbed(index, 'type', e.target.value)}
                                 className="mt-1 w-full rounded-lg border border-gray-300 bg-white focus:border-red-500 focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm"
+                                disabled={!!embed._id}
                             >
                                 <option value="AI">AI Content</option>
                                 <option value="H5P">H5P Content</option>
@@ -421,8 +431,10 @@ export default function Materials() {
                             placeholder="Paste your <iframe> or <script> code here"
                             rows="4"
                             className="mt-1 w-full rounded-lg border border-gray-300 bg-white focus:border-red-500 focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400"
+                            disabled={!!embed._id}
                             />
                         </label>
+                        {embed._id && <p className="text-xs text-orange-600 mt-1">To update the content of this embed, please delete it and create a new one.</p>}
                       </div>
                     ))}
                   </div>
@@ -447,7 +459,7 @@ export default function Materials() {
                 </div>
               </div>
 
-              {/* ADDED: Dropdown Title Input */}
+              {/* Dropdown Title Input */}
               <label className="block">
                 <span className="text-sm text-gray-700">Dropdown Title</span>
                 <input
@@ -497,7 +509,6 @@ export default function Materials() {
                       className="mt-1 w-full rounded-lg border border-gray-300 bg-gray-50 focus:border-red-500 focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400 hover:border-gray-400"
                     />
                   </label>
-                  {/* ... (Pinterest preview logic, etc.) ... */}
                 </div>
               )}
 

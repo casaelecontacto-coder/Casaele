@@ -5,9 +5,12 @@ import { apiGet } from "../../utils/api";
 const MeetTeachers = () => {
   const [teachers, setTeachers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selectedTeacher, setSelectedTeacher] = useState(null)
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerRow, setItemsPerRow] = useState(4);
+
+  const descriptionCharLimit = 100;
 
   useEffect(() => {
     const handleResize = () => {
@@ -54,6 +57,13 @@ const MeetTeachers = () => {
     currentIndex + itemsPerRow
   );
 
+  const truncateDescription = (text) => {
+    if (!text) return '';
+    return text.length > descriptionCharLimit 
+      ? text.substring(0, descriptionCharLimit).trim() + '...' 
+      : text;
+  };
+
   return (
     <div className="w-full bg-[#FDF2F2] mb-16 py-24 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto text-center">
@@ -96,7 +106,15 @@ const MeetTeachers = () => {
                   {teacher.name}
                 </h2>
                 <p className="text-sm sm:text-base text-gray-500 mt-3 px-2">
-                  {teacher.description}
+                  {truncateDescription(teacher.description)}
+                  {teacher.description && teacher.description.length > descriptionCharLimit && (
+                    <button
+                      onClick={() => setSelectedTeacher(teacher)}
+                      className="text-blue-600 hover:text-blue-800 ml-1 font-semibold cursor-pointer"
+                    >
+                      more
+                    </button>
+                  )}
                 </p>
               </div>
             ))}
@@ -112,6 +130,37 @@ const MeetTeachers = () => {
           </button>
         </div>
       </div>
+
+      {selectedTeacher && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="sticky top-0 bg-gray-50 border-b border-gray-200 p-4 flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-gray-800">Teacher Information</h2>
+              <button onClick={() => setSelectedTeacher(null)} className="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-4">
+                <img
+                  src={selectedTeacher.photoUrl}
+                  alt={selectedTeacher.name}
+                  className="w-24 h-24 rounded-full object-cover"
+                />
+                <div>
+                  <h3 className="text-2xl font-semibold text-gray-800">{selectedTeacher.name}</h3>
+                  {selectedTeacher.email && <p className="text-sm text-gray-600">{selectedTeacher.email}</p>}
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 font-medium mb-2">About</p>
+                <p className="text-gray-900 whitespace-pre-wrap bg-gray-50 p-3 rounded border border-gray-200">{selectedTeacher.description}</p>
+              </div>
+            </div>
+            <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 p-4 flex justify-end gap-2">
+              <button onClick={() => setSelectedTeacher(null)} className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

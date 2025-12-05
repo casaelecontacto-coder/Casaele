@@ -12,7 +12,7 @@ import { apiGet } from '../utils/api';
  * @param {string} [imageClassName=''] - Additional CSS classes for the image.
  * @param {string} [fallbackImage=''] - Fallback image URL if no CMS image is available.
  */
-function CmsContent({ slug, as: Component = 'div', prose = true, className = '', children, showImage = true, imageClassName = '', fallbackImage = '' }) {
+function CmsContent({ slug, as: Component = 'div', prose = true, className = '', children, showImage = true, imageClassName = '', fallbackImage = '', renderContent = true }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -76,8 +76,8 @@ function CmsContent({ slug, as: Component = 'div', prose = true, className = '',
         </div>
       )}
       
-      {/* Render content if available */}
-      {contentToRender && (
+      {/* Render content if available and allowed */}
+      {renderContent && contentToRender && (
         <Component className={finalClassName} dangerouslySetInnerHTML={{ __html: contentToRender }} />
       )}
     </div>

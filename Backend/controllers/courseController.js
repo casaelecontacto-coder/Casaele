@@ -1,5 +1,6 @@
 import Course from '../models/Course.js';
 import mongoose from 'mongoose';
+import cloudinary from '../config/cloudinaryConfig.js'; // <-- 1. IMPORT CLOUDINARY
 
 // Utility to handle validation errors
 const handleValidationError = (error, res) => {
@@ -67,9 +68,6 @@ export const getCourses = async (req, res) => {
         // Keyword search (searches across title, description, category, and availableLevels) - EXACT WORD MATCHING
         if (keyword && keyword.trim()) {
             const cleanKeyword = keyword.trim();
-            
-            // Create regex that matches whole words only (not partial matches)
-            // \b ensures word boundaries, so "hand" won't match "handsome" or "shorthand"
             const exactWordRegex = new RegExp(`\\b${cleanKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
             
             query = query.or([
@@ -94,7 +92,6 @@ export const getCourses = async (req, res) => {
         if (maxPrice) {
             query = query.where('price').lte(parseFloat(maxPrice));
         }
-
 
         // Sorting
         let sortOption = { createdAt: -1 }; // Default: newest first
@@ -162,12 +159,35 @@ export const createCourse = async (req, res) => {
             discountPrice, 
             category, 
             instructor, 
-            thumbnail, 
-            images, 
             level, 
-            availableLevels, // <-- Destructure new field
+            availableLevels,
             productType 
         } = req.body;
+
+        // --- 2. START IMAGE UPLOAD LOGIC ---
+        let imageUrl = ''; // Default
+        let imagePublicId = ''; // To store for later deletion
+
+        // Check if a file was uploaded by multer
+        if (req.file) {
+            // Convert buffer to data URI
+            const fileBuffer = req.file.buffer.toString('base64');
+            const dataUri = `data:${req.file.mimetype};base64,${fileBuffer}`;
+
+            // Upload to Cloudinary
+            const result = await cloudinary.uploader.upload(dataUri, {
+                folder: 'lms-courses', // Folder in Cloudinary
+                resource_type: 'auto',
+            });
+            
+            imageUrl = result.secure_url;
+            imagePublicId = result.public_id;
+        } else if (req.body.thumbnail) {
+            // Fallback if you are still sending a URL in the body
+            imageUrl = req.body.thumbnail;
+        }
+        // --- END IMAGE UPLOAD LOGIC ---
+
 
         // Basic validation (more comprehensive validation is in the model)
         if (!title || !description || price == null || !category) { // Check if price is provided (can be 0)
@@ -181,10 +201,11 @@ export const createCourse = async (req, res) => {
             discountPrice: discountPrice || 0,
             category,
             instructor: instructor || 'CasaDeELE Team',
-            thumbnail: thumbnail || '', // Keep thumbnail if still used, otherwise remove
-            images: Array.isArray(images) ? images : [], 
-            level, // Keep if still relevant
-            availableLevels: Array.isArray(availableLevels) ? availableLevels : [], // <-- Save as array, default empty
+            thumbnail: imageUrl, // <-- 3. SAVE THE CLOUDINARY URL
+            images: [imageUrl], // <-- 4. SAVE THE CLOUDINARY URL (or as needed)
+            imagePublicId: imagePublicId, // <-- 5. SAVE THE PUBLIC ID
+            level, 
+            availableLevels: Array.isArray(availableLevels) ? availableLevels : [],
             productType: productType || 'Digital'
         });
 
@@ -208,37 +229,60 @@ export const updateCourse = async (req, res) => {
             return res.status(400).json({ message: 'Invalid course ID format' });
         }
 
-        const { 
-            title, 
-            description, 
-            price, 
-            discountPrice, 
-            category, 
-            instructor, 
-            thumbnail, 
-            images, 
-            level, 
-            availableLevels, // <-- Destructure new field
-            productType,
-            isActive // Allow updating isActive status
-         } = req.body;
+        const course = await Course.findById(req.params.id);
+        if (!course) {
+            return res.status(404).json({ message: 'Course not found' });
+        }
 
-        // Construct update object only with provided fields
-        const updateData = {};
-        if (title) updateData.title = title;
-        if (description) updateData.description = description;
-        if (price != null) updateData.price = price; // Allow setting price to 0
-        if (discountPrice != null) updateData.discountPrice = discountPrice;
-        if (category) updateData.category = category;
-        if (instructor) updateData.instructor = instructor;
-        if (thumbnail) updateData.thumbnail = thumbnail; // Keep if used
-        if (images) updateData.images = Array.isArray(images) ? images : [];
-        if (level) updateData.level = level;
-        if (availableLevels) updateData.availableLevels = Array.isArray(availableLevels) ? availableLevels : []; // <-- Update as array
-        if (productType) updateData.productType = productType;
-        if (typeof isActive === 'boolean') updateData.isActive = isActive; // Update isActive status
+        // Construct update object with fields from req.body
+        const updateData = { ...req.body };
+
+        // --- 6. START IMAGE UPDATE LOGIC ---
+        // Check if a new file is being uploaded
+        if (req.file) {
+            // Optional: Delete old image from Cloudinary
+            if (course.imagePublicId) {
+                try {
+                    await cloudinary.uploader.destroy(course.imagePublicId);
+                } catch (err) {
+                    console.error("Error deleting old image from Cloudinary:", err);
+                    // Don't block update if deletion fails, just log it
+                }
+            }
+
+            // Convert and upload the new file
+            const fileBuffer = req.file.buffer.toString('base64');
+            const dataUri = `data:${req.file.mimetype};base64,${fileBuffer}`;
+            
+            const result = await cloudinary.uploader.upload(dataUri, {
+                folder: 'lms-courses',
+                resource_type: 'auto',
+            });
+            
+            // 8. Add new image URL and public_id to update data
+            updateData.thumbnail = result.secure_url;
+            updateData.images = [result.secure_url]; // or push to array
+            updateData.imagePublicId = result.public_id;
+        }
+        // --- END IMAGE UPDATE LOGIC ---
         
-        updateData.updatedAt = Date.now(); // Manually update updatedAt if pre-save hook isn't used
+        // Manually handle array/boolean fields from body to avoid them being erased
+        if (req.body.availableLevels) {
+            updateData.availableLevels = Array.isArray(req.body.availableLevels) ? req.body.availableLevels : [];
+        } else if (updateData.hasOwnProperty('availableLevels') && !req.body.availableLevels) {
+            // If field is present in body but empty (e.g., from form)
+            updateData.availableLevels = [];
+        }
+
+        if (req.body.images) {
+             updateData.images = Array.isArray(req.body.images) ? req.body.images : [];
+        }
+
+        if (typeof req.body.isActive === 'boolean') {
+            updateData.isActive = req.body.isActive;
+        }
+
+        updateData.updatedAt = Date.now(); // Manually update updatedAt
 
         const updatedCourse = await Course.findByIdAndUpdate(
             req.params.id, 
@@ -246,11 +290,8 @@ export const updateCourse = async (req, res) => {
             { new: true, runValidators: true, context: 'query' } // context needed for some validators on update
         );
 
-        if (updatedCourse) {
-            res.json(updatedCourse);
-        } else {
-            res.status(404).json({ message: 'Course not found' });
-        }
+        res.json(updatedCourse);
+
     } catch (error) {
          if (error.name === 'ValidationError') {
             return handleValidationError(error, res);
@@ -268,6 +309,18 @@ export const deleteCourse = async (req, res) => {
          if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
             return res.status(400).json({ message: 'Invalid course ID format' });
         }
+
+        // --- Optional: Delete image from Cloudinary before deleting from DB ---
+        const course = await Course.findById(req.params.id);
+        if (course && course.imagePublicId) {
+             try {
+                await cloudinary.uploader.destroy(course.imagePublicId);
+            } catch (err) {
+                console.error("Error deleting image from Cloudinary during course delete:", err);
+            }
+        }
+        // --- End of optional Cloudinary delete ---
+
         const deletedCourse = await Course.findByIdAndDelete(req.params.id);
         if (deletedCourse) {
             res.json({ message: 'Course deleted successfully' });

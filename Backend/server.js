@@ -250,7 +250,7 @@ app.use('/api/admins', adminRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/picks', pickRoutes);
 app.use('/api/reviews', reviewRoutes);
-app.use('/api/upload', uploadRoutes);
+app.use('/api/uploads', uploadRoutes);
 
 // Error Handlers
 app.use(notFound);

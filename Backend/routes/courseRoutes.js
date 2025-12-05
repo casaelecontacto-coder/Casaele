@@ -2,15 +2,20 @@ import express from 'express';
 import { verifyFirebaseToken } from '../middleware/auth.js';
 import { getCourses, getCourseById, createCourse, updateCourse, deleteCourse } from '../controllers/courseController.js';
 
+// 1. Import the upload middleware
+import { upload } from '../config/cloudinaryConfig.js';
+
 const router = express.Router();
 
 router.route('/')
   .get(getCourses) // Public
-  .post(verifyFirebaseToken, createCourse); // Admin protected
+  // 2. Add 'upload.single("image")' here
+  .post(verifyFirebaseToken, upload.single('image'), createCourse); // Admin protected
 
 router.route('/:id')
   .get(getCourseById) // Public
-  .put(verifyFirebaseToken, updateCourse) // Admin protected
+  // 3. Add 'upload.single("image")' here
+  .put(verifyFirebaseToken, upload.single('image'), updateCourse) // Admin protected
   .delete(verifyFirebaseToken, deleteCourse); // Admin protected
 
-export default router
+export default router;

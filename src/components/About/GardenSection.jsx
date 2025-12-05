@@ -21,6 +21,7 @@ const GardenSection = () => {
           <CmsContent
             slug="about-garden-section-content" // Use the new unique slug
             showImage={true}
+            renderContent={false}
             imageClassName="w-60 sm:w-72 md:w-80 h-auto rounded-lg mx-auto"
             fallbackImage="/About/image 11.jpg" // Keep the original as a fallback
           >
@@ -48,10 +49,7 @@ const GardenSection = () => {
                 Hola, Earth friends! I’m Ele, and I need your help to make
                 CasaDeEle even more awesome! This garden is where your ideas grow
                 — share a song, a fun feature, or a way to make learning Spanish
-                more exciting... Hola, Earth friends! I’m Ele, and I need your help to make
-                CasaDeEle even more awesome! This garden is where your ideas grow
-                — share a song, a fun feature, or a way to make learning Spanish
-                more exciting...
+                more exciting.
               </p>
             </CmsContent>
             

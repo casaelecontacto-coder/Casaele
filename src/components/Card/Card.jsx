@@ -1,8 +1,24 @@
 import React from 'react';
 
-export default function Card({ fileUrl, image, title, description, tags, price, discountPrice, onClick }) {
+// 1. Added "thumbnail" and "availableLevels" to the props
+export default function Card({ 
+  fileUrl, 
+  image, 
+  thumbnail, 
+  title, 
+  description, 
+  tags, 
+  availableLevels, 
+  price, 
+  discountPrice, 
+  onClick 
+}) {
 
-  const displayImage = fileUrl || image;
+  // 2. Updated displayImage to also check for "thumbnail"
+  const displayImage = fileUrl || image || thumbnail;
+
+  // 3. Use "availableLevels" as a fallback for "tags"
+  const displayTags = tags || availableLevels;
 
   return (
     <div
@@ -27,9 +43,10 @@ export default function Card({ fileUrl, image, title, description, tags, price, 
 
         {/* Tags and Price will be pushed to the bottom */}
         <div className="mt-auto">
-          {tags && Array.isArray(tags) && (
+          {/* 4. Updated this section to use "displayTags" */}
+          {displayTags && Array.isArray(displayTags) && (
             <div className="flex flex-wrap gap-2 mb-3">
-              {tags.map((tag, idx) => (
+              {displayTags.map((tag, idx) => (
                 <span key={idx} className="text-xs bg-pink-100 rounded-full px-3 py-1 text-gray-500">
                   {tag}
                 </span>

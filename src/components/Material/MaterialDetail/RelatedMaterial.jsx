@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { Link } from "react-router-dom"; // Import Link for navigation
 import Card from "../../Card/Card";
 
 function RelatedMaterials({ materials, onCardClick }) {
@@ -9,7 +10,7 @@ function RelatedMaterials({ materials, onCardClick }) {
     const container = scrollRef.current;
     if (!container) return;
 
-    const firstCard = container.querySelector(".snap-center"); // Updated selector
+    const firstCard = container.querySelector(".snap-center"); 
     if (!firstCard) return;
 
     const cardStyle = window.getComputedStyle(firstCard);
@@ -39,24 +40,25 @@ function RelatedMaterials({ materials, onCardClick }) {
         </div>
       </div>
 
-      {/* Card Slider - Updated for better snapping */}
+      {/* Card Slider */}
       <div 
         ref={scrollRef} 
         className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar pb-4"
       >
         {materials.map((card, i) => (
-          <div 
-            key={i} 
-            className="snap-center flex-shrink-0 w-5/6 sm:w-1/2 md:w-1/3 lg:w-1/4" 
+          <Link 
+            key={card._id || i} 
+            to={`/material-detail/${card._id}`}
+            className="snap-center flex-shrink-0 w-5/6 sm:w-1/2 md:w-1/3 lg:w-1/4 block" 
             onClick={() => onCardClick && onCardClick(card)}
           >
             <Card
-              image={card.image}
+              fileUrl={card.fileUrl} // FIX: Changed from image={card.image} to fileUrl={card.fileUrl}
               title={card.title}
               description={card.description}
               tags={card.tags}
             />
-          </div>
+          </Link>
         ))}
       </div>
     </div>

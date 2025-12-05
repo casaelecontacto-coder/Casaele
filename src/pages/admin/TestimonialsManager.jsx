@@ -7,6 +7,7 @@ export default function TestimonialsManager() {
   const [error, setError] = useState('')
   const [actingId, setActingId] = useState('')
   const [actingType, setActingType] = useState('')
+  const [selectedTestimonial, setSelectedTestimonial] = useState(null)
 
   const load = () => {
     setLoading(true)
@@ -61,7 +62,7 @@ export default function TestimonialsManager() {
             ) : items.map(t => (
               <tr key={t._id} className="hover:bg-gray-50">
                 <td className="px-4 py-3 font-medium text-gray-800">{t.name}</td>
-                <td className="px-4 py-3 text-gray-700 max-w-md truncate" title={t.message}>{t.message}</td>
+                <td className="px-4 py-3 text-gray-700 max-w-md truncate cursor-pointer hover:text-blue-600" title="Click to view full message" onClick={() => setSelectedTestimonial(t)}>{t.message}</td>
                 <td className="px-4 py-3 text-gray-700">{t.rating || '-'}</td>
                 <td className="px-4 py-3 text-gray-700">{new Date(t.date || t.createdAt).toLocaleDateString()}</td>
                 <td className="px-4 py-3"><span className={`px-2 py-1 text-xs rounded-full ${t.status==='approved'?'bg-green-50 text-green-700':t.status==='rejected'?'bg-red-50 text-red-700':'bg-gray-100 text-gray-700'}`}>{t.status}</span></td>
@@ -79,6 +80,64 @@ export default function TestimonialsManager() {
           </tbody>
         </table>
       </div>
+      
+      {selectedTestimonial && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">Testimonial Details</h2>
+              <button onClick={() => setSelectedTestimonial(null)} aria-label="Close testimonial" className="inline-flex items-center justify-center w-8 h-8 rounded-md text-gray-500 hover:bg-gray-100">
+                <span className="text-xl leading-none">×</span>
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <p className="text-sm text-gray-600">Name</p>
+                <p className="text-gray-900 font-medium">{selectedTestimonial.name}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Email</p>
+                <p className="text-gray-900">{selectedTestimonial.email}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-600">Country</p>
+                  <p className="text-gray-900">{selectedTestimonial.country}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Profession</p>
+                  <p className="text-gray-900">{selectedTestimonial.profession}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-600">Level</p>
+                  <p className="text-gray-900">{selectedTestimonial.level}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Rating</p>
+                  <p className="text-gray-900">{selectedTestimonial.rating || '-'}</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Message</p>
+                <p className="text-gray-900 whitespace-pre-wrap bg-gray-50 p-3 rounded border border-gray-200 mt-1">{selectedTestimonial.message}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Status</p>
+                <p className={`inline-block px-3 py-1 text-xs rounded-full font-medium ${selectedTestimonial.status==='approved'?'bg-green-50 text-green-700':selectedTestimonial.status==='rejected'?'bg-red-50 text-red-700':'bg-gray-100 text-gray-700'}`}>{selectedTestimonial.status}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Date</p>
+                <p className="text-gray-900">{new Date(selectedTestimonial.date || selectedTestimonial.createdAt).toLocaleDateString()}</p>
+              </div>
+            </div>
+            <div className="border-t border-gray-200 p-6 flex justify-end gap-3">
+              <button onClick={() => setSelectedTestimonial(null)} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

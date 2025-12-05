@@ -14,6 +14,7 @@ const courseSchema = new mongoose.Schema({
   availableLevels: [{ type: String }], // Array of available levels like ['A1', 'B2']
   // *** END NEW FIELD ***
   productType: { type: String, enum: ['Digital', 'Physical', 'Both'], default: 'Digital' },
+  isActive: { type: Boolean, default: true },
 }, { timestamps: true });
 
 export default mongoose.models.Course || mongoose.model('Course', courseSchema);
