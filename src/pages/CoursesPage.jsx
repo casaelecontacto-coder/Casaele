@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'; // Import useMemo
-import Banner from '../components/Shop/Banner';
+// Banner removed from CoursesPage to avoid confusion with shop page
 import Filters from '../components/Shop/Filters'; 
 import ProductGrid from '../components/Shop/ProductGrid';
 import Pagination from '../components/Shop/Pagination';
@@ -140,7 +140,7 @@ function CoursesPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <Banner /> 
+      {/* Banner removed - similar to shop page, causes confusion */}
       <div className="flex flex-col lg:flex-row gap-8 px-4 sm:px-6 lg:px-20 mt-10 mb-10">
         
         {/* Filters Sidebar */}

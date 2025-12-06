@@ -161,7 +161,9 @@ export const createCourse = async (req, res) => {
             instructor, 
             level, 
             availableLevels,
-            productType 
+            productType,
+            purchaseType,
+            formUrl
         } = req.body;
 
         // --- 2. START IMAGE UPLOAD LOGIC ---
@@ -190,15 +192,31 @@ export const createCourse = async (req, res) => {
 
 
         // Basic validation (more comprehensive validation is in the model)
-        if (!title || !description || price == null || !category) { // Check if price is provided (can be 0)
-            return res.status(400).json({ message: 'Title, description, price, and category are required' });
+        if (!title || !description || !category) {
+            return res.status(400).json({ message: 'Title, description, and category are required' });
+        }
+
+        // Validate purchaseType
+        const validPurchaseType = purchaseType || 'price';
+        if (!['price', 'form'].includes(validPurchaseType)) {
+            return res.status(400).json({ message: 'purchaseType must be either "price" or "form"' });
+        }
+
+        // If purchaseType is 'price', price is required
+        if (validPurchaseType === 'price' && (price == null || price < 0)) {
+            return res.status(400).json({ message: 'Price is required when purchaseType is "price"' });
+        }
+
+        // If purchaseType is 'form', formUrl is required
+        if (validPurchaseType === 'form' && (!formUrl || !formUrl.trim())) {
+            return res.status(400).json({ message: 'Form URL is required when purchaseType is "form"' });
         }
 
         const newCourse = new Course({
             title,
             description,
-            price,
-            discountPrice: discountPrice || 0,
+            price: validPurchaseType === 'price' ? price : 0, // Only set price if purchaseType is 'price'
+            discountPrice: validPurchaseType === 'price' ? (discountPrice || 0) : 0,
             category,
             instructor: instructor || 'CasaDeELE Team',
             thumbnail: imageUrl, // <-- 3. SAVE THE CLOUDINARY URL
@@ -206,7 +224,9 @@ export const createCourse = async (req, res) => {
             imagePublicId: imagePublicId, // <-- 5. SAVE THE PUBLIC ID
             level, 
             availableLevels: Array.isArray(availableLevels) ? availableLevels : [],
-            productType: productType || 'Digital'
+            productType: productType || 'Digital',
+            purchaseType: validPurchaseType,
+            formUrl: validPurchaseType === 'form' ? formUrl.trim() : ''
         });
 
         const savedCourse = await newCourse.save();
@@ -236,6 +256,35 @@ export const updateCourse = async (req, res) => {
 
         // Construct update object with fields from req.body
         const updateData = { ...req.body };
+
+        // Validate purchaseType if provided
+        if (req.body.purchaseType) {
+            if (!['price', 'form'].includes(req.body.purchaseType)) {
+                return res.status(400).json({ message: 'purchaseType must be either "price" or "form"' });
+            }
+            
+            const validPurchaseType = req.body.purchaseType;
+            
+            // If switching to 'price', ensure price is provided
+            if (validPurchaseType === 'price' && (req.body.price == null || req.body.price < 0)) {
+                return res.status(400).json({ message: 'Price is required when purchaseType is "price"' });
+            }
+            
+            // If switching to 'form', ensure formUrl is provided
+            if (validPurchaseType === 'form' && (!req.body.formUrl || !req.body.formUrl.trim())) {
+                return res.status(400).json({ message: 'Form URL is required when purchaseType is "form"' });
+            }
+            
+            // Clean up fields based on purchaseType
+            if (validPurchaseType === 'form') {
+                // Clear price fields when switching to form
+                updateData.price = 0;
+                updateData.discountPrice = 0;
+            } else if (validPurchaseType === 'price') {
+                // Clear formUrl when switching to price
+                updateData.formUrl = '';
+            }
+        }
 
         // --- 6. START IMAGE UPDATE LOGIC ---
         // Check if a new file is being uploaded

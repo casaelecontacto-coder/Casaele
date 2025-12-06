@@ -44,7 +44,9 @@ const Courses = () => {
     language: 'Spanish', // Keep if relevant
     instructor: 'CasaDeELE Team',
     modules: [], // Keep if relevant
-    productType: 'Digital' // Keep productType
+    productType: 'Digital', // Keep productType
+    purchaseType: 'price', // 'price' for paid courses, 'form' for lead generation
+    formUrl: '' // Google Form URL when purchaseType is 'form'
   });
   
   // Image handling state (keep if needed)
@@ -201,7 +203,9 @@ const Courses = () => {
       language: course.language || 'Spanish',
       instructor: course.instructor || 'CasaDeELE Team',
       modules: course.modules || [],
-      productType: course.productType || 'Digital' // Load productType
+      productType: course.productType || 'Digital', // Load productType
+      purchaseType: course.purchaseType || 'price', // Load purchaseType
+      formUrl: course.formUrl || '' // Load formUrl
     });
     // Determine image mode based on loaded data if needed
     // setImgMode(course.imageSource === 'pinterest' ? 'pinterest' : 'local');
@@ -269,7 +273,8 @@ const Courses = () => {
                 setFormData({
                   title: '', description: '', category: '', images: [],
                   thumbnail: '', price: 0, discountPrice: 0, level: '', availableLevels: [], 
-                  language: 'Spanish', instructor: 'CasaDeELE Team', modules: [], productType: 'Digital'
+                  language: 'Spanish', instructor: 'CasaDeELE Team', modules: [], productType: 'Digital',
+                  purchaseType: 'price', formUrl: ''
                 });
                 setShowModal(true);
               }}
@@ -395,11 +400,71 @@ const Courses = () => {
                  {/* Thumbnail URL (Optional Fallback) */}
                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Thumbnail URL (Optional)</label><input type="url" placeholder="https://..." value={formData.thumbnail} onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" /></div>
 
-                {/* Price, Discount Price */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label><input type="number" min="0" step="0.01" value={formData.price} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" required/></div>
-                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Discount Price (₹, optional)</label><input type="number" min="0" step="0.01" value={formData.discountPrice} onChange={(e) => setFormData({ ...formData, discountPrice: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" /></div>
+                {/* Purchase Type */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Type *</label>
+                    <select 
+                        value={formData.purchaseType} 
+                        onChange={(e) => setFormData({ ...formData, purchaseType: e.target.value, formUrl: e.target.value === 'price' ? '' : formData.formUrl })} 
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-red-500 focus:border-red-500"
+                        required
+                    >
+                        <option value="price">Price (Paid Course)</option>
+                        <option value="form">Form (Lead Generation)</option>
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">
+                        {formData.purchaseType === 'price' 
+                            ? 'Users will purchase this course with payment' 
+                            : 'Users will fill a Google Form to express interest'}
+                    </p>
                 </div>
+
+                {/* Price, Discount Price - Only show when purchaseType is 'price' */}
+                {formData.purchaseType === 'price' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
+                            <input 
+                                type="number" 
+                                min="0" 
+                                step="0.01" 
+                                value={formData.price} 
+                                onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })} 
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" 
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Discount Price (₹, optional)</label>
+                            <input 
+                                type="number" 
+                                min="0" 
+                                step="0.01" 
+                                value={formData.discountPrice} 
+                                onChange={(e) => setFormData({ ...formData, discountPrice: parseFloat(e.target.value) || 0 })} 
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" 
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* Form URL - Only show when purchaseType is 'form' */}
+                {formData.purchaseType === 'form' && (
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Google Form URL *</label>
+                        <input 
+                            type="url" 
+                            placeholder="https://docs.google.com/forms/..." 
+                            value={formData.formUrl} 
+                            onChange={(e) => setFormData({ ...formData, formUrl: e.target.value })} 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" 
+                            required={formData.purchaseType === 'form'}
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                            Paste the full Google Form URL. Users will be redirected to this form when they click "Fill Form".
+                        </p>
+                    </div>
+                )}
 
                 {/* --- AVAILABLE LEVELS CHECKBOXES --- */}
                 <div className="block">

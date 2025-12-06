@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash, FaTimes } from "react-icons/fa";
-import { auth, googleProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "../firebase";
+import { auth, googleProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail } from "../firebase";
 import { db } from "../firebase";
 import { doc, serverTimestamp, setDoc, getDoc } from "firebase/firestore";
 
@@ -12,6 +12,8 @@ function AuthForm({ onClose }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   
   async function ensureUserDoc(user, extra = {}) {
@@ -48,22 +50,44 @@ function AuthForm({ onClose }) {
   async function handleEmail(e) {
     e.preventDefault();
     try {
-      setError(""); setLoading(true);
+      setError(""); setSuccess(""); setLoading(true);
       if (isLogin) {
         const res = await signInWithEmailAndPassword(auth, email, password);
         await ensureUserDoc(res.user, { provider: "password" });
         const token = await res.user.getIdToken();
         localStorage.setItem('authToken', token);
+        onClose?.(); // Close the modal on successful login
       } else {
         const res = await createUserWithEmailAndPassword(auth, email, password);
         if (name) await updateProfile(res.user, { displayName: name });
         await ensureUserDoc(res.user, { provider: "password" });
         const token = await res.user.getIdToken();
         localStorage.setItem('authToken', token);
+        onClose?.(); // Close the modal on successful signup
       }
-      onClose?.(); // Close the modal on successful login/signup
     } catch (e) {
       setError(e?.message || 'Authentication failed');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleForgotPassword(e) {
+    e.preventDefault();
+    if (!email) {
+      setError("Please enter your email address first");
+      return;
+    }
+    try {
+      setError(""); setSuccess(""); setLoading(true);
+      await sendPasswordResetEmail(auth, email);
+      setSuccess("Password reset email sent! Check your inbox.");
+      setTimeout(() => {
+        setShowForgotPassword(false);
+        setSuccess("");
+      }, 3000);
+    } catch (e) {
+      setError(e?.message || 'Failed to send password reset email');
     } finally {
       setLoading(false);
     }
@@ -122,25 +146,67 @@ function AuthForm({ onClose }) {
           />
         </div>
 
-        <div className="mb-6 relative">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder={isLogin ? "Password" : "Create Password"}
-            value={password}
-            onChange={(e)=>setPassword(e.target.value)}
-            className="w-full border-b border-gray-400 focus:outline-none focus:border-red-500 py-2 placeholder-black text-sm sm:text-base"
-          />
-          <div
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
+        {!showForgotPassword && (
+          <div className="mb-6 relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder={isLogin ? "Password" : "Create Password"}
+              value={password}
+              onChange={(e)=>setPassword(e.target.value)}
+              className="w-full border-b border-gray-400 focus:outline-none focus:border-red-500 py-2 placeholder-black text-sm sm:text-base"
+            />
+            <div
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </div>
           </div>
-        </div>
+        )}
+
+        {isLogin && !showForgotPassword && (
+          <div className="mb-4 text-right">
+            <button
+              type="button"
+              onClick={() => {
+                setShowForgotPassword(true);
+                setError("");
+                setSuccess("");
+              }}
+              className="text-sm text-red-700 hover:text-red-800 font-medium"
+            >
+              Forgot Password?
+            </button>
+          </div>
+        )}
+
+        {showForgotPassword && (
+          <div className="mb-4">
+            <p className="text-sm text-gray-600 mb-2">
+              Enter your email address and we'll send you a link to reset your password.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setShowForgotPassword(false);
+                setError("");
+                setSuccess("");
+              }}
+              className="text-sm text-gray-600 hover:text-gray-800 mb-2"
+            >
+              ← Back to Login
+            </button>
+          </div>
+        )}
 
         {error && <div className="text-sm text-red-600 mb-2">{String(error)}</div>}
-        <button onClick={handleEmail} disabled={loading} className="w-full bg-red-700 text-white py-2 rounded-md font-semibold hover:bg-red-800 transition text-sm sm:text-base mb-4 disabled:opacity-60">
-          {loading ? 'Please wait…' : (isLogin ? "Login" : "Signup")}
+        {success && <div className="text-sm text-green-600 mb-2">{String(success)}</div>}
+        <button 
+          onClick={showForgotPassword ? handleForgotPassword : handleEmail} 
+          disabled={loading} 
+          className="w-full bg-red-700 text-white py-2 rounded-md font-semibold hover:bg-red-800 transition text-sm sm:text-base mb-4 disabled:opacity-60"
+        >
+          {loading ? 'Please wait…' : (showForgotPassword ? "Send Reset Email" : (isLogin ? "Login" : "Signup"))}
         </button>
 
         <p className="text-center text-sm sm:text-base text-gray-600">

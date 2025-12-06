@@ -15,6 +15,10 @@ const courseSchema = new mongoose.Schema({
   // *** END NEW FIELD ***
   productType: { type: String, enum: ['Digital', 'Physical', 'Both'], default: 'Digital' },
   isActive: { type: Boolean, default: true },
+  // Purchase type: 'price' for paid courses, 'form' for lead generation via Google Form
+  purchaseType: { type: String, enum: ['price', 'form'], default: 'price' },
+  // Google Form URL - required when purchaseType is 'form'
+  formUrl: { type: String, default: '' },
 }, { timestamps: true });
 
 export default mongoose.models.Course || mongoose.model('Course', courseSchema);

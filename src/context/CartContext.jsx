@@ -35,6 +35,12 @@ export const CartProvider = ({ children }) => {
   }, [cartItems]);
 
   const addToCart = (item) => {
+    // Prevent form-based courses from being added to cart
+    if (item.purchaseType === 'form') {
+      console.warn("Form-based courses cannot be added to cart. Use the form link instead.");
+      return;
+    }
+
     // Ensure item has at least a quantity of 1
     const quantityToAdd = Math.max(1, item.quantity || 1);
 
