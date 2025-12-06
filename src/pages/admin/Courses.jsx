@@ -16,6 +16,7 @@ import {
 } from 'react-icons/fi';
 import { apiGet, apiSend } from '../../utils/api';
 import Spinner from '../../components/Common/Spinner'; // Assuming Spinner path
+import { Editor } from '@tinymce/tinymce-react'; // Import TinyMCE Editor
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
@@ -290,7 +291,30 @@ const Courses = () => {
 
         {/* Filters and Search (keep) */}
          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-           {/* ... Filter inputs ... */}
+           <div className="flex flex-col md:flex-row gap-4">
+             <div className="flex-1 relative">
+               <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+               <input
+                 type="text"
+                 placeholder="Search courses..."
+                 value={searchTerm}
+                 onChange={(e) => setSearchTerm(e.target.value)}
+                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+               />
+             </div>
+             <div className="w-full md:w-48">
+               <select
+                 value={categoryFilter}
+                 onChange={(e) => setCategoryFilter(e.target.value)}
+                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white"
+               >
+                 <option value="">All Categories</option>
+                 {categories.map(cat => (
+                   <option key={cat._id} value={cat.name}>{cat.name}</option>
+                 ))}
+               </select>
+             </div>
+           </div>
          </div>
 
         {/* Courses Grid (keep) */}
@@ -329,7 +353,10 @@ const Courses = () => {
                       {/* Display 'main' level if needed */}
                       {course.level && <span className={`px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800`}>{course.level}</span>}
                     </div>
-                     <p className="text-gray-600 text-sm mb-4 line-clamp-3">{course.description}</p>
+                     {/* Remove raw description from card if it contains HTML */}
+                     <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                        {course.description ? course.description.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...' : ''}
+                     </p>
                     {/* Display available levels */}
                     {course.availableLevels && course.availableLevels.length > 0 && (
                         <div className="mb-4 flex flex-wrap gap-1">
@@ -356,7 +383,25 @@ const Courses = () => {
         </div>
 
         {/* Pagination (keep) */}
-        {/* ... */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-8 gap-2">
+             <button
+               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+               disabled={currentPage === 1}
+               className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50"
+             >
+               Previous
+             </button>
+             <span className="px-4 py-2">Page {currentPage} of {totalPages}</span>
+             <button
+               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+               disabled={currentPage === totalPages}
+               className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50"
+             >
+               Next
+             </button>
+          </div>
+        )}
 
         {/* Course Modal */}
         {showModal && (
@@ -376,8 +421,25 @@ const Courses = () => {
                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Title *</label><input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" required /></div>
                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Category *</label><select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-red-500 focus:border-red-500" required><option value="">Select Category</option>{categories.map(category => (<option key={category._id} value={category.name}>{category.name}</option>))}</select></div>
                 </div>
-                {/* Description */}
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Description *</label><textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={4} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" required /></div>
+                
+                {/* Description - Replaced with TinyMCE Editor */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                  <div className="rounded-lg overflow-hidden border border-gray-300 focus-within:ring-1 focus-within:ring-red-500 focus-within:border-red-500">
+                    <Editor
+                      apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+                      value={formData.description}
+                      onEditorChange={(content) => setFormData({ ...formData, description: content })}
+                      init={{
+                        height: 300,
+                        menubar: false,
+                        plugins: 'link lists table code fullscreen image media',
+                        toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist | link image media | code fullscreen',
+                        content_style: 'body { font-family:Inter,sans-serif; font-size:14px }'
+                      }}
+                    />
+                  </div>
+                </div>
                 
                 {/* Image Uploader */}
                  <div>
@@ -483,8 +545,6 @@ const Courses = () => {
                             </label>
                         ))}
                     </div>
-                    {/* Add validation message if needed */}
-                    {/* {formData.availableLevels.length === 0 && <p className="text-xs text-red-600 mt-1">Please select at least one level.</p>} */}
                 </div>
                 {/* --- END AVAILABLE LEVELS --- */}
 
@@ -494,13 +554,6 @@ const Courses = () => {
                      <div><label className="block text-sm font-medium text-gray-700 mb-1">Instructor</label><input type="text" value={formData.instructor} onChange={(e) => setFormData({ ...formData, instructor: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" /></div>
                      <div><label className="block text-sm font-medium text-gray-700 mb-1">Language</label><input type="text" value={formData.language} onChange={(e) => setFormData({ ...formData, language: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" /></div>
                  </div>
-                 
-                 {/* Main Level (Optional) */}
-                 {/* <div><label className="block text-sm font-medium text-gray-700 mb-1">Main Level (Optional)</label><input type="text" value={formData.level} onChange={(e) => setFormData({ ...formData, level: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g., Intermediate or B1"/></div> */}
-
-
-                {/* Modules (keep if needed) */}
-                {/* ... (Module add/edit/remove UI) ... */}
 
                 {/* Modal Footer */}
                 <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">

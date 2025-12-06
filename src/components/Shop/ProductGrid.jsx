@@ -15,7 +15,13 @@ function ProductGrid({ products, itemType }) {
             ? `/course-detail/${product._id}`
             : `/product-detail/${product._id}`;
 
-          const imageUrl = (product.imageUrls && product.imageUrls[0]) || (product.images && product.images[0]) || product.thumbnail || product.imageUrl || DEFAULT_IMAGE; const title = product.title || product.name;
+          const imageUrl = (product.imageUrls && product.imageUrls[0]) || (product.images && product.images[0]) || product.thumbnail || product.imageUrl || DEFAULT_IMAGE; 
+          const title = product.title || product.name;
+
+          // *** FIX: Strip HTML tags for the preview description ***
+          const plainDescription = product.description 
+            ? product.description.replace(/<[^>]+>/g, '') 
+            : '';
 
           return (
             <Link
@@ -34,8 +40,9 @@ function ProductGrid({ products, itemType }) {
                 <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-red-700 transition-colors">
                   {title}
                 </h3>
+                {/* Use plainDescription instead of product.description */}
                 <p className="text-sm text-gray-600 mb-3 line-clamp-3">
-                  {product.description}
+                  {plainDescription}
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-xl font-bold text-gray-900">

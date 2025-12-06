@@ -1,5 +1,3 @@
-// src/components/CourseDetail/DetailedInfo.jsx
-
 import React from 'react';
 
 // Simple component to render HTML or plain text safely
@@ -25,6 +23,18 @@ const DetailedInfo = ({ description, instructor }) => {
         <h3 className="text-2xl font-semibold text-gray-900 mb-4">
           About this Product
         </h3>
+
+        {/* CSS to make iframes responsive within the description */}
+        <style>{`
+          .prose iframe {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+          }
+        `}</style>
         
         {description ? (
           <div className="prose prose-lg max-w-none text-gray-700">

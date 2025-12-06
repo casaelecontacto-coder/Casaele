@@ -20,6 +20,11 @@ export default function Card({
   // 3. Use "availableLevels" as a fallback for "tags"
   const displayTags = tags || availableLevels;
 
+  // *** FIX: Strip HTML tags for the preview description ***
+  const plainDescription = description 
+    ? description.replace(/<[^>]+>/g, '') 
+    : '';
+
   return (
     <div
       onClick={onClick}
@@ -37,8 +42,9 @@ export default function Card({
         <h3 className="font-semibold text-lg truncate" title={title}>{title}</h3>
         
         {/* Description is now limited to 2 lines */}
+        {/* Use plainDescription instead of description */}
         <p className="text-sm text-gray-600 mb-3 mt-1 line-clamp-2 h-10"> 
-          {description}
+          {plainDescription}
         </p>
 
         {/* Tags and Price will be pushed to the bottom */}
