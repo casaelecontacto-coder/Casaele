@@ -45,7 +45,7 @@ const DetailedInfo = ({ description, instructor }) => {
         )}
       </div>
 
-      {/* Instructor Section (Conditional) */}
+      {/* Instructor Section (Conditional)
       {instructor && (
         <div>
           <h3 className="text-2xl font-semibold text-gray-900 mb-4">
@@ -63,7 +63,7 @@ const DetailedInfo = ({ description, instructor }) => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
     </div>
   );
