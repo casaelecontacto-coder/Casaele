@@ -129,6 +129,7 @@ function CourseDetail() {
             setQuantity={setQuantity}
             added={added} // Pass the added state for button display
             handleAddToCart={handleAddToCart} // Pass the handler function
+            itemType="course" // Indicate this is a course page
           />
         </div>
 
@@ -137,6 +138,7 @@ function CourseDetail() {
           <DetailedInfo
             description={course.description}
             instructor={course.instructor} // Pass relevant details
+            itemType="course" // Indicate this is a course page
             // Pass modules if DetailedInfo displays them
             // modules={course.modules} 
           />

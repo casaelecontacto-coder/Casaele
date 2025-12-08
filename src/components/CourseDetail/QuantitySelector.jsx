@@ -8,10 +8,12 @@ function QuantitySelector({
   increaseQty,
   decreaseQty,
   added, // Use the 'added' prop again
-  handleAddToCart, 
+  handleAddToCart,
+  itemType = 'product', // Default to 'product'
 }) {
   // 2. Re-initialize navigate
   const navigate = useNavigate();
+  const isCourse = itemType === 'course';
 
   return (
     <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -32,7 +34,7 @@ function QuantitySelector({
           className="flex-1 sm:flex-initial w-full sm:w-auto bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
         >
           <FiCheck className="w-5 h-5" />
-          Added! Go to Cart
+          {isCourse ? 'Enrolled! Go to Cart' : 'Added! Go to Cart'}
         </button>
       ) : (
         // Button to add the item to the cart
@@ -41,7 +43,7 @@ function QuantitySelector({
           className="flex-1 sm:flex-initial w-full sm:w-auto bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
         >
           <FiShoppingCart className="w-5 h-5" />
-          Add To Cart
+          {isCourse ? 'Enroll Now' : 'Add To Cart'}
         </button>
       )}
       {/* --- END RESTORED BUTTON --- */}

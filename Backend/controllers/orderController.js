@@ -1,6 +1,7 @@
 import Razorpay from 'razorpay';
 import dotenv from 'dotenv';
 import Order from '../models/Order.js';
+import Coupon from '../models/Coupon.js';
 import crypto from 'crypto';
 import mongoose from 'mongoose';
 
@@ -94,6 +95,8 @@ export const verifyPayment = async (req, res) => {
       billingDetails,
       cartItems,
       totalAmount,
+      couponCode,
+      discountAmount,
     } = req.body;
 
     if (
@@ -160,6 +163,21 @@ export const verifyPayment = async (req, res) => {
 
       const calculatedItemsPrice = orderItems.reduce((acc, item) => acc + item.price * item.qty, 0);
       const calculatedTotalPrice = Number(totalAmount);
+      const appliedDiscount = Number(discountAmount) || 0;
+
+      // Increment coupon usage count if coupon was applied
+      if (couponCode) {
+        try {
+          const coupon = await Coupon.findOne({ code: couponCode.toUpperCase() });
+          if (coupon) {
+            coupon.usedCount = (coupon.usedCount || 0) + 1;
+            await coupon.save();
+          }
+        } catch (couponError) {
+          console.error('Error updating coupon usage:', couponError);
+          // Don't fail the order if coupon update fails
+        }
+      }
 
       const newOrder = new Order({
         orderItems,
@@ -184,6 +202,8 @@ export const verifyPayment = async (req, res) => {
         taxPrice: 0,
         shippingPrice: 0,
         totalPrice: calculatedTotalPrice,
+        couponCode: couponCode || null,
+        discountAmount: appliedDiscount,
         isPaid: true,
         paidAt: new Date(),
         razorpayOrderId: razorpay_order_id,

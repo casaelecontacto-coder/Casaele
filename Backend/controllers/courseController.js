@@ -154,6 +154,7 @@ export const createCourse = async (req, res) => {
     try {
         const { 
             title, 
+            subtitle,
             description, 
             price, 
             discountPrice, 
@@ -214,6 +215,7 @@ export const createCourse = async (req, res) => {
 
         const newCourse = new Course({
             title,
+            subtitle: subtitle || '', // Add subtitle field
             description,
             price: validPurchaseType === 'price' ? price : 0, // Only set price if purchaseType is 'price'
             discountPrice: validPurchaseType === 'price' ? (discountPrice || 0) : 0,

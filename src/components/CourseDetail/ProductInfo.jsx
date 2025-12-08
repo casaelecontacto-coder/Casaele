@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from "react";
 import QuantitySelector from "./QuantitySelector";
 
-function ProductInfo({ item, quantity, setQuantity, added, handleAddToCart }) {
+function ProductInfo({ item, quantity, setQuantity, added, handleAddToCart, itemType = 'product' }) {
   const [selectedFormat, setSelectedFormat] = useState(null);
+  const isCourse = itemType === 'course';
 
   const hasDiscount = item?.discountPrice > 0 && item?.discountPrice < item?.price;
   const discountPercentage = hasDiscount ? Math.round(((item.price - item.discountPrice) / item.price) * 100) : 0;
 
   useEffect(() => {
     // Set default format based on productType, allow selection if 'Both'
-    setSelectedFormat(item?.productType === 'Both' ? null : item?.productType);
-  }, [item?._id, item?.productType]);
+    // Only set format for products, not courses
+    if (!isCourse) {
+      setSelectedFormat(item?.productType === 'Both' ? null : item?.productType);
+    }
+  }, [item?._id, item?.productType, isCourse]);
 
   const handleAdd = () => {
-    // Check format selection if applicable
-    if ((item?.productType === 'Digital' || item?.productType === 'Physical' || item?.productType === 'Both') && !selectedFormat) {
+    // Check format selection if applicable (only for products, not courses)
+    if (!isCourse && (item?.productType === 'Digital' || item?.productType === 'Physical' || item?.productType === 'Both') && !selectedFormat) {
       alert("Please select a format before adding to cart.");
       return;
     }
@@ -22,7 +26,7 @@ function ProductInfo({ item, quantity, setQuantity, added, handleAddToCart }) {
     // Add item to cart, including selected options
     handleAddToCart({
       ...item,
-      selectedFormat,
+      selectedFormat: isCourse ? undefined : selectedFormat, // Don't include format for courses
       // Ensure quantity is included if the handler expects it
       // quantity: quantity 
     });
@@ -34,7 +38,12 @@ function ProductInfo({ item, quantity, setQuantity, added, handleAddToCart }) {
   return (
     <div className="w-full flex flex-col space-y-5">
       {/* Use title (course) or name (product) */}
-      <h1 className="font-bold text-4xl lg:text-5xl">{item?.title || item?.name}</h1> 
+      <h1 className="font-bold text-4xl lg:text-5xl">{item?.title || item?.name}</h1>
+      
+      {/* Subtitle - Only show for courses */}
+      {isCourse && item?.subtitle && (
+        <p className="text-lg text-gray-600 pt-1">{item.subtitle}</p>
+      )} 
 
       {/* Pricing - Only show if purchaseType is 'price' */}
       {!isFormBased && (
@@ -62,8 +71,8 @@ function ProductInfo({ item, quantity, setQuantity, added, handleAddToCart }) {
 
 
 
-      {/* Format Options - Only show for price-based courses */}
-      {!isFormBased && (item?.productType === 'Digital' || item?.productType === 'Physical' || item?.productType === 'Both') && (
+      {/* Format Options - Only show for products (not courses) and price-based items */}
+      {!isCourse && !isFormBased && (item?.productType === 'Digital' || item?.productType === 'Physical' || item?.productType === 'Both') && (
         <div className="pt-2"> {/* Added pt-2 for spacing */}
            <h3 className="font-medium text-gray-500 text-base mb-2">Format</h3> {/* Added label */}
            <div className="flex items-center p-1 rounded-full bg-gray-100 w-full max-w-xs"> {/* Added background */}
@@ -104,6 +113,7 @@ function ProductInfo({ item, quantity, setQuantity, added, handleAddToCart }) {
             decreaseQty={() => setQuantity((q) => (q > 1 ? q - 1 : 1))}
             added={added}
             handleAddToCart={handleAdd} // Use the updated handleAdd
+            itemType={itemType} // Pass itemType to QuantitySelector
           />
         </div>
       )}

@@ -34,6 +34,7 @@ const Courses = () => {
   // *** ADDED availableLevels to default state ***
   const [formData, setFormData] = useState({
     title: '',
+    subtitle: '', // Subtitle field for courses
     description: '',
     category: '',
     images: [],
@@ -193,6 +194,7 @@ const Courses = () => {
     setEditingCourse(course);
     setFormData({
       title: course.title || '',
+      subtitle: course.subtitle || '', // Load subtitle
       description: course.description || '',
       category: course.category || '',
       images: course.images || [], // Default to empty array
@@ -272,7 +274,7 @@ const Courses = () => {
                 setEditingCourse(null);
                 // *** Reset availableLevels ***
                 setFormData({
-                  title: '', description: '', category: '', images: [],
+                  title: '', subtitle: '', description: '', category: '', images: [],
                   thumbnail: '', price: 0, discountPrice: 0, level: '', availableLevels: [], 
                   language: 'Spanish', instructor: 'CasaDeELE Team', modules: [], productType: 'Digital',
                   purchaseType: 'price', formUrl: ''
@@ -420,6 +422,19 @@ const Courses = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Title *</label><input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" required /></div>
                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Category *</label><select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-red-500 focus:border-red-500" required><option value="">Select Category</option>{categories.map(category => (<option key={category._id} value={category.name}>{category.name}</option>))}</select></div>
+                </div>
+                
+                {/* Subtitle */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Subtitle (Optional)</label>
+                  <input 
+                    type="text" 
+                    value={formData.subtitle} 
+                    onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })} 
+                    placeholder="Enter a short subtitle or tagline for this course"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" 
+                  />
+                  <p className="text-xs text-gray-500 mt-1">This will appear below the course title on the course detail page.</p>
                 </div>
                 
                 {/* Description - Replaced with TinyMCE Editor */}

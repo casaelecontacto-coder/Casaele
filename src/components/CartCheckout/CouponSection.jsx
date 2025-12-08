@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FiTag, FiCheck, FiX, FiPercent, FiDollarSign } from 'react-icons/fi';
+import { apiSend } from '../../utils/api';
 
 function CouponSection({ totalPrice, onCouponApplied, appliedCoupon, onRemoveCoupon }) {
   const [couponCode, setCouponCode] = useState('');
@@ -20,18 +21,10 @@ function CouponSection({ totalPrice, onCouponApplied, appliedCoupon, onRemoveCou
     setSuccess('');
 
     try {
-      const response = await fetch('/api/coupons/validate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code: couponCode.trim(),
-          orderAmount: totalPrice
-        })
+      const data = await apiSend('/api/coupons/validate', 'POST', {
+        code: couponCode.trim(),
+        orderAmount: totalPrice
       });
-
-      const data = await response.json();
 
       if (data.valid) {
         setSuccess(data.message);
@@ -42,7 +35,11 @@ function CouponSection({ totalPrice, onCouponApplied, appliedCoupon, onRemoveCou
       }
     } catch (error) {
       console.error('Error validating coupon:', error);
-      setError('Failed to validate coupon. Please try again.');
+      // Try to extract error message from response
+      const errorMessage = error.message?.includes('Request failed') 
+        ? 'Invalid coupon code or coupon has expired' 
+        : 'Failed to validate coupon. Please try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

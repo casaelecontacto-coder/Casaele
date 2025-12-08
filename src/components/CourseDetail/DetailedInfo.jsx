@@ -14,14 +14,20 @@ const HtmlRenderer = ({ htmlString }) => {
   return <p className="text-gray-700 whitespace-pre-wrap">{htmlString}</p>;
 };
 
-const DetailedInfo = ({ description, instructor }) => {
+const DetailedInfo = ({ description, instructor, itemType = 'product' }) => {
+  const isCourse = itemType === 'course';
+  const headingText = isCourse ? 'About this Course' : 'About this Product';
+  const noDescriptionText = isCourse 
+    ? 'No description available for this course.' 
+    : 'No description available for this product.';
+
   return (
     <div className="bg-white p-6 md:p-8 rounded-lg shadow-sm border border-gray-200">
       
       {/* Description Section */}
       <div className="mb-8">
         <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-          About this Product
+          {headingText}
         </h3>
 
         {/* CSS to make iframes responsive within the description */}
@@ -41,7 +47,7 @@ const DetailedInfo = ({ description, instructor }) => {
             <HtmlRenderer htmlString={description} />
           </div>
         ) : (
-          <p className="text-gray-600">No description available for this product.</p>
+          <p className="text-gray-600">{noDescriptionText}</p>
         )}
       </div>
 

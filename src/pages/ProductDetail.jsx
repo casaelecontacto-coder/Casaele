@@ -129,6 +129,7 @@ function ProductDetail() {
             setQuantity={setQuantity}
             added={added} // Pass the added state for button display
             handleAddToCart={handleAddToCart} // Pass the handler function
+            itemType="product" // Indicate this is a product page
           />
         </div>
 
@@ -136,6 +137,7 @@ function ProductDetail() {
         <div className="space-y-16 md:space-y-20"> {/* Added space-y */}
           <DetailedInfo
             description={product.description}
+            itemType="product" // Indicate this is a product page
             // Products likely don't have an instructor, pass undefined or null
             // The DetailedInfo component should handle this gracefully (e.g., hide the instructor part)
             instructor={product.instructor} 

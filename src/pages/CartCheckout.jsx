@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'; // Import useState, useEffect
 import CartSection from '../components/CartCheckout/CartSection';
 import BillingDetails from '../components/CartCheckout/BillingDetails';
+import CouponSection from '../components/CartCheckout/CouponSection';
 import { useCart } from '../context/CartContext';
 import { apiSend, apiGet } from '../utils/api'; // Import apiSend for POST requests
 import { useNavigate } from 'react-router-dom'; // For redirecting after payment
@@ -26,6 +27,13 @@ function CartCheckout() {
   const navigate = useNavigate();
   const [loadingPayment, setLoadingPayment] = useState(false); // Loading state for payment process
   const [paymentError, setPaymentError] = useState(''); // State for payment errors
+  
+  // Coupon state
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  
+  // Calculate final total after discount
+  const finalTotal = Math.max(0, totalPrice - discountAmount);
 
   // State for Billing Information
   const [billingInfo, setBillingInfo] = useState({
@@ -82,7 +90,8 @@ function CartCheckout() {
 
       // 3. Create Razorpay Order via Backend
       // Amount should be in the smallest currency unit (e.g., paise for INR)
-      const amountInPaise = Math.round(totalPrice * 100); 
+      // Use finalTotal (after discount) instead of totalPrice
+      const amountInPaise = Math.round(finalTotal * 100); 
       const orderPayload = { amount: amountInPaise, currency: 'INR' }; // Adjust currency if needed
       
       // *** DEBUG: Log order payload ***
@@ -127,7 +136,9 @@ function CartCheckout() {
                     // --- Include Billing Info and Cart Items ---
                     billingDetails: billingInfo, 
                     cartItems: cartItems, // Send cart items for order creation on backend
-                    totalAmount: totalPrice // Send final amount paid
+                    totalAmount: finalTotal, // Send final amount paid (after discount)
+                    couponCode: appliedCoupon?.code || null, // Include coupon code if applied
+                    discountAmount: discountAmount // Include discount amount
                 };
                 
                 // Use the correct backend endpoint: /api/orders/verify (POST)
@@ -209,6 +220,22 @@ function CartCheckout() {
                   errors={formErrors} // Pass validation errors
               />
 
+              {/* Coupon Section */}
+              {cartItems && cartItems.length > 0 && (
+                <CouponSection
+                  totalPrice={totalPrice}
+                  onCouponApplied={(coupon, discount) => {
+                    setAppliedCoupon(coupon);
+                    setDiscountAmount(discount);
+                  }}
+                  appliedCoupon={appliedCoupon}
+                  onRemoveCoupon={() => {
+                    setAppliedCoupon(null);
+                    setDiscountAmount(0);
+                  }}
+                />
+              )}
+
               {/* Order Summary & Proceed Button */}
               {cartItems && cartItems.length > 0 && (
                 <div className="bg-white rounded-lg shadow p-6">
@@ -218,11 +245,16 @@ function CartCheckout() {
                        <span>Subtotal ({totalItems} {totalItems === 1 ? 'item' : 'items'})</span>
                        <span>₹{totalPrice.toFixed(2)}</span>
                      </div>
-                     {/* Add Shipping/Discount lines if needed */}
+                     {appliedCoupon && discountAmount > 0 && (
+                       <div className="flex justify-between text-green-600">
+                         <span>Discount ({appliedCoupon.code})</span>
+                         <span>-₹{discountAmount.toFixed(2)}</span>
+                       </div>
+                     )}
                    </div>
                    <div className="flex justify-between font-semibold text-gray-800 mt-4 pt-4 border-t">
                      <span>Total</span>
-                     <span>₹{totalPrice.toFixed(2)}</span> 
+                     <span>₹{finalTotal.toFixed(2)}</span> 
                    </div>
 
                    {/* Display Payment Error */}
