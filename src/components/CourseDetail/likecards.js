@@ -3,28 +3,28 @@ const likecards = [
         id: 1,
         image: "/Shop/Image4.jpg",
         title: "¡Ritmos Latinos!",
-        description: "Ipsum is simply dummy text of the printing and",
+        description: "",
         price: 96,
     },
     {
         id: 2,
         image: "/Shop/Image4.jpg",
         title: "¡Ritmos Latinos!",
-        description: "Ipsum is simply dummy text of the printing and",
+        description: "",
         price: 37,
     },
     {
         id: 3,
         image: "/Shop/Image4.jpg",
         title: "¡Ritmos Latinos!",
-        description: "Ipsum is simply dummy text of the printing and",
+        description: "",
         price: 12,
     },
     {
         id: 4,
         image: "/Shop/Image4.jpg",
         title: "¡Ritmos Latinos!",
-        description: "Ipsum is simply dummy text of the printing and",
+        description: "",
         price: 10,
     }
 
