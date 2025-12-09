@@ -4,12 +4,14 @@ import "./index.css";
 import App from './App.jsx'
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { CartProvider } from './context/CartContext.jsx';
+import { LanguageProvider } from './context/LanguageContext.jsx';
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    {/* 2. Wrap the <App /> with <CartProvider> */}
-    <CartProvider>
-      <App />
-    </CartProvider>
-  </StrictMode>,
+<StrictMode>
+    <LanguageProvider>
+      <CartProvider>
+        <App />
+      </CartProvider>
+    </LanguageProvider>
+  </StrictMode>
 )
