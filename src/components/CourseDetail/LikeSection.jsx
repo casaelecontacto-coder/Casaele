@@ -8,11 +8,16 @@ function LikeSection({ likecards = [], handleLikeCardClick = () => {} }) {
       <h1 className="font-bold text-3xl sm:text-4xl mb-8 text-center">You might also like</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         
-        {/* --- FIX: Change 'card.id' to 'card._id' --- */}
+        {/* --- FIX: Change 'card.id' to 'card._id' and ensure proper image mapping --- */}
         {likecards.map((card) => (
           <div key={card._id} onClick={() => handleLikeCardClick(card)} className="cursor-pointer">
-            {/* The ...card spread will pass 'title', 'price', etc. */}
-            <Card {...card} /> 
+            {/* Map course data to Card props, ensuring images array is passed correctly */}
+            <Card 
+              {...card}
+              images={card.images} // Explicitly pass images array
+              imageUrls={card.imageUrls} // Explicitly pass imageUrls array
+              thumbnail={card.thumbnail} // Explicitly pass thumbnail
+            /> 
           </div>
         ))}
 

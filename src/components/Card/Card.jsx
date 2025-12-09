@@ -1,10 +1,12 @@
 import React from 'react';
 
-// 1. Added "thumbnail" and "availableLevels" to the props
+// 1. Added "thumbnail", "availableLevels", and "images" array to the props
 export default function Card({ 
   fileUrl, 
   image, 
   thumbnail, 
+  images, // Support for images array from Course model
+  imageUrls, // Support for imageUrls array from Product model
   title, 
   description, 
   tags, 
@@ -14,15 +16,19 @@ export default function Card({
   onClick 
 }) {
 
-  // 2. Updated displayImage to also check for "thumbnail"
-  const displayImage = fileUrl || image || thumbnail;
+  // 2. Updated displayImage to check for images array, imageUrls array, thumbnail, and other fields
+  const displayImage = (images && images.length > 0) 
+    ? images[0] 
+    : (imageUrls && imageUrls.length > 0)
+    ? imageUrls[0]
+    : fileUrl || image || thumbnail;
 
   // 3. Use "availableLevels" as a fallback for "tags"
   const displayTags = tags || availableLevels;
 
-  // *** FIX: Strip HTML tags for the preview description ***
+  // *** FIX: Strip HTML tags and limit description length to avoid showing too much text ***
   const plainDescription = description 
-    ? description.replace(/<[^>]+>/g, '') 
+    ? description.replace(/<[^>]+>/g, '').substring(0, 100).trim() // Limit to 100 characters
     : '';
 
   return (
