@@ -76,7 +76,7 @@ function Searchbar({ onSearch, activeButton }) {
         onSearch({ keyword });
       } else {
         // If no keyword, don't search (or show message)
-        console.log("No keyword provided for search");
+        ("No keyword provided for search");
         return;
       }
     }

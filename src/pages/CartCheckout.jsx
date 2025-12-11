@@ -74,7 +74,7 @@ function CartCheckout() {
     
     // 1. Validate Billing Form
     if (!validateBillingInfo()) {
-       console.log("Billing validation failed:", formErrors);
+       ("Billing validation failed:", formErrors);
        // Scroll to the first error field if needed
        return; 
     }
@@ -95,13 +95,13 @@ function CartCheckout() {
       const orderPayload = { amount: amountInPaise, currency: 'INR' }; // Adjust currency if needed
       
       // *** DEBUG: Log order payload ***
-      console.log("Creating Razorpay order with payload:", orderPayload);
+      ("Creating Razorpay order with payload:", orderPayload);
 
       // Use the correct backend endpoint: /api/orders (POST)
       const orderResult = await apiSend('/api/orders', 'POST', orderPayload); 
       
       // *** DEBUG: Log order result ***
-      console.log("Razorpay order creation result:", orderResult);
+      ("Razorpay order creation result:", orderResult);
 
       if (!orderResult || !orderResult.order || !orderResult.order.id) {
         throw new Error('Failed to create Razorpay order.');
@@ -125,7 +125,7 @@ function CartCheckout() {
         order_id: order_id, // From backend
         // --- Payment Handler Callback ---
         handler: async function (response) {
-            console.log("Razorpay payment successful:", response);
+            ("Razorpay payment successful:", response);
             setLoadingPayment(true); // Show loading while verifying
             try {
                 // 5. Verify Payment Signature via Backend
@@ -144,11 +144,11 @@ function CartCheckout() {
                 // Use the correct backend endpoint: /api/orders/verify (POST)
                 const verifyResult = await apiSend('/api/orders/verify', 'POST', verificationPayload); 
                 
-                console.log("Backend verification result:", verifyResult);
+                ("Backend verification result:", verifyResult);
 
                 if (verifyResult?.success) {
                     // 6. Payment Verified - Clear Cart & Redirect
-                    console.log("Payment Verified Successfully!");
+                    ("Payment Verified Successfully!");
                     clearCart(); // Clear cart from context/localStorage
                     // Redirect to a success page (create this page if it doesn't exist)
                     navigate('/order-success', { state: { orderId: verifyResult.orderId } }); // Pass order ID if needed
@@ -178,7 +178,7 @@ function CartCheckout() {
         // --- Modal Close Handler ---
         modal: {
             ondismiss: function() {
-                console.log('Razorpay checkout form closed.');
+                ('Razorpay checkout form closed.');
                 setLoadingPayment(false); // Stop loading if user closes modal
             }
         }

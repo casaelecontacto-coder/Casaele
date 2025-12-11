@@ -48,7 +48,7 @@ function MaterialPage() {
 
   // Enhanced search handler that works with both Explore and Keyword modes
   const handleSearch = async (filters) => {
-    console.log("🔍 Frontend: Starting search with filters:", filters);
+    ("🔍 Frontend: Starting search with filters:", filters);
     
     setSearchLoading(true);
     setShowSearchResults(true);
@@ -65,18 +65,18 @@ function MaterialPage() {
       });
       
       const queryString = queryParams.toString();
-      console.log("🔍 Frontend: API query string:", queryString);
+      ("🔍 Frontend: API query string:", queryString);
       
       // Make API call with filters
       const response = await apiGet(`/api/materials?${queryString}`);
       
-      console.log("🔍 Frontend: API response:", response);
+      ("🔍 Frontend: API response:", response);
       
       // Handle both old format (array) and new format (object with materials property)
       const results = Array.isArray(response) ? response : response.materials || [];
       setSearchResults(results);
       
-      console.log("🔍 Frontend: Processed results:", results);
+      ("🔍 Frontend: Processed results:", results);
       
       // Update search query for display purposes
       if (filters.keyword) {

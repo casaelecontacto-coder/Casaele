@@ -14,7 +14,7 @@ export default function Settings() {
       setMsg('')
       return
     }
-    console.log('Settings saved:', payload)
+    ('Settings saved:', payload)
     setErr('')
     setMsg('Settings saved (demo).')
   }

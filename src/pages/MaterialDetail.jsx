@@ -41,7 +41,7 @@ function MaterialDetail() {
 
     const handleCommentSubmit = (newComment) => {
         // API call to post comment would go here
-        console.log('New comment submitted:', newComment);
+        ('New comment submitted:', newComment);
         // Optimistically update UI (or refetch comments)
         const commentWithUser = {
             ...newComment,

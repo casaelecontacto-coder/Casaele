@@ -16,7 +16,7 @@ function CartSection() {
   };
 
   // *** DEBUG: Log cartItems received by the component ***
-  console.log("CartSection: Rendering with cartItems:", cartItems);
+  ("CartSection: Rendering with cartItems:", cartItems);
 
   return (
     <div className="w-full lg:w-3/5 xl:w-2/3">
@@ -43,7 +43,7 @@ function CartSection() {
             // --- End Robust Property Access ---
             
             // *** DEBUG: Log each item being rendered ***
-             console.log("CartSection: Rendering item:", item);
+             ("CartSection: Rendering item:", item);
 
             return (
               <div key={uniqueId} className="bg-white rounded-lg shadow p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">

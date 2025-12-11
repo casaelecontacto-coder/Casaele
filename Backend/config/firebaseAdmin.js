@@ -21,7 +21,7 @@ function initialize() {
     if (process.env.FIREBASE_SERVICE_ACCOUNT) {
       try {
         serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-        console.log("🔹 Loaded Firebase credentials from environment variable.");
+        ("🔹 Loaded Firebase credentials from environment variable.");
       } catch (parseError) {
         console.error("❌ Failed to parse FIREBASE_SERVICE_ACCOUNT:", parseError.message);
         throw parseError;
@@ -37,7 +37,7 @@ function initialize() {
       }
 
       serviceAccount = JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
-      console.log(`🔹 Loaded Firebase credentials from file: ${absolutePath}`);
+      (`🔹 Loaded Firebase credentials from file: ${absolutePath}`);
     } 
     
     // --- If neither is set ---
@@ -50,7 +50,7 @@ function initialize() {
       credential: admin.credential.cert(serviceAccount),
     });
 
-    console.log("✅ Firebase Admin SDK initialized successfully.");
+    ("✅ Firebase Admin SDK initialized successfully.");
 
   } catch (error) {
     console.error("🔥 CRITICAL: Failed to initialize Firebase Admin SDK.");

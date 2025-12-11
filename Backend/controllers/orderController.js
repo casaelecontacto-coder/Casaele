@@ -17,7 +17,7 @@ try {
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
-    console.log("Razorpay initialized successfully.");
+    ("Razorpay initialized successfully.");
   }
 } catch (initError) {
   console.error("Backend Error: Failed to initialize Razorpay.", initError);
@@ -40,7 +40,7 @@ const handleValidationError = (error, res) => {
 // @route   POST /api/orders
 // @access  Public
 export const createOrder = async (req, res) => {
-  console.log("Backend: Received POST /api/orders request");
+  ("Backend: Received POST /api/orders request");
 
   if (!razorpay) {
     console.error("Backend: Attempted to create order, but Razorpay is not initialized.");
@@ -86,7 +86,7 @@ export const createOrder = async (req, res) => {
 // @route   POST /api/orders/verify
 // @access  Public
 export const verifyPayment = async (req, res) => {
-  console.log("Backend: Received POST /api/orders/verify request");
+  ("Backend: Received POST /api/orders/verify request");
   try {
     const {
       razorpay_order_id,
@@ -237,9 +237,9 @@ export const verifyPayment = async (req, res) => {
 // @route   GET /api/orders
 // @access  Admin
 export const getOrders = async (req, res) => {
-  console.log('\n--- [DEBUG] /api/orders GET CONTROLLER HIT ---');
-  console.log(`[DEBUG] Time: ${new Date().toISOString()}`);
-  console.log('[DEBUG] Raw Query Params:', JSON.stringify(req.query, null, 2));
+  ('\n--- [DEBUG] /api/orders GET CONTROLLER HIT ---');
+  (`[DEBUG] Time: ${new Date().toISOString()}`);
+  ('[DEBUG] Raw Query Params:', JSON.stringify(req.query, null, 2));
 
   const pageSize = 10;
   const page = Number(req.query.page) || 1;
@@ -272,7 +272,7 @@ export const getOrders = async (req, res) => {
     } else if (orderStatus === 'delivered') filter.isDelivered = true;
   }
 
-  console.log('[DEBUG] Final MongoDB Filter Object:', JSON.stringify(filter, null, 2));
+  ('[DEBUG] Final MongoDB Filter Object:', JSON.stringify(filter, null, 2));
 
   try {
     const count = await Order.countDocuments(filter);
@@ -289,8 +289,8 @@ export const getOrders = async (req, res) => {
       totalOrders: count,
     };
 
-    console.log(`[DEBUG] Sending response with ${orders.length} orders.`);
-    console.log(`[DEBUG] getOrders: Sending response:`, JSON.stringify(responseJson, null, 2));
+    (`[DEBUG] Sending response with ${orders.length} orders.`);
+    (`[DEBUG] getOrders: Sending response:`, JSON.stringify(responseJson, null, 2));
     res.status(200).json(responseJson);
   } catch (error) {
     console.error('--- [DEBUG] ERROR IN getOrders CATCH BLOCK ---');
@@ -341,7 +341,7 @@ export const updateOrder = async (req, res) => {
     if (order) {
       const { isDelivered, status } = req.body;
       if (status) {
-        console.log(`[DEBUG] Updating order ${req.params.id} with status: ${status}`);
+        (`[DEBUG] Updating order ${req.params.id} with status: ${status}`);
         if (status === 'delivered') {
           order.isDelivered = true;
           order.deliveredAt = Date.now();
@@ -355,11 +355,11 @@ export const updateOrder = async (req, res) => {
           order.deliveredAt = null;
         }
       } else if (typeof isDelivered === 'boolean') {
-        console.log(`[DEBUG] Updating order ${req.params.id} with isDelivered: ${isDelivered}`);
+        (`[DEBUG] Updating order ${req.params.id} with isDelivered: ${isDelivered}`);
         order.isDelivered = isDelivered;
         order.deliveredAt = isDelivered ? Date.now() : null;
       } else {
-        console.log("Backend: updateOrder called without specific action for ID:", req.params.id);
+        ("Backend: updateOrder called without specific action for ID:", req.params.id);
       }
 
       const updatedOrder = await order.save();
@@ -387,7 +387,7 @@ export const deleteOrder = async (req, res) => {
     }
     const order = await Order.findByIdAndDelete(req.params.id);
     if (order) {
-      console.log("Backend: Order deleted:", req.params.id);
+      ("Backend: Order deleted:", req.params.id);
       res.json({ success: true, message: 'Order removed' });
     } else {
       res.status(4404).json({ success: false, message: 'Order not found' });

@@ -19,7 +19,7 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
 
 // 4. Connect to MongoDB
 mongoose.connect(MONGO_URI)
-  .then(() => console.log('MongoDB Connected successfully.'))
+  .then(() => ('MongoDB Connected successfully.'))
   .catch(err => console.error('MongoDB Connection Error:', err));
 
 // 5. Standard Middleware
@@ -91,5 +91,5 @@ app.use((err, req, res, next) => {
 
 // 9. Start the Server
 app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+    (`Server listening on port ${PORT}`);
 });

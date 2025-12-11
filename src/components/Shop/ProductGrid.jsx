@@ -49,7 +49,7 @@ function ProductGrid({ products, itemType }) {
                     ₹{product.discountPrice || product.price || 0}
                   </span>
                   <button
-                    onClick={(e) => { e.preventDefault(); console.log("Add to cart:", title); }}
+                    onClick={(e) => { e.preventDefault(); ("Add to cart:", title); }}
                     className="p-2 rounded-full bg-red-100 text-red-700 hover:bg-red-600 hover:text-white transition-colors duration-200 opacity-0 group-hover:opacity-100"
                     aria-label="Add to cart"
                   >

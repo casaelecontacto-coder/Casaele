@@ -20,7 +20,7 @@ const StripeCheckoutForm = ({ clientSecret, totalPrice }) => {
         });
 
         if (result.error) {
-            console.log(result.error.message);
+            (result.error.message);
         } else {
             if (result.paymentIntent.status === 'succeeded') {
                 alert('Payment Successful!');

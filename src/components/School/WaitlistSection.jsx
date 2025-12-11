@@ -28,7 +28,7 @@ function WaitlistSection() {
                 {card.title}
               </h2>
               <p className="text-black font-light text-base mb-6 text-left">
-                Ipsum is simply dummy text of the printing and
+                
               </p>
               <a
                 href={card.link}

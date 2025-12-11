@@ -15,9 +15,9 @@ function CmsPage() {
       try {
         // Fetches the page data from your backend using the slug from the URL
         const data = await apiGet(`/api/cms/slug/${slug}`);
-        console.log('📄 Fetched CMS page data:', data);
-        console.log('🔗 Has embed?', !!data.secondSectionEmbed);
-        console.log('🖼️ Has image?', !!data.imageUrl);
+        ('📄 Fetched CMS page data:', data);
+        ('🔗 Has embed?', !!data.secondSectionEmbed);
+        ('🖼️ Has image?', !!data.imageUrl);
         setPage(data);
       } catch (err) {
         console.error('❌ Error fetching CMS page:', err);
@@ -38,7 +38,7 @@ function CmsPage() {
   }
 
   // Debug logging
-  console.log('🎨 Rendering CMS page:', {
+  ('🎨 Rendering CMS page:', {
     hasEmbed: !!page.secondSectionEmbed,
     embedTitle: page.secondSectionEmbed?.title,
     embedCodeLength: page.secondSectionEmbed?.embedCode?.length,
@@ -48,7 +48,7 @@ function CmsPage() {
 
   // Temporary debug display
   if (page.secondSectionEmbed) {
-    console.log('✅ Embed Data Structure:', {
+    ('✅ Embed Data Structure:', {
       title: page.secondSectionEmbed.title,
       type: page.secondSectionEmbed.type,
       embedCode: page.secondSectionEmbed.embedCode?.substring(0, 100) + '...'

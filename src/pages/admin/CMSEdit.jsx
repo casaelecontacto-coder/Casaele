@@ -75,7 +75,7 @@ export default function CMSEdit() {
           // Update form with the new image URL
           setForm({ ...form, imageUrl: downloadURL })
           
-          console.log('Image uploaded successfully:', downloadURL)
+          ('Image uploaded successfully:', downloadURL)
         } catch (error) {
           console.error('Error uploading image:', error)
           alert('Failed to upload image. Please check console for details.')
@@ -109,14 +109,14 @@ export default function CMSEdit() {
       secondSectionEmbed: form.secondSectionEmbed || null 
     };
     
-    console.log('💾 Saving CMS page with payload:', payload);
-    console.log('🔗 Embed ID being saved:', payload.secondSectionEmbed);
+    ('💾 Saving CMS page with payload:', payload);
+    ('🔗 Embed ID being saved:', payload.secondSectionEmbed);
     
     try {
       if (isNew) await apiSend('/api/cms', 'POST', payload)
       else await apiSend(`/api/cms/${id}`, 'PUT', payload)
       
-      console.log('✅ CMS page saved successfully!');
+      ('✅ CMS page saved successfully!');
       alert('CMS page saved successfully!')
       navigate('/admin/cms')
     } catch (error) {

@@ -200,7 +200,7 @@ async function fetchPinData(pinId) {
       try {
         metadata = JSON.parse(jsonLd);
       } catch (e) {
-        console.log('Could not parse JSON-LD');
+        ('Could not parse JSON-LD');
       }
     }
 

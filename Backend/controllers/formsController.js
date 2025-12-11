@@ -5,9 +5,9 @@ export async function submitForm(req, res) {
   try {
     const { name, email, message } = req.body
     if (!name || !email) return res.status(400).json({ message: 'name and email are required' })
-    console.log('[forms] incoming submission:', { name, email, message })
+    ('[forms] incoming submission:', { name, email, message })
     const doc = await FormSubmission.create({ name, email, message })
-    console.log('[forms] saved submission id:', doc._id)
+    ('[forms] saved submission id:', doc._id)
     res.status(201).json(doc)
   } catch (err) {
     // Log full stack for debugging
@@ -49,7 +49,7 @@ export async function listForms(req, res) {
     } else {
       // Default: return all forms as array (for legacy/Forms.jsx)
       const items = await FormSubmission.find().sort({ createdAt: -1 });
-      console.log('[forms] listForms returning', items.length, 'items');
+      ('[forms] listForms returning', items.length, 'items');
       res.json(items);
     }
   } catch (err) {

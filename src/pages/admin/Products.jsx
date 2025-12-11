@@ -79,7 +79,7 @@ const Products = () => {
     if (!files || files.length === 0) return;
 
     setUploading(true);
-    console.log(`☁️ [DEBUG] Starting upload for ${files.length} files...`);
+    (`☁️ [DEBUG] Starting upload for ${files.length} files...`);
     
     const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
     const uploadPreset = 'casadeele_materials'; // Your preset
@@ -92,7 +92,7 @@ const Products = () => {
         cloudFormData.append('file', file);
         cloudFormData.append('upload_preset', uploadPreset); 
 
-        console.log(`☁️ [DEBUG] Posting ${file.name} to Cloudinary...`);
+        (`☁️ [DEBUG] Posting ${file.name} to Cloudinary...`);
 
         const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
           method: 'POST',
@@ -106,7 +106,7 @@ const Products = () => {
         }
 
         const data = await response.json();
-        console.log('☁️ [DEBUG] Cloudinary Success Response:', data);
+        ('☁️ [DEBUG] Cloudinary Success Response:', data);
         uploadedUrls.push(data.secure_url);
       }
 

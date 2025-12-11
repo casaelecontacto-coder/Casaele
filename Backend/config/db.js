@@ -22,7 +22,7 @@ export default async function connectDB() {
   }
   try {
     const conn = await mongoose.connect(mongoUri)
-    console.log(`MongoDB connected: ${conn.connection.host}`)
+    (`MongoDB connected: ${conn.connection.host}`)
     return conn
   } catch (error) {
     console.error('MongoDB connection error:', error.message)

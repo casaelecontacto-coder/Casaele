@@ -37,18 +37,18 @@ import uploadRoutes from './routes/uploadRoutes.js';
 dotenv.config();
 
 // Log environment variables for debugging
-console.log("--- Environment Variables ---");
-console.log("PORT:", process.env.PORT);
-console.log("MONGO_URI:", process.env.MONGO_URI ? "Loaded" : "Missing");
-console.log("CLOUDINARY_CLOUD_NAME:", process.env.CLOUDINARY_CLOUD_NAME ? "Loaded" : "Missing");
-console.log("CLOUDINARY_API_KEY:", process.env.CLOUDINARY_API_KEY ? "Loaded" : "Missing");
-console.log("CLOUDINARY_API_SECRET:", process.env.CLOUDINARY_API_SECRET ? "Loaded" : "Missing");
-console.log("RAZORPAY_KEY_ID:", process.env.RAZORPAY_KEY_ID ? "Loaded" : "Missing");
-console.log("RAZORPAYSECRETKEY or RAZORPAY_KEY_SECRET:", (process.env.RAZORPAYSECRETKEY || process.env.RAZORPAY_KEY_SECRET) ? "Loaded" : "Missing");
-console.log("FIREBASE_SERVICE_ACCOUNT_PATH:", process.env.FIREBASE_SERVICE_ACCOUNT_PATH ? "Loaded" : "Missing");
-console.log("FIREBASE_SERVICE_ACCOUNT:", process.env.FIREBASE_SERVICE_ACCOUNT ? "Loaded" : "Missing");
-console.log("CORS_ORIGIN:", process.env.CORS_ORIGIN ? "Loaded" : "Missing");
-console.log("--------------------------");
+("--- Environment Variables ---");
+("PORT:", process.env.PORT);
+("MONGO_URI:", process.env.MONGO_URI ? "Loaded" : "Missing");
+("CLOUDINARY_CLOUD_NAME:", process.env.CLOUDINARY_CLOUD_NAME ? "Loaded" : "Missing");
+("CLOUDINARY_API_KEY:", process.env.CLOUDINARY_API_KEY ? "Loaded" : "Missing");
+("CLOUDINARY_API_SECRET:", process.env.CLOUDINARY_API_SECRET ? "Loaded" : "Missing");
+("RAZORPAY_KEY_ID:", process.env.RAZORPAY_KEY_ID ? "Loaded" : "Missing");
+("RAZORPAYSECRETKEY or RAZORPAY_KEY_SECRET:", (process.env.RAZORPAYSECRETKEY || process.env.RAZORPAY_KEY_SECRET) ? "Loaded" : "Missing");
+("FIREBASE_SERVICE_ACCOUNT_PATH:", process.env.FIREBASE_SERVICE_ACCOUNT_PATH ? "Loaded" : "Missing");
+("FIREBASE_SERVICE_ACCOUNT:", process.env.FIREBASE_SERVICE_ACCOUNT ? "Loaded" : "Missing");
+("CORS_ORIGIN:", process.env.CORS_ORIGIN ? "Loaded" : "Missing");
+("--------------------------");
 
 // Cloudinary Configuration
 cloudinary.config({
@@ -66,7 +66,7 @@ if (dbConn) {
   try {
     const db = mongoose.connection.useDb('amritDB');
     const result = await db.collection('test').insertOne({ name: 'Natansh', status: 'connected' });
-    console.log('Dummy document inserted into amritDB.test:', result.insertedId);
+    ('Dummy document inserted into amritDB.test:', result.insertedId);
   } catch (err) {
     console.error('Failed to insert dummy document into amritDB.test:', err.message);
   }
@@ -132,7 +132,7 @@ app.use(express.static(path.join(__dirname, '../src/public')));
 // Mongoose Connection Events
 mongoose.connection.on('connected', () => {
   app.set('isDbConnected', true);
-  console.log('Mongoose event: connected');
+  ('Mongoose event: connected');
 });
 mongoose.connection.on('disconnected', () => {
   app.set('isDbConnected', false);
@@ -154,7 +154,7 @@ if (hasRazorpayKeys) {
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAYSECRETKEY || process.env.RAZORPAY_KEY_SECRET,
     });
-    console.log('Razorpay initialized');
+    ('Razorpay initialized');
   } catch (err) {
     console.warn('Failed to initialize Razorpay:', err?.message || err);
   }
@@ -186,7 +186,7 @@ if (process.env.STRIPESECRETKEY) {
   try {
     const { default: Stripe } = await import('stripe');
     stripe = Stripe(process.env.STRIPESECRETKEY);
-    console.log('Stripe initialized');
+    ('Stripe initialized');
   } catch (err) {
     console.warn('Failed to initialize Stripe:', err?.message || err);
   }
@@ -269,5 +269,5 @@ app.use((err, req, res, next) => {
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  (`🚀 Server running on port ${PORT}`);
 });

@@ -59,12 +59,12 @@ const Orders = () => {
         const data = await response.json();
 
         if (data && data.orders) {
-          console.log(`[DEBUG] fetchOrders: ✅ SUCCESS! Found ${data.orders.length} orders.`);
-          console.log('[DEBUG] fetchOrders: Total orders:', data.totalOrders);
-          console.log('[DEBUG] fetchOrders: Total pages:', data.totalPages);
+          (`[DEBUG] fetchOrders: ✅ SUCCESS! Found ${data.orders.length} orders.`);
+          ('[DEBUG] fetchOrders: Total orders:', data.totalOrders);
+          ('[DEBUG] fetchOrders: Total pages:', data.totalPages);
         } else {
           console.error('[DEBUG] fetchOrders: ⚠️ API OK, but "data.orders" is missing or undefined.');
-          console.log('[DEBUG] fetchOrders: Possible cause: backend returned wrong JSON shape or unauthorized access.');
+          ('[DEBUG] fetchOrders: Possible cause: backend returned wrong JSON shape or unauthorized access.');
         }
 
         const fetchedOrders = data.orders || [];
@@ -93,7 +93,7 @@ const Orders = () => {
       setOrders([]);
     } finally {
       setLoading(false);
-      console.log('--- [DEBUG] fetchOrders: FINISHED ---');
+      ('--- [DEBUG] fetchOrders: FINISHED ---');
     }
   };
 

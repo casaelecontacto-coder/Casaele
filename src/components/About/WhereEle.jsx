@@ -10,8 +10,8 @@ const WhereEle = () => {
   useEffect(() => {
     apiGet('/api/cms/slug/about-where-ele-map-image')
       .then(data => {
-        console.log('🗺️ WhereEle section data:', data);
-        console.log('🔗 Has embed?', !!data.secondSectionEmbed);
+        ('🗺️ WhereEle section data:', data);
+        ('🔗 Has embed?', !!data.secondSectionEmbed);
         setMapData(data);
       })
       .catch(err => console.error("Failed to load WhereEle data:", err))
