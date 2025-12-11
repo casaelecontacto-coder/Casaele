@@ -77,6 +77,24 @@ if (dbConn) {
 const app = express();
 app.set('isDbConnected', isDbConnected);
 
+// ------------------------------------------------------------
+// API Timing Logger: logs response time for CRUD API calls
+// ------------------------------------------------------------
+app.use((req, res, next) => {
+  // Only log /api routes
+  if (!req.originalUrl.startsWith('/api')) return next();
+
+  const start = process.hrtime.bigint();
+  res.on('finish', () => {
+    const durationMs = Number(process.hrtime.bigint() - start) / 1e6;
+    console.log(
+      `[API] ${req.method} ${req.originalUrl} ${res.statusCode} - ${durationMs.toFixed(1)}ms`
+    );
+  });
+
+  next();
+});
+
 // CORS Configuration
 app.use(
   cors({
