@@ -1,61 +1,70 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import AdminLayout from "./components/Admin/AdminLayout";
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { auth } from './firebase';
-import RequireAuth from "./components/Admin/RequireAuth";
-import AdminLogin from "./pages/admin/Login";
-import Dashboard from "./pages/admin/Dashboard";
-import UsersPage from "./pages/admin/Users";
-import Products from "./pages/admin/Products";
-import Orders from "./pages/admin/Orders";
-import Materials from "./pages/admin/Materials";
-import Courses from "./pages/admin/Courses";
-import Categories from "./pages/admin/Categories";
-import Banners from "./pages/admin/Banners";
-import CMSList from "./pages/admin/CMSList";
-import CMSEdit from "./pages/admin/CMSEdit";
-import Forms from "./pages/admin/Forms";
-import Coupons from "./pages/admin/Coupons";
-import ManageAdmins from "./pages/admin/ManageAdmins";
-import Subscribers from "./pages/admin/Subscribers";
-import Embeds from "./pages/admin/Embeds";
-import TestimonialsManager from "./pages/admin/TestimonialsManager";
-import CommentsManager from "./pages/admin/CommentsManager";
-import Teachers from "./pages/admin/Teachers";
-import PinterestManager from "./pages/admin/PinterestManager";
-import PicksManager from "./pages/admin/PicksManager";
-import AdminNotFound from "./pages/admin/NotFound";
-import Header from "./components/CommonPage/Header";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import School from "./pages/School";
-import MaterialPage from "./pages/MaterialPage";
-import MaterialDetail from "./pages/MaterialDetail";
-import Newsletter from "./components/CommonPage/Newsletter";
-import Footer from "./components/CommonPage/Footer";
-import CourseDetail from "./pages/CourseDetail";
-import CartCheckout from "./pages/CartCheckout";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsAndConditions from "./pages/TermsAndConditions";
-import CmsPage from "./pages/CmsPage";
-import ScrollToTop from "./pages/ScrollToTop";
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+
+// --- Static Imports (Critical for initial load) ---
+import Header from "./components/CommonPage/Header";
+import Footer from "./components/CommonPage/Footer";
+import Newsletter from "./components/CommonPage/Newsletter";
+import ScrollToTop from "./pages/ScrollToTop";
 import DisableContextMenu from "./components/Common/DisableContextMenu";
-import ReviewsManager from './pages/admin/ReviewsManager';
-import CoursesPage from './pages/CoursesPage'; 
-import ProductsPage from './pages/ProductsPage'; 
-import ProductDetail from './pages/ProductDetail';
-import OrderSuccess from './pages/OrderSuccess'; // Import the new page
-import Garden from "./pages/GardenOfIdeas";
-import GardenPostsList from "./pages/admin/GardenPostsList";
-import ContentUpload from "./pages/admin/ContentUpload";
-import GardenContent from "./pages/admin/GardenContent";
-import PostDetail from "./pages/PostDetail";
-// Guard Stripe initialization: require Vite-prefixed key and avoid crashing if missing
+import Spinner from "./components/Common/Spinner";
+
+// --- Lazy Load User Pages ---
+const Home = lazy(() => import("./pages/Home"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
+const School = lazy(() => import("./pages/School"));
+const MaterialPage = lazy(() => import("./pages/MaterialPage"));
+const MaterialDetail = lazy(() => import("./pages/MaterialDetail"));
+const CoursesPage = lazy(() => import("./pages/CoursesPage"));
+const CourseDetail = lazy(() => import("./pages/CourseDetail"));
+const ProductsPage = lazy(() => import("./pages/ProductsPage"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail"));
+const CartCheckout = lazy(() => import("./pages/CartCheckout"));
+const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
+const Garden = lazy(() => import("./pages/GardenOfIdeas"));
+const PostDetail = lazy(() => import("./pages/PostDetail"));
+const CmsPage = lazy(() => import("./pages/CmsPage"));
+
+// --- Lazy Load Admin Pages (Heavy components) ---
+const AdminLayout = lazy(() => import("./components/Admin/AdminLayout"));
+const RequireAuth = lazy(() => import("./components/Admin/RequireAuth"));
+const AdminLogin = lazy(() => import("./pages/admin/Login"));
+const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
+const UsersPage = lazy(() => import("./pages/admin/Users"));
+const Products = lazy(() => import("./pages/admin/Products"));
+const Orders = lazy(() => import("./pages/admin/Orders"));
+const Materials = lazy(() => import("./pages/admin/Materials"));
+const ReviewsManager = lazy(() => import("./pages/admin/ReviewsManager"));
+const Courses = lazy(() => import("./pages/admin/Courses"));
+const Categories = lazy(() => import("./pages/admin/Categories"));
+const Banners = lazy(() => import("./pages/admin/Banners"));
+const CMSList = lazy(() => import("./pages/admin/CMSList"));
+const CMSEdit = lazy(() => import("./pages/admin/CMSEdit"));
+const Forms = lazy(() => import("./pages/admin/Forms"));
+const Coupons = lazy(() => import("./pages/admin/Coupons"));
+const ManageAdmins = lazy(() => import("./pages/admin/ManageAdmins"));
+const Subscribers = lazy(() => import("./pages/admin/Subscribers"));
+const Embeds = lazy(() => import("./pages/admin/Embeds"));
+const TestimonialsManager = lazy(() => import("./pages/admin/TestimonialsManager"));
+const CommentsManager = lazy(() => import("./pages/admin/CommentsManager"));
+const Teachers = lazy(() => import("./pages/admin/Teachers"));
+const PinterestManager = lazy(() => import("./pages/admin/PinterestManager"));
+const PicksManager = lazy(() => import("./pages/admin/PicksManager"));
+const GardenContent = lazy(() => import("./pages/admin/GardenContent"));
+const GardenPostsList = lazy(() => import("./pages/admin/GardenPostsList"));
+const ContentUpload = lazy(() => import("./pages/admin/ContentUpload"));
+const AdminNotFound = lazy(() => import("./pages/admin/NotFound"));
+
+// Guard Stripe initialization
 const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
+
 function AppWrapper() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
@@ -77,63 +86,65 @@ function AppWrapper() {
     <>
       <ScrollToTop />
       {!isAdmin && <Header />}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/material" element={<MaterialPage />} />
-        <Route path="/material-detail/:id" element={<MaterialDetail />} />
-        <Route path="/school" element={<School />} />
-        <Route path="/courses" element={<CoursesPage />} /> 
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/course-detail/:id" element={<CourseDetail />} />
-        <Route path="/product-detail/:id" element={<ProductDetail />} />
-        <Route path="/cart-checkout" element={<CartCheckout />} />
-        <Route path="/order-success" element={<OrderSuccess />} /> 
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-        <Route path="/garden-of-ideas" element={<Garden />} />
-        <Route path="/garden-of-ideas/:id" element={<PostDetail />} />
-        <Route path="/page/:slug" element={<CmsPage />} />
+      
+      {/* Suspense handles the loading state while lazy components are fetched */}
+      <Suspense fallback={<div className="h-screen flex justify-center items-center"><Spinner /></div>}>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/material" element={<MaterialPage />} />
+          <Route path="/material-detail/:id" element={<MaterialDetail />} />
+          <Route path="/school" element={<School />} />
+          <Route path="/courses" element={<CoursesPage />} /> 
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/course-detail/:id" element={<CourseDetail />} />
+          <Route path="/product-detail/:id" element={<ProductDetail />} />
+          <Route path="/cart-checkout" element={<CartCheckout />} />
+          <Route path="/order-success" element={<OrderSuccess />} /> 
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route path="/garden-of-ideas" element={<Garden />} />
+          <Route path="/garden-of-ideas/:id" element={<PostDetail />} />
+          <Route path="/page/:slug" element={<CmsPage />} />
 
-
-        {/* Admin routes */}
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<RequireAuth />}>
-          <Route element={<AdminLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="users" element={<UsersPage />} />
-            <Route path="products" element={<Products />} />
-            <Route path="orders" element={<Orders />} />
-            <Route path="materials" element={<Materials />} />
-            <Route path="reviews" element={<ReviewsManager />} />
-            <Route path="courses" element={<Courses />} />
-            <Route path="categories" element={<Categories />} />
-            <Route path="banners" element={<Banners />} />
-            <Route path="cms" element={<CMSList />} />
-            <Route path="cms/new" element={<CMSEdit />} />
-            <Route path="cms/edit/:id" element={<CMSEdit />} />
-            <Route path="forms" element={<Forms />} />
-            <Route path="coupons" element={<Coupons />} />
-            <Route path="manage-admins" element={<ManageAdmins />} />
-            <Route path="subscribers" element={<Subscribers />} />
-            <Route path="embeds" element={<Embeds />} />
-            <Route path="testimonials" element={<TestimonialsManager />} />
-            <Route path="comments" element={<CommentsManager />} />
-            <Route path="teachers" element={<Teachers />} />
-            <Route path="pinterest" element={<PinterestManager />} />
-            <Route path="picks" element={<PicksManager />} />
-            <Route path="*" element={<AdminNotFound />} />
-            <Route path="garden-suggestions" element={<GardenContent />} />
-            <Route path="garden-posts" element={<GardenPostsList />} />  
-            <Route path="garden-upload" element={<ContentUpload />} />    
-            <Route path="garden-edit/:id" element={<ContentUpload />} />
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<RequireAuth />}>
+            <Route element={<AdminLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="users" element={<UsersPage />} />
+              <Route path="products" element={<Products />} />
+              <Route path="orders" element={<Orders />} />
+              <Route path="materials" element={<Materials />} />
+              <Route path="reviews" element={<ReviewsManager />} />
+              <Route path="courses" element={<Courses />} />
+              <Route path="categories" element={<Categories />} />
+              <Route path="banners" element={<Banners />} />
+              <Route path="cms" element={<CMSList />} />
+              <Route path="cms/new" element={<CMSEdit />} />
+              <Route path="cms/edit/:id" element={<CMSEdit />} />
+              <Route path="forms" element={<Forms />} />
+              <Route path="coupons" element={<Coupons />} />
+              <Route path="manage-admins" element={<ManageAdmins />} />
+              <Route path="subscribers" element={<Subscribers />} />
+              <Route path="embeds" element={<Embeds />} />
+              <Route path="testimonials" element={<TestimonialsManager />} />
+              <Route path="comments" element={<CommentsManager />} />
+              <Route path="teachers" element={<Teachers />} />
+              <Route path="pinterest" element={<PinterestManager />} />
+              <Route path="picks" element={<PicksManager />} />
+              <Route path="*" element={<AdminNotFound />} />
+              <Route path="garden-suggestions" element={<GardenContent />} />
+              <Route path="garden-posts" element={<GardenPostsList />} />  
+              <Route path="garden-upload" element={<ContentUpload />} />    
+              <Route path="garden-edit/:id" element={<ContentUpload />} />
+            </Route>
           </Route>
-        </Route>
-      </Routes>
-
-      {/* The Translate component has been removed from here */}
+        </Routes>
+      </Suspense>
 
       {!isAdmin && <Newsletter />}
       {!isAdmin && <Footer />}
