@@ -24,6 +24,8 @@ const GardenSection = () => {
             renderContent={false}
             imageClassName="w-60 sm:w-72 md:w-80 h-auto rounded-lg mx-auto"
             fallbackImage="/About/image 11.jpg" // Keep the original as a fallback
+            useContextData={true}
+            contextType="about"
           >
             {/* Fallback Image */}
             <img
@@ -40,6 +42,8 @@ const GardenSection = () => {
               showImage={false} // Only display content/text here
               as="div"
               className="space-y-4" // Use prose/space-y for formatting
+              useContextData={true}
+              contextType="about"
             >
               {/* Fallback Text */}
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">

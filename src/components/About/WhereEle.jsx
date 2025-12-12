@@ -1,22 +1,33 @@
 // src/components/About/WhereEle.jsx
 
-import React, { useState, useEffect } from 'react'
-import { apiGet } from "../../utils/api";
+import React, { useState, useEffect, useContext } from 'react'
+import { AboutPageContext } from "../../context/AboutPageContext";
 
 const WhereEle = () => {
   const [mapData, setMapData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const aboutPageContext = useContext(AboutPageContext);
 
   useEffect(() => {
-    apiGet('/api/cms/slug/about-where-ele-map-image')
-      .then(data => {
-        ('🗺️ WhereEle section data:', data);
-        ('🔗 Has embed?', !!data.secondSectionEmbed);
-        setMapData(data);
-      })
-      .catch(err => console.error("Failed to load WhereEle data:", err))
-      .finally(() => setLoading(false));
-  }, []);
+    // Use About page context data if available
+    if (aboutPageContext?.aboutData?.cms?.['about-where-ele-map-image']) {
+      const cmsItem = aboutPageContext.aboutData.cms['about-where-ele-map-image'];
+      setMapData({
+        imageUrl: cmsItem.imageUrl || '',
+        secondSectionEmbed: cmsItem.secondSectionEmbed || null
+      });
+      setLoading(false);
+      return;
+    }
+
+    // If context data not available yet, wait for it
+    if (aboutPageContext?.loading) {
+      return;
+    }
+
+    // If context loaded but no data, set loading to false
+    setLoading(false);
+  }, [aboutPageContext]);
 
   return (
     <>

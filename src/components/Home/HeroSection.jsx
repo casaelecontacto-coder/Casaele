@@ -17,10 +17,10 @@ function HeroSection() {
       {/* Laptop/Desktop Layout (unchanged) */}
 <div className="hidden lg:flex flex-row items-start justify-center gap-[24rem] relative">
         <div className="p-8 border-2 border-dashed border-gray-300 rounded-2xl w-full max-w-md shadow-xl bg-white relative z-10 min-h-[24rem]">
-          <CmsContent as="h2" slug="home-hero-students-title" prose={false} className="text-3xl md:text-4xl font-bold mb-4 leading-snug">
+          <CmsContent as="h2" slug="home-hero-students-title" prose={false} className="text-3xl md:text-4xl font-bold mb-4 leading-snug" useContextData={true}>
             Spanish For <br /> Students
           </CmsContent>
-          <CmsContent as="p" slug="home-hero-students-desc" prose={false} className="text-gray-600 mb-6 text-base md:text-lg leading-relaxed">
+          <CmsContent as="p" slug="home-hero-students-desc" prose={false} className="text-gray-600 mb-6 text-base md:text-lg leading-relaxed" useContextData={true}>
             Learn business Spanish from the best teachers worldwide. Fully adaptive curriculum for your needs. 100% online courses.
           </CmsContent>
           <button onClick={handleButtonClick} className="bg-[rgba(173,21,24,1)] hover:bg-red-700 text-white px-6 lg:px-16 py-3 rounded-lg flex items-center gap-3 text-sm md:text-base">
@@ -32,10 +32,10 @@ function HeroSection() {
           <img src="/Home/image 58.svg" alt="cartoon" className="w-full h-auto object-contain" />
         </div>
         <div className="p-8 border-2 border-dashed border-gray-300 rounded-2xl w-full max-w-md shadow-xl bg-white relative z-10 min-h-[24rem]">
-          <CmsContent as="h2" slug="home-hero-teachers-title" prose={false} className="text-3xl md:text-4xl font-bold mb-4">
+          <CmsContent as="h2" slug="home-hero-teachers-title" prose={false} className="text-3xl md:text-4xl font-bold mb-4" useContextData={true}>
             Teacher Material
           </CmsContent>
-          <CmsContent as="p" slug="home-hero-teachers-desc" prose={false} className="text-gray-600 mb-6 text-base md:text-lg leading-relaxed">
+          <CmsContent as="p" slug="home-hero-teachers-desc" prose={false} className="text-gray-600 mb-6 text-base md:text-lg leading-relaxed" useContextData={true}>
             Upgrade your teaching skills with Business Spanish materials. Adaptive resources designed for teachers. 100% online.
           </CmsContent>
           <button onClick={() => handleButtonClickRight("Teacher Material")} className="bg-[rgba(173,21,24,1)] hover:bg-red-700 text-white px-6 lg:px-16 py-3 rounded-lg flex items-center gap-3 text-sm md:text-base">

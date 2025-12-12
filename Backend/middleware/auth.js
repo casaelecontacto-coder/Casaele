@@ -58,11 +58,26 @@ export async function verifyVerifiedAdmin(req, res, next) {
                 return next();
             }
 
-            const Admin = (await import('../models/Admin.js')).default;
-            const admin = await Admin.findOne({
-                email: req.user.email,
-                verified: true
-            });
+            // Check cache first (performance optimization)
+            const { getCachedAdmin, setCachedAdmin } = await import('./adminCache.js');
+            let admin = getCachedAdmin(req.user.email);
+
+            if (!admin) {
+                // Cache miss - fetch from database
+                const Admin = (await import('../models/Admin.js')).default;
+                admin = await Admin.findOne({
+                    email: req.user.email,
+                    verified: true
+                });
+
+                // Cache the result (even if null, to prevent repeated DB queries)
+                if (admin) {
+                    setCachedAdmin(req.user.email, admin);
+                } else {
+                    // Cache null result for shorter time (3 seconds) to allow quick retry
+                    setCachedAdmin(req.user.email, null);
+                }
+            }
 
             if (!admin) {
                 return res.status(403).json({

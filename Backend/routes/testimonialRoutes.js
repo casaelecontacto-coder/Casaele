@@ -51,14 +51,36 @@ router.post('/add', async (req, res) => {
 
 // Public: fetch approved testimonials (for frontend)
 router.get('/approved', async (req, res) => {
-  const items = await Testimonial.find({ status: 'approved' }).sort({ createdAt: -1 })
-  res.json(items)
+  try {
+    // Check if MongoDB is connected
+    const mongoose = await import('mongoose');
+    if (mongoose.default.connection.readyState !== 1) {
+      return res.status(503).json({ message: 'Database not connected' });
+    }
+
+    const items = await Testimonial.find({ status: 'approved' }).sort({ createdAt: -1 })
+    res.json(items)
+  } catch (error) {
+    console.error('Error fetching approved testimonials:', error);
+    res.status(500).json({ message: 'Failed to fetch testimonials' });
+  }
 })
 
 // Admin: get all
 router.get('/', verifyAdminAccess, async (req, res) => {
-  const items = await Testimonial.find().sort({ createdAt: -1 })
-  res.json(items)
+  try {
+    // Check if MongoDB is connected
+    const mongoose = await import('mongoose');
+    if (mongoose.default.connection.readyState !== 1) {
+      return res.status(503).json({ message: 'Database not connected' });
+    }
+
+    const items = await Testimonial.find().sort({ createdAt: -1 })
+    res.json(items)
+  } catch (error) {
+    console.error('Error fetching testimonials:', error);
+    res.status(500).json({ message: 'Failed to fetch testimonials' });
+  }
 })
 
 // Admin: approve

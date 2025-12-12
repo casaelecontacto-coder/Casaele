@@ -1,11 +1,12 @@
 import React from "react";
+import { AboutPageProvider } from "../context/AboutPageContext";
 import CmsContent from "../components/CmsContent";
 import WhereEle from "../components/About/WhereEle";
 import GardenSection from "../components/About/GardenSection";
 
 export default function About() {
   return (
-    <>
+    <AboutPageProvider>
       <section className="bg-white flex items-center justify-center py-12 sm:py-16 px-4 sm:px-8">
         <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 lg:gap-12">
           
@@ -21,7 +22,7 @@ export default function About() {
           {/* Right Side Box - Content (text only) */}
           <div className="w-full md:w-1/2 flex justify-center md:justify-end">
             <div className="border-2 border-dashed border-red-400 bg-[#FDF2F2] p-6 sm:p-8 rounded-3xl shadow-sm w-full max-w-xl">
-              <CmsContent slug="about-us" showImage={false} />
+              <CmsContent slug="about-us" showImage={false} useContextData={true} contextType="about" />
             </div>
           </div>
         </div>
@@ -29,6 +30,6 @@ export default function About() {
 
       <WhereEle />
       <GardenSection />
-    </>
+    </AboutPageProvider>
   );
 }

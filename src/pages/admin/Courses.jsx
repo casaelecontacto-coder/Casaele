@@ -16,7 +16,7 @@ import {
 } from 'react-icons/fi';
 import { apiGet, apiSend } from '../../utils/api';
 import Spinner from '../../components/Common/Spinner'; // Assuming Spinner path
-import { Editor } from '@tinymce/tinymce-react'; // Import TinyMCE Editor
+import LazyTinyMCE from '../../components/Admin/LazyTinyMCE'; // Lazy-loaded TinyMCE Editor
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
@@ -441,7 +441,7 @@ const Courses = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
                   <div className="rounded-lg overflow-hidden border border-gray-300 focus-within:ring-1 focus-within:ring-red-500 focus-within:border-red-500">
-                    <Editor
+                    <LazyTinyMCE
                       apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
                       value={formData.description}
                       onEditorChange={(content) => setFormData({ ...formData, description: content })}

@@ -1,25 +1,57 @@
-import React, { useState, useEffect } from "react";
-import { apiGet } from "../../utils/api";
+import React, { useState, useEffect, useContext, useRef } from "react";
+import { HomePageContext } from "../../context/HomePageContext";
+import { useApiCache } from "../../context/ApiCacheContext";
 
 function PicksSection() {
   const [picks, setPicks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const homePageContext = useContext(HomePageContext);
+  const { fetchCached, getCached } = useApiCache();
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
-    fetchPicks();
-  }, []);
-
-  const fetchPicks = async () => {
-    try {
-      const response = await apiGet('/api/picks');
-      setPicks(response || []);
-    } catch (error) {
-      console.error('Error fetching picks:', error);
-      setPicks([]);
-    } finally {
-      setLoading(false);
+    // Prevent duplicate fetches
+    if (fetchedRef.current) {
+      return;
     }
-  };
+
+    // Try to use context data first (for Home page optimization)
+    if (homePageContext?.homeData?.picks) {
+      setPicks(homePageContext.homeData.picks || []);
+      setLoading(false);
+      fetchedRef.current = true;
+      return;
+    }
+
+    // Use cached fetch to prevent duplicates
+    const fetchPicks = async () => {
+      fetchedRef.current = true;
+      try {
+        // Check cache first
+        const cached = getCached('/api/picks');
+        if (cached && cached.data) {
+          setPicks(cached.data || []);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch using cache
+        const result = await fetchCached('/api/picks');
+        if (result.data) {
+          setPicks(result.data || []);
+        } else {
+          setPicks([]);
+        }
+      } catch (error) {
+        console.error('Error fetching picks:', error);
+        setPicks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPicks();
+  }, [homePageContext, fetchCached, getCached]);
 
   const handleButtonClick = (url) => {
     if (url) {

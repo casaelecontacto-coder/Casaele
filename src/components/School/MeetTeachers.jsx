@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { GoArrowLeft, GoArrowRight } from "react-icons/go";
-import { apiGet } from "../../utils/api";
+import { HomePageContext } from "../../context/HomePageContext";
+import { useApiCache } from "../../context/ApiCacheContext";
 
 const MeetTeachers = () => {
   const [teachers, setTeachers] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedTeacher, setSelectedTeacher] = useState(null)
+  const homePageContext = useContext(HomePageContext);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerRow, setItemsPerRow] = useState(4);
@@ -24,21 +26,64 @@ const MeetTeachers = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    setLoading(true)
-    apiGet('/api/teachers')
-      .then(data => setTeachers(Array.isArray(data) ? data : []))
-      .catch(() => setTeachers([]))
-      .finally(() => setLoading(false))
+  const { fetchCached, getCached, clearCache } = useApiCache();
+  const fetchedRef = useRef(false);
 
-    const reload = () => {
-      apiGet('/api/teachers')
-        .then(data => setTeachers(Array.isArray(data) ? data : []))
-        .catch(() => {})
+  useEffect(() => {
+    // Prevent duplicate fetches
+    if (fetchedRef.current) {
+      return;
     }
-    window.addEventListener('teachers:updated', reload)
-    return () => window.removeEventListener('teachers:updated', reload)
-  }, [])
+
+    const fetchTeachers = async () => {
+      // Try to use context data first (for Home page optimization)
+      if (homePageContext?.homeData?.teachers) {
+        setTeachers(Array.isArray(homePageContext.homeData.teachers) ? homePageContext.homeData.teachers : []);
+        setLoading(false);
+        fetchedRef.current = true;
+        return;
+      }
+
+      // Use cached fetch to prevent duplicates
+      fetchedRef.current = true;
+      setLoading(true);
+      
+      try {
+        // Check cache first
+        const cached = getCached('/api/teachers');
+        if (cached && cached.data) {
+          setTeachers(Array.isArray(cached.data) ? cached.data : []);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch using cache
+        const result = await fetchCached('/api/teachers');
+        if (result.data) {
+          setTeachers(Array.isArray(result.data) ? result.data : []);
+        } else {
+          setTeachers([]);
+        }
+      } catch (error) {
+        console.error('Error fetching teachers:', error);
+        setTeachers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeachers();
+
+    // Listen for teacher updates (when admin adds/updates teachers)
+    const reload = () => {
+      // Clear cache and reload
+      clearCache('/api/teachers');
+      fetchedRef.current = false;
+      fetchTeachers();
+    };
+    window.addEventListener('teachers:updated', reload);
+    return () => window.removeEventListener('teachers:updated', reload);
+  }, [homePageContext, fetchCached, getCached, clearCache])
 
   const prev = () => {
     setCurrentIndex((prevIndex) =>

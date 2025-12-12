@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { GoArrowLeft, GoArrowRight } from "react-icons/go";
-import { apiGet } from "../../utils/api";
+import { HomePageContext } from "../../context/HomePageContext";
+import { useApiCache } from "../../context/ApiCacheContext";
 
 // --- Sub-component for individual cards to handle "Read More" state ---
 const TestimonialCard = ({ t }) => {
@@ -132,13 +133,54 @@ function Testimonials() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const homePageContext = useContext(HomePageContext);
+  const { fetchCached, getCached } = useApiCache();
+  const fetchedRef = useRef(false);
+
   useEffect(() => {
-    setLoading(true)
-    apiGet('/api/testimonials/approved')
-      .then(data => setItems(Array.isArray(data) ? data : []))
-      .catch(() => setItems([]))
-      .finally(() => setLoading(false))
-  }, [])
+    // Prevent duplicate fetches
+    if (fetchedRef.current) {
+      return;
+    }
+
+    // Try to use context data first (for Home page optimization)
+    if (homePageContext?.homeData?.testimonials) {
+      setItems(Array.isArray(homePageContext.homeData.testimonials) ? homePageContext.homeData.testimonials : []);
+      setLoading(false);
+      fetchedRef.current = true;
+      return;
+    }
+
+    // Use cached fetch to prevent duplicates
+    const fetchTestimonials = async () => {
+      fetchedRef.current = true;
+      setLoading(true);
+      
+      try {
+        // Check cache first
+        const cached = getCached('/api/testimonials/approved');
+        if (cached && cached.data) {
+          setItems(Array.isArray(cached.data) ? cached.data : []);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch using cache
+        const result = await fetchCached('/api/testimonials/approved');
+        if (result.data) {
+          setItems(Array.isArray(result.data) ? result.data : []);
+        } else {
+          setItems([]);
+        }
+      } catch (error) {
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTestimonials();
+  }, [homePageContext, fetchCached, getCached])
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) => {

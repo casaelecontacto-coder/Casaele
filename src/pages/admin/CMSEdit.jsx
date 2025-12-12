@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { apiGet, apiSend } from '../../utils/api'
-import { Editor } from '@tinymce/tinymce-react'
+import LazyTinyMCE from '../../components/Admin/LazyTinyMCE'
 
 export default function CMSEdit() {
   const { id } = useParams()
@@ -240,7 +240,7 @@ export default function CMSEdit() {
         <label className="block">
           <span className="text-sm font-medium text-gray-700">Content</span>
           <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 focus-within:border-red-600 focus-within:ring-2 focus-within:ring-red-100 transition-all duration-200">
-            <Editor
+            <LazyTinyMCE
               apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
               value={form.content}
               onEditorChange={(v) => setForm({ ...form, content: v })}

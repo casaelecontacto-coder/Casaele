@@ -1,24 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { apiGet } from '../utils/api';
+import { useApiCache } from '../context/ApiCacheContext';
 
 function CmsPage() {
   const { slug } = useParams();
   const [page, setPage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { fetchCached, getCached } = useApiCache();
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
+    // Prevent duplicate fetches
+    if (fetchedRef.current) {
+      return;
+    }
+
     const fetchPage = async () => {
+      fetchedRef.current = true;
       setLoading(true);
       setError('');
+      const endpoint = `/api/cms/slug/${slug}`;
+      
       try {
-        // Fetches the page data from your backend using the slug from the URL
-        const data = await apiGet(`/api/cms/slug/${slug}`);
-        ('📄 Fetched CMS page data:', data);
-        ('🔗 Has embed?', !!data.secondSectionEmbed);
-        ('🖼️ Has image?', !!data.imageUrl);
-        setPage(data);
+        // Check cache first
+        const cached = getCached(endpoint);
+        if (cached && cached.data) {
+          setPage(cached.data);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch using cache
+        const result = await fetchCached(endpoint);
+        if (result.data) {
+          setPage(result.data);
+        } else {
+          throw result.error || new Error('Page not found');
+        }
       } catch (err) {
         console.error('❌ Error fetching CMS page:', err);
         setError('Page not found. Please check the URL and try again.');
@@ -27,7 +46,7 @@ function CmsPage() {
       }
     };
     fetchPage();
-  }, [slug]); // This will re-run whenever the slug in the URL changes
+  }, [slug, fetchCached, getCached]); // This will re-run whenever the slug in the URL changes
 
   if (loading) {
     return <div className="text-center p-20 font-semibold">Loading Page...</div>;

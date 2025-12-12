@@ -33,4 +33,7 @@ cmsPageSchema.pre('validate', function (next) {
   next()
 })
 
+// Note: Index on slug is automatically created by unique: true in schema
+// No need to manually add index({ slug: 1 }) as it would be duplicate
+
 export default mongoose.models.CmsPage || mongoose.model('CmsPage', cmsPageSchema)

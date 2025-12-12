@@ -13,6 +13,8 @@ import materialCrudRoutes from './routes/materialRoutes.js';
 import materialsRoutes from './routes/materials.js';
 import debugRoutes from './routes/debug.js';
 import cmsRoutes from './routes/cmsRoutes.js';
+import homeDataRoutes from './routes/homeDataRoutes.js';
+import pagesRoutes from './routes/pagesRoutes.js';
 import formRoutes from './routes/formRoutes.js';
 import embedRoutes from './routes/embedRoutes.js';
 import testimonialRoutes from './routes/testimonialRoutes.js';
@@ -71,7 +73,9 @@ if (dbConn) {
     console.error('Failed to insert dummy document into amritDB.test:', err.message);
   }
 } else {
-  console.warn('Skipping dummy insert because DB is not connected');
+  console.warn('⚠️ WARNING: MongoDB connection failed!');
+  console.warn('⚠️ The server will start but API endpoints will return 503 until MongoDB is connected.');
+  console.warn('⚠️ Please check your MONGO_URI in .env file and ensure MongoDB is running.');
 }
 
 const app = express();
@@ -150,7 +154,7 @@ app.use(express.static(path.join(__dirname, '../src/public')));
 // Mongoose Connection Events
 mongoose.connection.on('connected', () => {
   app.set('isDbConnected', true);
-  ('Mongoose event: connected');
+  console.log('Mongoose event: connected');
 });
 mongoose.connection.on('disconnected', () => {
   app.set('isDbConnected', false);
@@ -159,6 +163,12 @@ mongoose.connection.on('disconnected', () => {
 mongoose.connection.on('error', (err) => {
   app.set('isDbConnected', false);
   console.error('Mongoose event: error', err?.message || err);
+});
+mongoose.connection.on('connecting', () => {
+  console.log('Mongoose event: connecting...');
+});
+mongoose.connection.on('reconnected', () => {
+  console.log('Mongoose event: reconnected');
 });
 
 // Razorpay Integration
@@ -251,6 +261,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/materials', materialCrudRoutes);
 app.use('/api/debug', debugRoutes);
 app.use('/api/cms', cmsRoutes);
+app.use('/api/home-data', homeDataRoutes);
+app.use('/api/pages', pagesRoutes);
 app.use('/api/forms', formRoutes);
 app.use('/api/embeds', embedRoutes);
 app.use('/api/testimonials', testimonialRoutes);

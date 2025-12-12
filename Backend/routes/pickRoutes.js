@@ -7,6 +7,12 @@ const router = express.Router();
 // Get all picks (public)
 router.get('/', async (req, res) => {
   try {
+    // Check if MongoDB is connected
+    const mongoose = await import('mongoose');
+    if (mongoose.default.connection.readyState !== 1) {
+      return res.status(503).json({ message: 'Database not connected' });
+    }
+
     const picks = await Pick.find({ isActive: true })
       .sort({ order: 1, createdAt: -1 })
       .limit(3);

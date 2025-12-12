@@ -1,3 +1,4 @@
+import { HomePageProvider } from "../context/HomePageContext";
 import HeroSection from "../components/Home/HeroSection";
 import WelcomeSection from "../components/Home/WelcomeSection";
 import PicksSection from "../components/Home/PicksSection";
@@ -8,7 +9,7 @@ import ExperienceSpanish from "../components/Home/ExperienceSpanish";
 
 function Home() {
   return (
-    <>
+    <HomePageProvider>
       <HeroSection />
       <WelcomeSection />
       <PicksSection />
@@ -16,7 +17,7 @@ function Home() {
       <ExperienceSpanish />
       <Testimonials />
       <TestimonialForm />
-    </>
+    </HomePageProvider>
   );
 }
 
