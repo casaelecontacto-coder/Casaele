@@ -39,7 +39,7 @@ export default async function connectDB() {
 
     // Disable Mongoose buffering globally (this is the correct way)
     mongoose.set('bufferCommands', false);
-    mongoose.set('bufferMaxEntries', 0);
+    // mongoose.set('bufferMaxEntries', 0);
 
     // Wait for connection to be established
     const conn = await mongoose.connect(mongoUri, options);
