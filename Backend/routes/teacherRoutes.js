@@ -9,9 +9,10 @@ const router = express.Router()
 router.get('/', async (req, res) => {
   try {
     // Check if MongoDB is connected
-    const mongoose = await import('mongoose');
-    if (mongoose.default.connection.readyState !== 1) {
-      return res.status(503).json({ message: 'Database not connected' });
+    const isDbConnected = req.app.get('isDbConnected');
+    if (!isDbConnected) {
+      console.warn('MongoDB not connected. Cannot fetch teachers.');
+      return res.status(503).json({ message: 'Service Unavailable: MongoDB not connected' });
     }
 
     // Check cache first

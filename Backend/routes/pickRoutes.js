@@ -1,21 +1,35 @@
 import express from 'express';
 import Pick from '../models/Pick.js';
 import { verifyAdminAccess } from '../middleware/superAdminAuth.js';
+import { getCachedPicks, setCachedPicks, clearPicksCache } from '../middleware/picksCache.js';
 
 const router = express.Router();
 
-// Get all picks (public)
+// Get all picks (public) - CACHED
 router.get('/', async (req, res) => {
   try {
     // Check if MongoDB is connected
-    const mongoose = await import('mongoose');
-    if (mongoose.default.connection.readyState !== 1) {
-      return res.status(503).json({ message: 'Database not connected' });
+    const isDbConnected = req.app.get('isDbConnected');
+    if (!isDbConnected) {
+      console.warn('MongoDB not connected. Cannot fetch picks.');
+      return res.status(503).json({ message: 'Service Unavailable: MongoDB not connected' });
     }
 
+    // Check cache first
+    const cached = getCachedPicks();
+    if (cached) {
+      return res.json(cached);
+    }
+
+    // Fetch from database
     const picks = await Pick.find({ isActive: true })
       .sort({ order: 1, createdAt: -1 })
-      .limit(3);
+      .limit(3)
+      .lean();
+    
+    // Cache successful response (status 200)
+    setCachedPicks(picks);
+    
     res.json(picks);
   } catch (error) {
     console.error('Error fetching picks:', error);
@@ -52,6 +66,7 @@ router.post('/', verifyAdminAccess, async (req, res) => {
     });
 
     await pick.save();
+    clearPicksCache(); // Invalidate cache on create
     res.status(201).json(pick);
   } catch (error) {
     console.error('Error creating pick:', error);
@@ -81,6 +96,7 @@ router.put('/:id', verifyAdminAccess, async (req, res) => {
       return res.status(404).json({ message: 'Pick not found' });
     }
 
+    clearPicksCache(); // Invalidate cache on update
     res.json(pick);
   } catch (error) {
     console.error('Error updating pick:', error);
@@ -97,6 +113,7 @@ router.delete('/:id', verifyAdminAccess, async (req, res) => {
       return res.status(404).json({ message: 'Pick not found' });
     }
 
+    clearPicksCache(); // Invalidate cache on delete
     res.json({ message: 'Pick deleted successfully' });
   } catch (error) {
     console.error('Error deleting pick:', error);

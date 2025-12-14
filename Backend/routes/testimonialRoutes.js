@@ -1,6 +1,7 @@
 import express from 'express'
 import Testimonial from '../models/Testimonial.js'
 import { verifyAdminAccess } from '../middleware/superAdminAuth.js'
+import { getCachedTestimonials, setCachedTestimonials, clearTestimonialsCache } from '../middleware/testimonialsCache.js'
 
 const router = express.Router()
 
@@ -49,17 +50,29 @@ router.post('/add', async (req, res) => {
   }
 })
 
-// Public: fetch approved testimonials (for frontend)
+// Public: fetch approved testimonials (for frontend) - CACHED
 router.get('/approved', async (req, res) => {
   try {
     // Check if MongoDB is connected
-    const mongoose = await import('mongoose');
-    if (mongoose.default.connection.readyState !== 1) {
-      return res.status(503).json({ message: 'Database not connected' });
+    const isDbConnected = req.app.get('isDbConnected');
+    if (!isDbConnected) {
+      console.warn('MongoDB not connected. Cannot fetch approved testimonials.');
+      return res.status(503).json({ message: 'Service Unavailable: MongoDB not connected' });
     }
 
-    const items = await Testimonial.find({ status: 'approved' }).sort({ createdAt: -1 })
-    res.json(items)
+    // Check cache first
+    const cached = getCachedTestimonials();
+    if (cached) {
+      return res.json(cached);
+    }
+
+    // Fetch from database
+    const items = await Testimonial.find({ status: 'approved' }).sort({ createdAt: -1 }).lean();
+    
+    // Cache successful response (status 200)
+    setCachedTestimonials(items);
+    
+    res.json(items);
   } catch (error) {
     console.error('Error fetching approved testimonials:', error);
     res.status(500).json({ message: 'Failed to fetch testimonials' });
@@ -87,6 +100,7 @@ router.get('/', verifyAdminAccess, async (req, res) => {
 router.put('/approve/:id', verifyAdminAccess, async (req, res) => {
   const updated = await Testimonial.findByIdAndUpdate(req.params.id, { status: 'approved' }, { new: true })
   if (!updated) return res.status(404).json({ message: 'Not found' })
+  clearTestimonialsCache(); // Invalidate cache on status change
   res.json(updated)
 })
 
@@ -94,6 +108,7 @@ router.put('/approve/:id', verifyAdminAccess, async (req, res) => {
 router.put('/reject/:id', verifyAdminAccess, async (req, res) => {
   const updated = await Testimonial.findByIdAndUpdate(req.params.id, { status: 'rejected' }, { new: true })
   if (!updated) return res.status(404).json({ message: 'Not found' })
+  clearTestimonialsCache(); // Invalidate cache on status change
   res.json(updated)
 })
 
@@ -101,6 +116,7 @@ router.put('/reject/:id', verifyAdminAccess, async (req, res) => {
 router.delete('/:id', verifyAdminAccess, async (req, res) => {
   const deleted = await Testimonial.findByIdAndDelete(req.params.id)
   if (!deleted) return res.status(404).json({ message: 'Not found' })
+  clearTestimonialsCache(); // Invalidate cache on delete
   res.json({ success: true })
 })
 
