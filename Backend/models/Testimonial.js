@@ -1,21 +1,64 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
 const TestimonialSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
-    email: { type: String, required: true, trim: true },
-    country: { type: String, required: true, trim: true },
-    profession: { type: String, required: true, trim: true },
-    level: { type: String, required: true, trim: true },
-    message: { type: String, required: true, trim: true },
-    rating: { type: Number, min: 0, max: 5 },
-    videoUrl: { type: String, default: '' }, // For uploaded video/image
-    date: { type: Date, default: Date.now },
-    status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+    name: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    email: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    country: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    profession: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    level: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    message: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    rating: {
+      type: Number,
+      min: 0,
+      max: 5
+    },
+    videoUrl: {
+      type: String,
+      default: ''
+    },
+    date: {
+      type: Date,
+      default: Date.now
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending'
+    }
   },
-  { timestamps: true }
-)
+  {
+    timestamps: true
+  }
+);
 
-export default mongoose.models.Testimonial || mongoose.model('Testimonial', TestimonialSchema)
+// Compound index for Home page query optimization
+// Matches: find({ status: 'approved' }).sort({ createdAt: -1 })
+TestimonialSchema.index({ status: 1, createdAt: -1 });
 
-
+export default mongoose.models.Testimonial ||
+  mongoose.model('Testimonial', TestimonialSchema);

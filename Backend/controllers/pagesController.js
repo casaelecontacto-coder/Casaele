@@ -6,32 +6,40 @@ import { getCachedCms, setCachedCms } from '../middleware/cmsCache.js';
 
 /**
  * Helper function to fetch CMS page with caching
+ * Uses negative caching to prevent repeated DB hits for missing slugs
+ *
  * @param {string} slug - CMS slug
  * @returns {Promise<object|null>} - CMS page data or null
  */
 async function fetchCmsWithCache(slug) {
-  // Check cache first
+  // 1️⃣ Check cache first
   const cached = getCachedCms(slug);
-  if (cached) {
+
+  // IMPORTANT:
+  // undefined → cache miss
+  // null      → cached 404
+  // object    → cached CMS page
+  if (cached !== undefined) {
     return cached;
   }
 
-  // Check if MongoDB is connected before querying
+  // 2️⃣ Ensure MongoDB connection
   const mongoose = await import('mongoose');
   if (mongoose.default.connection.readyState !== 1) {
     console.error(`MongoDB not connected. Cannot fetch CMS slug: ${slug}`);
     return null;
   }
 
-  // Fetch from database
+  // 3️⃣ Fetch from database
   try {
-    const page = await CmsPage.findOne({ slug }).populate('secondSectionEmbed');
-    if (page) {
-      // Cache the result
-      setCachedCms(slug, page);
-      return page;
-    }
-    return null;
+    const page = await CmsPage.findOne({ slug })
+      .populate('secondSectionEmbed')
+      .lean();
+
+    // 4️⃣ Cache result (including null for 404)
+    setCachedCms(slug, page || null);
+
+    return page;
   } catch (error) {
     console.error(`Error fetching CMS slug ${slug}:`, error);
     return null;
@@ -44,7 +52,6 @@ async function fetchCmsWithCache(slug) {
  */
 export async function getHomePage(req, res) {
   try {
-    // List of CMS slugs used on the Home page
     const homeCmsSlugs = [
       'home-hero-students-title',
       'home-hero-students-desc',
@@ -54,45 +61,41 @@ export async function getHomePage(req, res) {
       'home-welcome-desc'
     ];
 
-    // Fetch all CMS blocks in parallel (using cached lookups)
-    const cmsPromises = homeCmsSlugs.map(slug => fetchCmsWithCache(slug));
-    const cmsResults = await Promise.all(cmsPromises);
+    // Fetch CMS blocks in parallel
+    const cmsResults = await Promise.all(
+      homeCmsSlugs.map(slug => fetchCmsWithCache(slug))
+    );
 
-    // Build CMS data object with friendly keys
-    const cmsData = {};
+    // Friendly CMS keys for frontend
+    const cmsFriendly = {};
     homeCmsSlugs.forEach((slug, index) => {
       const page = cmsResults[index];
-      if (page) {
-        // Use friendly keys for easier frontend access
-        const key = slug.replace('home-', '').replace(/-/g, '');
-        cmsData[key] = {
-          content: page.content || '',
-          imageUrl: page.imageUrl || '',
-          title: page.title || '',
-          slug: page.slug
-        };
-      } else {
-        const key = slug.replace('home-', '').replace(/-/g, '');
-        cmsData[key] = null;
-      }
+      const key = slug.replace('home-', '').replace(/-/g, '');
+
+      cmsFriendly[key] = page
+        ? {
+            content: page.content || '',
+            imageUrl: page.imageUrl || '',
+            title: page.title || '',
+            slug: page.slug
+          }
+        : null;
     });
 
-    // Also include slug-based access for backward compatibility
+    // Slug-based CMS object (backward compatibility)
     const cmsBySlug = {};
     homeCmsSlugs.forEach((slug, index) => {
       const page = cmsResults[index];
-      if (page) {
-        cmsBySlug[slug] = {
-          content: page.content || '',
-          imageUrl: page.imageUrl || '',
-          title: page.title || ''
-        };
-      } else {
-        cmsBySlug[slug] = null;
-      }
+      cmsBySlug[slug] = page
+        ? {
+            content: page.content || '',
+            imageUrl: page.imageUrl || '',
+            title: page.title || ''
+          }
+        : null;
     });
 
-    // Check if MongoDB is connected before querying
+    // Ensure MongoDB connection before other queries
     const mongoose = await import('mongoose');
     if (mongoose.default.connection.readyState !== 1) {
       return res.status(503).json({
@@ -105,24 +108,26 @@ export async function getHomePage(req, res) {
       });
     }
 
-    // Fetch picks, testimonials, and teachers in parallel
+    // Fetch other homepage data in parallel
     const [picks, testimonials, teachers] = await Promise.all([
       Pick.find({ isActive: true })
         .sort({ order: 1, createdAt: -1 })
         .limit(3)
         .lean(),
+
       Testimonial.find({ status: 'approved' })
         .sort({ createdAt: -1 })
         .lean(),
+
       Teacher.find()
         .sort({ createdAt: -1 })
         .lean()
     ]);
 
-    // Return aggregated data
+    // Final response
     res.json({
-      cms: cmsBySlug, // Keep slug-based structure for compatibility
-      cmsFriendly: cmsData, // New friendly keys
+      cms: cmsBySlug,
+      cmsFriendly,
       picks: picks || [],
       testimonials: testimonials || [],
       teachers: teachers || []
@@ -146,37 +151,30 @@ export async function getHomePage(req, res) {
  */
 export async function getAboutPage(req, res) {
   try {
-    // List of CMS slugs used on the About page
     const aboutCmsSlugs = [
       'about-us',
       'about-where-ele-map-image',
       'about-garden-section-content'
     ];
 
-    // Fetch all CMS blocks in parallel (using cached lookups)
-    const cmsPromises = aboutCmsSlugs.map(slug => fetchCmsWithCache(slug));
-    const cmsResults = await Promise.all(cmsPromises);
+    const cmsResults = await Promise.all(
+      aboutCmsSlugs.map(slug => fetchCmsWithCache(slug))
+    );
 
-    // Build CMS data object
     const cmsData = {};
     aboutCmsSlugs.forEach((slug, index) => {
       const page = cmsResults[index];
-      if (page) {
-        cmsData[slug] = {
-          content: page.content || '',
-          imageUrl: page.imageUrl || '',
-          title: page.title || '',
-          secondSectionEmbed: page.secondSectionEmbed || null
-        };
-      } else {
-        cmsData[slug] = null;
-      }
+      cmsData[slug] = page
+        ? {
+            content: page.content || '',
+            imageUrl: page.imageUrl || '',
+            title: page.title || '',
+            secondSectionEmbed: page.secondSectionEmbed || null
+          }
+        : null;
     });
 
-    // Return aggregated data
-    res.json({
-      cms: cmsData
-    });
+    res.json({ cms: cmsData });
   } catch (error) {
     console.error('Error fetching about page data:', error);
     res.status(500).json({
@@ -185,4 +183,3 @@ export async function getAboutPage(req, res) {
     });
   }
 }
-

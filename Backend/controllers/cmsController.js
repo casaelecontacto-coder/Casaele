@@ -1,72 +1,116 @@
-import CmsPage from '../models/CmsPage.js'
-import Pick from '../models/Pick.js'
-import Testimonial from '../models/Testimonial.js'
-import Teacher from '../models/Teacher.js'
-import { getCachedCms, setCachedCms } from '../middleware/cmsCache.js'
+import CmsPage from '../models/CmsPage.js';
+import Pick from '../models/Pick.js';
+import Testimonial from '../models/Testimonial.js';
+import Teacher from '../models/Teacher.js';
+import {
+  getCachedCms,
+  setCachedCms,
+  clearCmsCache
+} from '../middleware/cmsCache.js';
 
+/**
+ * CREATE CMS PAGE
+ */
 export async function createCmsPage(req, res) {
   try {
-    // ++ Add 'secondSectionEmbed' ++
-    const { title, slug, content, imageUrl, secondSectionEmbed } = req.body
-    if (!title) return res.status(400).json({ message: 'title is required' })
-    const page = await CmsPage.create({ title, slug, content, imageUrl, secondSectionEmbed: secondSectionEmbed || null })
-    
-    // Clear cache for this slug when created
-    const { clearCmsCache } = await import('../middleware/cmsCache.js');
+    const { title, slug, content, imageUrl, secondSectionEmbed } = req.body;
+
+    if (!title || !slug) {
+      return res.status(400).json({ message: 'title and slug are required' });
+    }
+
+    const page = await CmsPage.create({
+      title,
+      slug,
+      content,
+      imageUrl,
+      secondSectionEmbed: secondSectionEmbed || null
+    });
+
+    // Invalidate cache for this slug
     clearCmsCache(page.slug);
-    
-    res.status(201).json(page)
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to create CMS page' })
+
+    res.status(201).json(page);
+  } catch (error) {
+    console.error('Error creating CMS page:', error);
+    res.status(500).json({ message: 'Failed to create CMS page' });
   }
 }
 
+/**
+ * GET ALL CMS PAGES
+ */
 export async function getCmsPages(req, res) {
   try {
-    // ++ Add populate here ++
-    const pages = await CmsPage.find().sort({ createdAt: -1 }).populate('secondSectionEmbed');
-    res.json(pages)
-  } catch {
-    res.status(500).json({ message: 'Failed to list CMS pages' })
+    const pages = await CmsPage.find()
+      .sort({ createdAt: -1 })
+      .populate('secondSectionEmbed');
+
+    res.json(pages);
+  } catch (error) {
+    console.error('Error listing CMS pages:', error);
+    res.status(500).json({ message: 'Failed to list CMS pages' });
   }
 }
 
+/**
+ * GET CMS PAGE BY ID
+ */
 export async function getCmsPageById(req, res) {
   try {
-    // ++ Add populate here ++
-    const page = await CmsPage.findById(req.params.id).populate('secondSectionEmbed');
-    if (!page) return res.status(404).json({ message: 'Not found' })
-    res.json(page)
-  } catch {
-    res.status(500).json({ message: 'Failed to fetch CMS page' })
-  }
-}
+    const page = await CmsPage.findById(req.params.id)
+      .populate('secondSectionEmbed');
 
-export async function getCmsPageBySlug(req, res) {
-  try {
-    const slug = req.params.slug;
-    
-    // Check if MongoDB is connected
-    const mongoose = await import('mongoose');
-    if (mongoose.default.connection.readyState !== 1) {
-      return res.status(503).json({ message: 'Database not connected' });
-    }
-    
-    // Check cache first
-    const cached = getCachedCms(slug);
-    if (cached) {
-      return res.json(cached);
-    }
-
-    // Fetch from database
-    const page = await CmsPage.findOne({ slug }).populate('secondSectionEmbed');
     if (!page) {
       return res.status(404).json({ message: 'Not found' });
     }
 
-    // Cache the result
-    setCachedCms(slug, page);
-    
+    res.json(page);
+  } catch (error) {
+    console.error('Error fetching CMS page by ID:', error);
+    res.status(500).json({ message: 'Failed to fetch CMS page' });
+  }
+}
+
+/**
+ * GET CMS PAGE BY SLUG
+ * Uses negative caching (null values cached as 404)
+ */
+export async function getCmsPageBySlug(req, res) {
+  try {
+    const slug = req.params.slug;
+
+    // 1️⃣ Check cache first
+    const cached = getCachedCms(slug);
+
+    // undefined → cache miss
+    // null      → cached 404
+    // object    → cached CMS page
+    if (cached !== undefined) {
+      if (cached === null) {
+        return res.status(404).json({ message: 'Not found' });
+      }
+      return res.json(cached);
+    }
+
+    // 2️⃣ Ensure MongoDB is connected
+    const mongoose = await import('mongoose');
+    if (mongoose.default.connection.readyState !== 1) {
+      return res.status(503).json({ message: 'Database not connected' });
+    }
+
+    // 3️⃣ Fetch from database
+    const page = await CmsPage.findOne({ slug })
+      .populate('secondSectionEmbed')
+      .lean();
+
+    // 4️⃣ Cache result (including negative cache)
+    setCachedCms(slug, page || null);
+
+    if (!page) {
+      return res.status(404).json({ message: 'Not found' });
+    }
+
     res.json(page);
   } catch (error) {
     console.error('Error in getCmsPageBySlug:', error);
@@ -74,51 +118,66 @@ export async function getCmsPageBySlug(req, res) {
   }
 }
 
+/**
+ * UPDATE CMS PAGE
+ */
 export async function updateCmsPage(req, res) {
   try {
-    // ++ Add 'secondSectionEmbed' ++
-    const { title, slug, content, imageUrl, secondSectionEmbed } = req.body
+    const { title, slug, content, imageUrl, secondSectionEmbed } = req.body;
+
     const updated = await CmsPage.findByIdAndUpdate(
       req.params.id,
-      // ++ Add 'secondSectionEmbed' to update object ++
-      { title, slug, content, imageUrl, secondSectionEmbed: secondSectionEmbed || null },
+      {
+        title,
+        slug,
+        content,
+        imageUrl,
+        secondSectionEmbed: secondSectionEmbed || null
+      },
       { new: true, runValidators: true }
-    )
-    // ++ Add populate here to return the full updated object ++
-    .populate('secondSectionEmbed'); 
-    
-    if (!updated) return res.status(404).json({ message: 'Not found' })
-    
-    // Clear cache for this slug when updated
-    const { clearCmsCache } = await import('../middleware/cmsCache.js');
+    ).populate('secondSectionEmbed');
+
+    if (!updated) {
+      return res.status(404).json({ message: 'Not found' });
+    }
+
+    // Invalidate cache for updated slug
     clearCmsCache(updated.slug);
-    
-    res.json(updated)
-  } catch(err) { // Add error logging
-    console.error("Error updating CMS Page:", err);
+
+    res.json(updated);
+  } catch (error) {
+    console.error('Error updating CMS page:', error);
     res.status(500).json({ message: 'Failed to update CMS page' });
   }
 }
 
+/**
+ * DELETE CMS PAGE
+ */
 export async function deleteCmsPage(req, res) {
   try {
-    const deleted = await CmsPage.findByIdAndDelete(req.params.id)
-    if (!deleted) return res.status(404).json({ message: 'Not found' })
-    
-    // Clear cache for this slug when deleted
-    const { clearCmsCache } = await import('../middleware/cmsCache.js');
+    const deleted = await CmsPage.findByIdAndDelete(req.params.id);
+
+    if (!deleted) {
+      return res.status(404).json({ message: 'Not found' });
+    }
+
+    // Invalidate cache for deleted slug
     clearCmsCache(deleted.slug);
-    
-    res.json({ success: true })
-  } catch {
-    res.status(500).json({ message: 'Failed to delete CMS page' })
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting CMS page:', error);
+    res.status(500).json({ message: 'Failed to delete CMS page' });
   }
 }
 
-// Aggregated endpoint for Home page - fetches all CMS blocks, picks, and testimonials in one call
+/**
+ * AGGREGATED HOME PAGE DATA
+ * (CMS blocks + picks + testimonials + teachers)
+ */
 export async function getHomePageData(req, res) {
   try {
-    // List of CMS slugs used on the Home page
     const homeCmsSlugs = [
       'home-hero-students-title',
       'home-hero-students-desc',
@@ -128,42 +187,42 @@ export async function getHomePageData(req, res) {
       'home-welcome-desc'
     ];
 
-    // Fetch all CMS blocks in parallel
-    const cmsPromises = homeCmsSlugs.map(slug =>
-      CmsPage.findOne({ slug }).populate('secondSectionEmbed').catch(() => null)
+    const cmsResults = await Promise.all(
+      homeCmsSlugs.map(slug =>
+        CmsPage.findOne({ slug })
+          .populate('secondSectionEmbed')
+          .lean()
+          .catch(() => null)
+      )
     );
-    const cmsResults = await Promise.all(cmsPromises);
 
-    // Build CMS data object
     const cmsData = {};
     homeCmsSlugs.forEach((slug, index) => {
       const page = cmsResults[index];
-      if (page) {
-        cmsData[slug] = {
-          content: page.content || '',
-          imageUrl: page.imageUrl || '',
-          title: page.title || ''
-        };
-      } else {
-        cmsData[slug] = null;
-      }
+      cmsData[slug] = page
+        ? {
+            content: page.content || '',
+            imageUrl: page.imageUrl || '',
+            title: page.title || ''
+          }
+        : null;
     });
 
-    // Fetch picks, testimonials, and teachers in parallel
     const [picks, testimonials, teachers] = await Promise.all([
       Pick.find({ isActive: true })
         .sort({ order: 1, createdAt: -1 })
         .limit(3)
         .lean(),
+
       Testimonial.find({ status: 'approved' })
         .sort({ createdAt: -1 })
         .lean(),
+
       Teacher.find()
         .sort({ createdAt: -1 })
         .lean()
     ]);
 
-    // Return aggregated data
     res.json({
       cms: cmsData,
       picks: picks || [],
