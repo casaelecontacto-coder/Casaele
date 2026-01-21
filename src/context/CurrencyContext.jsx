@@ -66,16 +66,17 @@ export const CurrencyProvider = ({ children }) => {
     // Handle new multi-currency format
     if (product.prices && typeof product.prices === 'object') {
       const currencyPrice = product.prices[curr];
-      if (currencyPrice) {
-        return currencyPrice.discountPrice || currencyPrice.price || 0;
+      // Check if the selected currency has a price set (not zero)
+      if (currencyPrice && (currencyPrice.price > 0 || currencyPrice.discountPrice > 0)) {
+        return currencyPrice.discountPrice || currencyPrice.price;
       }
-      // Fallback to USD
-      if (product.prices.USD) {
-        return product.prices.USD.discountPrice || product.prices.USD.price || 0;
+      // Fallback to USD if selected currency has no price
+      if (curr !== 'USD' && product.prices.USD && (product.prices.USD.price > 0 || product.prices.USD.discountPrice > 0)) {
+        return product.prices.USD.discountPrice || product.prices.USD.price;
       }
     }
 
-    // Handle old format (backward compatibility)
+    // Handle old format (backward compatibility) - use default price/discountPrice fields
     return product.discountPrice || product.price || 0;
   };
 

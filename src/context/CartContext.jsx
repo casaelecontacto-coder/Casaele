@@ -11,16 +11,17 @@ const getPriceFromProduct = (item, currency = 'USD') => {
   // Handle new multi-currency format
   if (item.prices && typeof item.prices === 'object') {
     const currencyPrice = item.prices[currency];
-    if (currencyPrice) {
-      return currencyPrice.discountPrice || currencyPrice.price || 0;
+    // Check if the selected currency has a price set (not zero)
+    if (currencyPrice && (currencyPrice.price > 0 || currencyPrice.discountPrice > 0)) {
+      return currencyPrice.discountPrice || currencyPrice.price;
     }
-    // Fallback to USD
-    if (item.prices.USD) {
-      return item.prices.USD.discountPrice || item.prices.USD.price || 0;
+    // Fallback to USD if selected currency has no price
+    if (currency !== 'USD' && item.prices.USD && (item.prices.USD.price > 0 || item.prices.USD.discountPrice > 0)) {
+      return item.prices.USD.discountPrice || item.prices.USD.price;
     }
   }
 
-  // Handle old format (backward compatibility)
+  // Handle old format (backward compatibility) - use default price/discountPrice fields
   return item.discountPrice || item.price || 0;
 };
 

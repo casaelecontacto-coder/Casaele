@@ -154,18 +154,18 @@ export const getProductById = async (req, res) => {
 // @access  Admin (Protected by verifyFirebaseToken)
 export const createProduct = async (req, res) => {
     try {
-        const { 
-            name, 
-            description, 
-            price, 
-            discountPrice, 
-            category, 
-            // --- CHANGE ---
-            // imageUrl, // Old field
-            imageUrls, // New field
-            // --- END CHANGE ---
+        const {
+            name,
+            description,
+            price,
+            discountPrice,
+            category,
+            imageUrls,
             availableLevels,
-            productType 
+            productType,
+            digitalFiles,
+            downloadSettings,
+            prices
         } = req.body;
 
         if (!name || !description || price == null || !category) {
@@ -178,12 +178,12 @@ export const createProduct = async (req, res) => {
             price,
             discountPrice: discountPrice || 0,
             category,
-            // --- CHANGE ---
-            // imageUrl: imageUrl || '', // Old field
-            imageUrls: Array.isArray(imageUrls) ? imageUrls : [], // New field, ensure it's an array
-            // --- END CHANGE ---
+            imageUrls: Array.isArray(imageUrls) ? imageUrls : [],
             availableLevels: Array.isArray(availableLevels) ? availableLevels : [],
-            productType: productType || 'Digital'
+            productType: productType || 'Digital',
+            digitalFiles: Array.isArray(digitalFiles) ? digitalFiles : [],
+            downloadSettings: downloadSettings || { maxDownloads: 3, linkExpiryDays: 30 },
+            prices: prices || { USD: { price: 0, discountPrice: 0 }, EUR: { price: 0, discountPrice: 0 }, INR: { price: 0, discountPrice: 0 } }
         });
 
         const savedProduct = await newProduct.save();
@@ -206,20 +206,20 @@ export const updateProduct = async (req, res) => {
             return res.status(400).json({ message: 'Invalid product ID format' });
         }
 
-        const { 
-            name, 
-            description, 
-            price, 
-            discountPrice, 
-            category, 
-            // --- CHANGE ---
-            // imageUrl, // Old field
-            imageUrls, // New field
-            // --- END CHANGE ---
+        const {
+            name,
+            description,
+            price,
+            discountPrice,
+            category,
+            imageUrls,
             availableLevels,
             productType,
-            isActive
-         } = req.body;
+            isActive,
+            digitalFiles,
+            downloadSettings,
+            prices
+        } = req.body;
 
         const updateData = {};
         if (name) updateData.name = name;
@@ -227,24 +227,33 @@ export const updateProduct = async (req, res) => {
         if (price != null) updateData.price = price;
         if (discountPrice != null) updateData.discountPrice = discountPrice;
         if (category) updateData.category = category;
-        
-        // --- CHANGE ---
-        // if (imageUrl) updateData.imageUrl = imageUrl; // Old field
-        // New field: Check if it exists in the request body
+
         if (imageUrls) {
-          updateData.imageUrls = Array.isArray(imageUrls) ? imageUrls : []; // Ensure it's an array
+            updateData.imageUrls = Array.isArray(imageUrls) ? imageUrls : [];
         }
-        // --- END CHANGE ---
 
         if (availableLevels) updateData.availableLevels = Array.isArray(availableLevels) ? availableLevels : [];
         if (productType) updateData.productType = productType;
         if (typeof isActive === 'boolean') updateData.isActive = isActive;
 
+        // Digital product fields
+        if (digitalFiles !== undefined) {
+            updateData.digitalFiles = Array.isArray(digitalFiles) ? digitalFiles : [];
+        }
+        if (downloadSettings) {
+            updateData.downloadSettings = downloadSettings;
+        }
+
+        // Multi-currency prices
+        if (prices) {
+            updateData.prices = prices;
+        }
+
         updateData.updatedAt = Date.now();
 
         const updatedProduct = await Product.findByIdAndUpdate(
-            req.params.id, 
-            { $set: updateData }, 
+            req.params.id,
+            { $set: updateData },
             { new: true, runValidators: true, context: 'query' }
         );
 
@@ -254,7 +263,7 @@ export const updateProduct = async (req, res) => {
             res.status(404).json({ message: 'Product not found' });
         }
     } catch (error) {
-         if (error.name === 'ValidationError') {
+        if (error.name === 'ValidationError') {
             return handleValidationError(error, res);
         }
         console.error('Error updating product:', error);
