@@ -26,6 +26,7 @@ const ProductsPage = lazy(() => import("./pages/ProductsPage"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const CartCheckout = lazy(() => import("./pages/CartCheckout"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
+const Download = lazy(() => import("./pages/Download"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
 const Garden = lazy(() => import("./pages/GardenOfIdeas"));
@@ -52,6 +53,7 @@ const Coupons = lazy(() => import("./pages/admin/Coupons"));
 const ManageAdmins = lazy(() => import("./pages/admin/ManageAdmins"));
 const Subscribers = lazy(() => import("./pages/admin/Subscribers"));
 const Embeds = lazy(() => import("./pages/admin/Embeds"));
+const DigitalDownloads = lazy(() => import("./pages/admin/DigitalDownloads"));
 const TestimonialsManager = lazy(() => import("./pages/admin/TestimonialsManager"));
 const CommentsManager = lazy(() => import("./pages/admin/CommentsManager"));
 const Teachers = lazy(() => import("./pages/admin/Teachers"));
@@ -101,7 +103,8 @@ function AppWrapper() {
           <Route path="/course-detail/:id" element={<CourseDetail />} />
           <Route path="/product-detail/:id" element={<ProductDetail />} />
           <Route path="/cart-checkout" element={<CartCheckout />} />
-          <Route path="/order-success" element={<OrderSuccess />} /> 
+          <Route path="/order-success" element={<OrderSuccess />} />
+          <Route path="/download/:token" element={<Download />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -132,6 +135,7 @@ function AppWrapper() {
               <Route path="manage-admins" element={<ManageAdmins />} />
               <Route path="subscribers" element={<Subscribers />} />
               <Route path="embeds" element={<Embeds />} />
+              <Route path="digital-downloads" element={<DigitalDownloads />} />
               <Route path="testimonials" element={<TestimonialsManager />} />
               <Route path="comments" element={<CommentsManager />} />
               <Route path="teachers" element={<Teachers />} />

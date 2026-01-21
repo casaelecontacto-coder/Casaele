@@ -1,5 +1,5 @@
 import express from 'express'
-import { uploadCmsImage } from '../controllers/uploadController.js'
+import { uploadCmsImage, uploadHtmlFile, uploadDigitalProductFile } from '../controllers/uploadController.js'
 import { upload } from '../config/cloudinaryConfig.js'
 
 const router = express.Router()
@@ -8,5 +8,13 @@ const router = express.Router()
 // 1. `upload.single('image')` processes the file. 'image' must match the key used in the frontend's FormData.
 // 2. `uploadCmsImage` executes the Cloudinary upload logic.
 router.post('/cms-image', upload.single('image'), uploadCmsImage)
+
+// The route: POST /api/upload/html-file
+// Upload HTML activity files to Cloudinary
+router.post('/html-file', upload.single('htmlFile'), uploadHtmlFile)
+
+// The route: POST /api/uploads/digital-product-file
+// Upload digital product files (PDF, DOC, MP3, MP4, etc.) to Cloudinary
+router.post('/digital-product-file', upload.single('file'), uploadDigitalProductFile)
 
 export default router

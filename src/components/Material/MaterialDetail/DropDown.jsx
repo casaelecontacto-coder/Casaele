@@ -1,10 +1,65 @@
 // src/components/Material/MaterialDetail/DropDown.jsx
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { FaAngleDown } from "react-icons/fa";
+
+// Helper function to process embed code for HTML files
+const processEmbedCode = (embedCode) => {
+  if (!embedCode) return embedCode;
+
+  // Check if embedCode is a direct URL to an HTML file
+  const isDirectHtmlUrl = embedCode.match(/^https?:\/\/.*\.html$/i);
+
+  if (isDirectHtmlUrl) {
+    // Wrap direct HTML URLs in an iframe with proper sandbox attributes
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    const proxyUrl = `${apiBaseUrl}/api/html-proxy?url=${encodeURIComponent(embedCode)}`;
+
+    return `<iframe
+      src="${proxyUrl}"
+      style="width: 100%; min-height: 600px; border: none; border-radius: 8px;"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+      loading="lazy"
+    ></iframe>`;
+  }
+
+  // Check if embedCode contains an iframe with HTML file
+  const iframeMatch = embedCode.match(/<iframe[^>]*src=["']([^"']+\.html[^"']*)["'][^>]*>/i);
+
+  if (iframeMatch) {
+    const originalSrc = iframeMatch[1];
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    const proxyUrl = `${apiBaseUrl}/api/html-proxy?url=${encodeURIComponent(originalSrc)}`;
+
+    // Replace the iframe src with proxy URL and add/update sandbox attribute
+    let processedCode = embedCode.replace(
+      /<iframe([^>]*)src=["'][^"']*["']([^>]*)>/i,
+      (match, before, after) => {
+        // Remove existing sandbox attribute if present
+        before = before.replace(/sandbox=["'][^"']*["']/gi, '');
+        after = after.replace(/sandbox=["'][^"']*["']/gi, '');
+
+        return `<iframe${before} src="${proxyUrl}"${after} sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals">`;
+      }
+    );
+
+    return processedCode;
+  }
+
+  // Return original embedCode if no HTML file detected
+  return embedCode;
+};
 
 // Accept 'title' as a prop
 function DropDown({ title = "Ejercicios", exercises = [] }) { // Default title if prop not passed
   const [active, setActive] = useState(null);
+
+  // Memoize processed embed codes
+  const processedExercises = useMemo(() => {
+    return exercises.map(exercise => ({
+      ...exercise,
+      processedEmbedCode: processEmbedCode(exercise.embedCode)
+    }));
+  }, [exercises]);
 
   return (
     <div className="w-full">
@@ -16,7 +71,7 @@ function DropDown({ title = "Ejercicios", exercises = [] }) { // Default title i
       </div>
 
       <div className="space-y-4">
-        {exercises.map((item, i) => (
+        {processedExercises.map((item, i) => (
           // ... rest of the dropdown item mapping ...
              <div key={item._id || i} className="border border-gray-200 rounded-xl p-4 sm:p-5">
             <div
@@ -34,7 +89,7 @@ function DropDown({ title = "Ejercicios", exercises = [] }) { // Default title i
 
             {active === i && (
               <div className="pt-4 mt-4 border-t border-gray-200">
-                <div dangerouslySetInnerHTML={{ __html: item.embedCode }} />
+                <div dangerouslySetInnerHTML={{ __html: item.processedEmbedCode }} />
               </div>
             )}
           </div>

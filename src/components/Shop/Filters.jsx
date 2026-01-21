@@ -1,31 +1,33 @@
 import React from 'react';
 import { FiFilter } from 'react-icons/fi';
+import { useLanguage } from "../../context/LanguageContext";
 
-// Updated props 
-function Filters({ 
-    categoryData = {}, 
-    selectedCategory, 
-    setSelectedCategory, 
+// Updated props
+function Filters({
+    categoryData = {},
+    selectedCategory,
+    setSelectedCategory,
     // Min Price
     minPrice,
     setMinPrice,
     actualMinPrice,
     // Max Price
-    maxPrice, 
-    setMaxPrice,        
+    maxPrice,
+    setMaxPrice,
     actualMaxPrice,
     // Sort
-    sortOrder,          
-    setSortOrder,       
+    sortOrder,
+    setSortOrder,
     // Level
     selectedLevels = [],
     setSelectedLevels,
     allProducts = [],
-    itemType            
+    itemType
 }) {
-  
-  const allItemsKey = ''; 
-  const allItemsLabel = itemType === 'course' ? 'All Courses' : 'All Products';
+  const { t } = useLanguage();
+
+  const allItemsKey = '';
+  const allItemsLabel = itemType === 'course' ? t('products.filters.allCourses') : t('products.filters.allProducts');
 
   const sortedCategories = Object.keys(categoryData).sort((a, b) => {
       if (a === allItemsKey) return -1; 
@@ -85,26 +87,26 @@ function Filters({
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
           <FiFilter className="w-5 h-5 text-gray-500" />
-          Filters
+          {t('products.filters.title')}
         </h3>
         {/* Optional Clear Filters Button */}
-         <button 
+         <button
            onClick={() => {
-             setSelectedCategory(allItemsKey); 
+             setSelectedCategory(allItemsKey);
              setMinPrice(actualMinPrice); // Reset min price
              setMaxPrice(actualMaxPrice); // Reset max price
-             setSortOrder('newest'); 
+             setSortOrder('newest');
              setSelectedLevels([]); // Clear selected levels
-            }} 
+            }}
            className="text-sm text-red-600 hover:text-red-800"
          >
-           Clear All
+           {t('products.filters.clearAll')}
          </button>
       </div>
 
       {/* Categories Filter */}
       <div className="mb-6">
-        <h4 className="text-base font-medium text-gray-800 mb-3">Category</h4>
+        <h4 className="text-base font-medium text-gray-800 mb-3">{t('products.filters.categories')}</h4>
         <ul className="space-y-2">
           {sortedCategories.map((categoryKey) => {
             const categoryLabel = categoryKey === allItemsKey ? allItemsLabel : categoryKey; 
@@ -134,7 +136,7 @@ function Filters({
       {/* Level Filter */}
       {availableLevels.length > 0 && (
         <div className="mb-6">
-          <h4 className="text-base font-medium text-gray-800 mb-3">Level</h4>
+          <h4 className="text-base font-medium text-gray-800 mb-3">{t('products.filters.level')}</h4>
           <div className="flex flex-wrap gap-2">
             {availableLevels.map((level) => (
               <label
@@ -165,7 +167,7 @@ function Filters({
 
       {/* --- Combined Price Range Filter --- */}
       <div className="mb-6">
-        <h4 className="text-base font-medium text-gray-800 mb-3">Price Range</h4>
+        <h4 className="text-base font-medium text-gray-800 mb-3">{t('products.filters.priceRange')}</h4>
         
         {/* Display Current Range */}
         <div className="flex items-center justify-between mb-2 text-sm text-gray-700 font-medium">
@@ -213,16 +215,16 @@ function Filters({
 
 
       {/* Sort Order */}
-      <div> 
-        <h4 className="text-base font-medium text-gray-800 mb-3">Sort By</h4>
-        <select 
-            value={sortOrder} 
-            onChange={(e) => setSortOrder(e.target.value)} 
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500 bg-white" 
+      <div>
+        <h4 className="text-base font-medium text-gray-800 mb-3">{t('products.filters.sortBy')}</h4>
+        <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500 bg-white"
         >
-          <option value="newest">Newest</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
+          <option value="newest">{t('products.filters.newest')}</option>
+          <option value="price-asc">{t('products.filters.priceAsc')}</option>
+          <option value="price-desc">{t('products.filters.priceDesc')}</option>
         </select>
       </div> 
     </div>

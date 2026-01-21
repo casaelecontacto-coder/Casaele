@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiShoppingCart } from 'react-icons/fi';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const DEFAULT_IMAGE = "https://placehold.co/400x300/e5e7eb/4b5563?text=Image";
 
 // Receives paginated products and itemType
 function ProductGrid({ products, itemType }) {
+  const { getPriceValue, getCurrencySymbol, currency } = useCurrency();
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -46,7 +48,7 @@ function ProductGrid({ products, itemType }) {
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-xl font-bold text-gray-900">
-                    ₹{product.discountPrice || product.price || 0}
+                    {getCurrencySymbol()}{getPriceValue(product, currency)}
                   </span>
                   <button
                     onClick={(e) => { e.preventDefault(); ("Add to cart:", title); }}

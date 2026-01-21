@@ -1,20 +1,23 @@
 import React from 'react';
+import { useCurrency } from '../../context/CurrencyContext';
 
 // 1. Added "thumbnail", "availableLevels", and "images" array to the props
-export default function Card({ 
-  fileUrl, 
-  image, 
-  thumbnail, 
+export default function Card({
+  fileUrl,
+  image,
+  thumbnail,
   images, // Support for images array from Course model
   imageUrls, // Support for imageUrls array from Product model
-  title, 
-  description, 
-  tags, 
-  availableLevels, 
-  price, 
-  discountPrice, 
-  onClick 
+  title,
+  description,
+  tags,
+  availableLevels,
+  price,
+  discountPrice,
+  prices, // New multi-currency prices object
+  onClick
 }) {
+  const { getPriceValue, getCurrencySymbol, currency } = useCurrency();
 
   // 2. Updated displayImage to check for images array, imageUrls array, thumbnail, and other fields
   const displayImage = (images && images.length > 0) 
@@ -27,9 +30,14 @@ export default function Card({
   const displayTags = tags || availableLevels;
 
   // *** FIX: Strip HTML tags and limit description length to avoid showing too much text ***
-  const plainDescription = description 
+  const plainDescription = description
     ? description.replace(/<[^>]+>/g, '').substring(0, 100).trim() // Limit to 100 characters
     : '';
+
+  // Get currency-aware prices
+  const currentPrice = prices?.[currency]?.price || price || 0;
+  const currentDiscountPrice = prices?.[currency]?.discountPrice || discountPrice || 0;
+  const hasDiscount = currentDiscountPrice > 0 && currentDiscountPrice < currentPrice;
 
   return (
     <div
@@ -66,15 +74,15 @@ export default function Card({
             </div>
           )}
 
-          {typeof price === 'number' && (
+          {(typeof price === 'number' || typeof currentPrice === 'number') && currentPrice > 0 && (
             <div className="flex items-center gap-2">
-              {discountPrice > 0 ? (
+              {hasDiscount ? (
                 <>
-                  <span className="text-md font-semibold text-gray-800">₹{discountPrice}</span>
-                  <span className="text-sm text-gray-400 line-through">₹{price}</span>
+                  <span className="text-md font-semibold text-gray-800">{getCurrencySymbol()}{currentDiscountPrice}</span>
+                  <span className="text-sm text-gray-400 line-through">{getCurrencySymbol()}{currentPrice}</span>
                 </>
               ) : (
-                <span className="text-md font-semibold text-gray-800">₹{price}</span>
+                <span className="text-md font-semibold text-gray-800">{getCurrencySymbol()}{currentPrice}</span>
               )}
             </div>
           )}

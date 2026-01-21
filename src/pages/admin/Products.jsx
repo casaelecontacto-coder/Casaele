@@ -1,7 +1,7 @@
 // pages/admin/Products.jsx
 
 import React, { useState, useEffect } from 'react';
-import { FiPlus, FiSearch, FiEdit, FiTrash2, FiImage, FiSave, FiX, FiRefreshCw, FiDollarSign, FiBookOpen } from 'react-icons/fi'; 
+import { FiPlus, FiSearch, FiEdit, FiTrash2, FiImage, FiSave, FiX, FiRefreshCw, FiDollarSign, FiBookOpen, FiFile, FiDownload } from 'react-icons/fi';
 import { apiGet, apiSend } from '../../utils/api';
 import Spinner from '../../components/Common/Spinner'; 
 
@@ -26,12 +26,23 @@ const Products = () => {
     imageUrls: [], // Changed from imageUrl: ''
     price: 0,
     discountPrice: 0,
-    availableLevels: [], 
+    availableLevels: [],
     productType: 'Digital',
+    digitalFiles: [],
+    downloadSettings: {
+      maxDownloads: 3,
+      linkExpiryDays: 30
+    }
   });
   // --- END ---
-  
-  const [uploading, setUploading] = useState(false); 
+
+  // Multi-currency pricing state
+  const [pricesUSD, setPricesUSD] = useState({ price: 0, discountPrice: 0 });
+  const [pricesEUR, setPricesEUR] = useState({ price: 0, discountPrice: 0 });
+  const [pricesINR, setPricesINR] = useState({ price: 0, discountPrice: 0 });
+
+  const [uploading, setUploading] = useState(false);
+  const [uploadingDigitalFiles, setUploadingDigitalFiles] = useState(false); 
 
   const ALL_POSSIBLE_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
@@ -125,6 +136,90 @@ const Products = () => {
   };
   // --- END OF MODIFICATION ---
 
+  // --- NEW: Digital File Upload Handler ---
+  const handleDigitalFileChange = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploadingDigitalFiles(true);
+    console.log(`📁 [DEBUG] Starting digital file upload for ${files.length} file(s)...`);
+
+    const uploadedFiles = [];
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+    try {
+      for (const file of files) {
+        // Validate file type
+        const allowedTypes = [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'text/html',
+          'audio/mpeg',
+          'audio/wav',
+          'video/mp4',
+          'application/zip'
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+          alert(`File type not supported: ${file.name}. Allowed: PDF, DOC, DOCX, HTML, MP3, WAV, MP4, ZIP`);
+          continue;
+        }
+
+        // Validate file size (max 100MB)
+        const maxSize = 100 * 1024 * 1024; // 100MB in bytes
+        if (file.size > maxSize) {
+          alert(`File too large: ${file.name}. Maximum size: 100MB`);
+          continue;
+        }
+
+        console.log(`📁 [DEBUG] Uploading ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)...`);
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch(`${apiBaseUrl}/api/uploads/digital-product-file`, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('📁 [DEBUG] Upload Error:', errorData);
+          throw new Error(errorData.message || `Upload failed for ${file.name}`);
+        }
+
+        const data = await response.json();
+        console.log('📁 [DEBUG] Upload Success:', data);
+
+        uploadedFiles.push({
+          fileUrl: data.url,
+          fileName: data.fileName,
+          fileType: data.fileType,
+          fileSize: data.fileSize,
+          cloudinaryPublicId: data.publicId
+        });
+      }
+
+      // Add uploaded files to formData
+      setFormData(prev => ({
+        ...prev,
+        digitalFiles: [...prev.digitalFiles, ...uploadedFiles]
+      }));
+
+      console.log(`📁 [DEBUG] Successfully uploaded ${uploadedFiles.length} file(s)`);
+
+    } catch (error) {
+      console.error('📁 [DEBUG] Digital file upload error:', error);
+      alert(`File upload failed: ${error.message}`);
+    } finally {
+      setUploadingDigitalFiles(false);
+      // Reset file input
+      e.target.value = '';
+    }
+  };
+  // --- END NEW ---
+
   // --- Checkbox Handler (No change) ---
   const handleLevelCheckboxChange = (level) => {
     setFormData(prevForm => {
@@ -143,7 +238,7 @@ const Products = () => {
     setIsSaving(true);
     try {
       // Check for imageUrls array
-      if (formData.imageUrls.length === 0) { 
+      if (formData.imageUrls.length === 0) {
         alert('Please upload at least one image for the product.');
         setIsSaving(false);
         return;
@@ -157,13 +252,18 @@ const Products = () => {
       const payload = {
         ...formData,
         imageUrls: formData.imageUrls || [], // Ensure array is sent
-        availableLevels: formData.availableLevels || []
+        availableLevels: formData.availableLevels || [],
+        prices: {
+          USD: pricesUSD,
+          EUR: pricesEUR,
+          INR: pricesINR
+        }
       };
-      
+
       // Remove legacy field if it exists, just in case
-      delete payload.imageUrl; 
-      
-      const url = editingProduct ? `/api/products/${editingProduct._id}` : '/api/products'; 
+      delete payload.imageUrl;
+
+      const url = editingProduct ? `/api/products/${editingProduct._id}` : '/api/products';
       const method = editingProduct ? 'PUT' : 'POST';
       const savedProduct = await apiSend(url, method, payload);
 
@@ -171,7 +271,7 @@ const Products = () => {
         setProducts(prev => prev.map(p => (p._id === savedProduct._id ? savedProduct : p)));
       } else {
         setProducts(prev => [savedProduct, ...prev.slice(0, 9)]);
-        if (products.length >= 10) fetchProducts(); 
+        if (products.length >= 10) fetchProducts();
       }
       setShowModal(false);
       setSuccessMsg(editingProduct ? 'Product updated!' : 'Product created!');
@@ -189,7 +289,7 @@ const Products = () => {
   // --- MODIFIED handleEdit ---
   const handleEdit = (product) => {
     setEditingProduct(product);
-    
+
     // Handle backward compatibility for old products with single `imageUrl`
     let images = [];
     if (product.imageUrls && Array.isArray(product.imageUrls)) {
@@ -199,15 +299,23 @@ const Products = () => {
     }
 
     setFormData({
-      name: product.name || '', 
+      name: product.name || '',
       description: product.description || '',
       category: product.category || '',
       imageUrls: images, // Use the new array
       price: product.price || 0,
       discountPrice: product.discountPrice || 0,
-      availableLevels: product.availableLevels || [], 
+      availableLevels: product.availableLevels || [],
       productType: product.productType || 'Digital',
+      digitalFiles: product.digitalFiles || [],
+      downloadSettings: product.downloadSettings || { maxDownloads: 3, linkExpiryDays: 30 }
     });
+
+    // Populate multi-currency prices
+    setPricesUSD(product.prices?.USD || { price: 0, discountPrice: 0 });
+    setPricesEUR(product.prices?.EUR || { price: 0, discountPrice: 0 });
+    setPricesINR(product.prices?.INR || { price: 0, discountPrice: 0 });
+
     setShowModal(true);
   };
   // --- END OF MODIFICATION ---
@@ -249,9 +357,14 @@ const Products = () => {
                  setEditingProduct(null);
                  // MODIFIED: Reset form
                  setFormData({
-                   name: '', description: '', category: '', imageUrls: [], 
-                   price: 0, discountPrice: 0, availableLevels: [], productType: 'Digital'
+                   name: '', description: '', category: '', imageUrls: [],
+                   price: 0, discountPrice: 0, availableLevels: [], productType: 'Digital',
+                   digitalFiles: [], downloadSettings: { maxDownloads: 3, linkExpiryDays: 30 }
                  });
+                 // Reset multi-currency prices
+                 setPricesUSD({ price: 0, discountPrice: 0 });
+                 setPricesEUR({ price: 0, discountPrice: 0 });
+                 setPricesINR({ price: 0, discountPrice: 0 });
                  setShowModal(true);
                }}
                className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
@@ -378,6 +491,74 @@ const Products = () => {
                     <div><label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label><input type="number" min="0" step="0.01" value={formData.price} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" required/></div>
                     <div><label className="block text-sm font-medium text-gray-700 mb-1">Discount Price (₹, optional)</label><input type="number" min="0" step="0.01" value={formData.discountPrice} onChange={(e) => setFormData({ ...formData, discountPrice: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" /></div>
                 </div>
+
+                {/* Multi-Currency Pricing */}
+                <div className="border-t pt-4 mt-4">
+                  <h4 className="text-sm font-semibold mb-3">Multi-Currency Pricing</h4>
+
+                  {/* USD */}
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">USD Prices</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="number"
+                        placeholder="Price (USD)"
+                        value={pricesUSD.price}
+                        onChange={(e) => setPricesUSD({...pricesUSD, price: parseFloat(e.target.value) || 0})}
+                        className="border rounded px-3 py-2"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Discount Price (USD)"
+                        value={pricesUSD.discountPrice}
+                        onChange={(e) => setPricesUSD({...pricesUSD, discountPrice: parseFloat(e.target.value) || 0})}
+                        className="border rounded px-3 py-2"
+                      />
+                    </div>
+                  </div>
+
+                  {/* EUR */}
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">EUR Prices</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="number"
+                        placeholder="Price (EUR)"
+                        value={pricesEUR.price}
+                        onChange={(e) => setPricesEUR({...pricesEUR, price: parseFloat(e.target.value) || 0})}
+                        className="border rounded px-3 py-2"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Discount Price (EUR)"
+                        value={pricesEUR.discountPrice}
+                        onChange={(e) => setPricesEUR({...pricesEUR, discountPrice: parseFloat(e.target.value) || 0})}
+                        className="border rounded px-3 py-2"
+                      />
+                    </div>
+                  </div>
+
+                  {/* INR */}
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">INR Prices</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="number"
+                        placeholder="Price (INR)"
+                        value={pricesINR.price}
+                        onChange={(e) => setPricesINR({...pricesINR, price: parseFloat(e.target.value) || 0})}
+                        className="border rounded px-3 py-2"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Discount Price (INR)"
+                        value={pricesINR.discountPrice}
+                        onChange={(e) => setPricesINR({...pricesINR, discountPrice: parseFloat(e.target.value) || 0})}
+                        className="border rounded px-3 py-2"
+                      />
+                    </div>
+                  </div>
+                </div>
                 
                 <div className="block">
                     <span className="text-sm font-medium text-gray-700">Available Levels *</span>
@@ -400,11 +581,128 @@ const Products = () => {
 
                 <div><label className="block text-sm font-medium text-gray-700 mb-1">Product Type</label><select value={formData.productType} onChange={(e) => setFormData({ ...formData, productType: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-red-500 focus:border-red-500"><option value="Digital">Digital</option><option value="Physical">Physical</option><option value="Both">Both</option></select></div>
 
+                {/* --- NEW: Digital Files Upload Section --- */}
+                {(formData.productType === 'Digital' || formData.productType === 'Both') && (
+                  <div className="border-2 border-gray-200 rounded-lg p-6 bg-gray-50">
+                    <h4 className="text-md font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                      <FiFile className="w-5 h-5 text-red-600" />
+                      Digital Product Files
+                    </h4>
+
+                    {/* File Upload Input */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Upload Files (PDF, DOC, DOCX, HTML, MP3, WAV, MP4, ZIP)
+                      </label>
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx,.html,.mp3,.wav,.mp4,.zip"
+                        onChange={handleDigitalFileChange}
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                        multiple
+                        disabled={uploadingDigitalFiles}
+                      />
+                      {uploadingDigitalFiles && (
+                        <div className="mt-2 text-sm text-red-600 flex items-center gap-2">
+                          <FiRefreshCw className="animate-spin" />
+                          Uploading files...
+                        </div>
+                      )}
+                      <p className="text-xs text-gray-500 mt-1">Max file size: 100MB per file</p>
+                    </div>
+
+                    {/* Uploaded Files List */}
+                    {formData.digitalFiles.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-gray-700 mb-2">
+                          Uploaded Files ({formData.digitalFiles.length})
+                        </p>
+                        {formData.digitalFiles.map((file, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:border-red-300 transition-colors"
+                          >
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <FiFile className="w-5 h-5 text-red-600 flex-shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                  {file.fileName}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {file.fileType.toUpperCase()} • {(file.fileSize / 1024 / 1024).toFixed(2)} MB
+                                </p>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  digitalFiles: prev.digitalFiles.filter((_, i) => i !== index)
+                                }));
+                              }}
+                              className="ml-2 text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 flex-shrink-0"
+                              title="Remove file"
+                            >
+                              <FiTrash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Download Settings */}
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Max Downloads per Customer
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="10"
+                          value={formData.downloadSettings.maxDownloads}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            downloadSettings: {
+                              ...formData.downloadSettings,
+                              maxDownloads: parseInt(e.target.value) || 3
+                            }
+                          })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Default: 3 downloads</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Link Expiry (Days)
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="365"
+                          value={formData.downloadSettings.linkExpiryDays}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            downloadSettings: {
+                              ...formData.downloadSettings,
+                              linkExpiryDays: parseInt(e.target.value) || 30
+                            }
+                          })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Default: 30 days</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {/* --- END NEW --- */}
+
                 <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
                   <button type="button" onClick={() => setShowModal(false)} className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
-                  <button type="submit" disabled={isSaving || uploading} className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2 disabled:opacity-60">
-                    <FiSave className={`w-4 h-4 ${isSaving ? 'animate-spin' : ''}`} /> 
-                    {isSaving ? 'Saving…' : (uploading ? 'Uploading...' : (editingProduct ? 'Update Product' : 'Create Product'))}
+                  <button type="submit" disabled={isSaving || uploading || uploadingDigitalFiles} className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2 disabled:opacity-60">
+                    <FiSave className={`w-4 h-4 ${isSaving ? 'animate-spin' : ''}`} />
+                    {isSaving ? 'Saving…' : (uploading || uploadingDigitalFiles ? 'Uploading...' : (editingProduct ? 'Update Product' : 'Create Product'))}
                   </button>
                 </div>
 

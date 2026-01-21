@@ -51,6 +51,7 @@ const editablePages = [
   { group: 'Standalone Pages', name: 'About - Where Ele Is Now Image', slug: 'about-where-ele-map-image', description: 'The map image on the "Where is Ele Now?" section. Set an Image URL only.' },
   { group: 'Standalone Pages', name: 'About - Garden Section (Image/Text)', slug: 'about-garden-section-content', description: 'The content block and image for the "El jardín de ideas" section.' },
   // *** END NEW ENTRIES ***
+  { group: 'Standalone Pages', name: 'How to Use Casa De ELE', slug: 'how-to-use', description: 'Complete guide for using the platform - linked in footer. Editable content with sections on rooms, courses, shop, downloads, and more.', editorType: 'rich' },
   { group: 'Standalone Pages', name: 'Privacy Policy Page', slug: 'privacy-policy', description: 'Full content for the /privacy-policy page.' },
   { group: 'Standalone Pages', name: 'Terms & Conditions Page', slug: 'terms-and-conditions', description: 'Full content for the /terms-and-conditions page.' },
 ];

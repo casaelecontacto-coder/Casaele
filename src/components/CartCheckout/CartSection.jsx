@@ -1,12 +1,14 @@
 import React from 'react';
-import { useCart } from '../../context/CartContext'; 
-import { FiTrash2 } from 'react-icons/fi'; 
+import { useCart } from '../../context/CartContext';
+import { FiTrash2 } from 'react-icons/fi';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const DEFAULT_IMAGE = "https://placehold.co/100x80/e5e7eb/4b5563?text=Image";
 
 function CartSection() {
   // Get cart data and functions from context
   const { cartItems, removeFromCart, updateQuantity, totalPrice } = useCart();
+  const { getPriceValue, getCurrencySymbol, currency } = useCurrency();
 
   // Handler for quantity changes (input field or buttons)
   const handleQuantityChange = (uniqueId, newQuantity) => {
@@ -36,7 +38,7 @@ function CartSection() {
             const uniqueId = item?.uniqueId || `item-${index}`; // Fallback key
             const imageUrl = item?.images?.[0] || item?.thumbnail || item?.imageUrl || DEFAULT_IMAGE;
             const itemName = item?.title || item?.name || 'Unknown Item';
-            const itemPrice = Number(item?.discountPrice || item?.price || 0);
+            const itemPrice = getPriceValue(item, currency); // Use currency-aware price
             const itemQuantity = Number(item?.quantity || 1); // Default to 1 if missing
             const selectedLevel = item?.selectedLevel;
             const selectedFormat = item?.selectedFormat;
@@ -64,8 +66,8 @@ function CartSection() {
                        {selectedFormat && `Format: ${selectedFormat}`}
                      </p>
                   )}
-                  {/* Display price, ensure it's a number */}
-                  <p className="text-sm text-gray-600 font-medium mt-1">₹{itemPrice.toFixed(2)}</p> 
+                  {/* Display price with currency symbol */}
+                  <p className="text-sm text-gray-600 font-medium mt-1">{getCurrencySymbol()}{itemPrice.toFixed(2)}</p>
                 </div>
 
                 {/* Quantity and Remove */}
@@ -112,8 +114,8 @@ function CartSection() {
           {/* Cart Total */}
           <div className="bg-white rounded-lg shadow p-4 mt-6 text-right">
              <span className="text-lg font-semibold text-gray-800">
-               {/* Ensure totalPrice is calculated correctly in context */}
-               Subtotal: ₹{totalPrice.toFixed(2)} 
+               {/* Display total with currency symbol */}
+               Subtotal: {getCurrencySymbol()}{totalPrice.toFixed(2)}
              </span>
           </div>
         </div>

@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { apiSend } from '../../utils/api'
+import { useLanguage } from "../../context/LanguageContext";
 
 const ContactContent = () => {
+  const { t } = useLanguage();
 
   // State to manage form inputs
   const [name, setName] = useState('');
@@ -18,7 +20,7 @@ const ContactContent = () => {
 
     // Check if all fields are filled
     if (!name || !email || !country || !reason) {
-      alert("Please fill in all fields before sending.");
+      alert(t('contact.fillAllFields'));
       return;
     }
 
@@ -28,14 +30,14 @@ const ContactContent = () => {
         email,
         message: `${country}${selectedUser ? ` (${selectedUser})` : ''} - ${reason}`
       })
-      alert("¡Gracias! Your message has been received. We'll respond within 2-3 business days. In the meantime, feel free to explore Ele’s house and the magic in each room!");
+      alert(t('contact.successMessage'));
       setName('');
       setEmail('');
       setCountry('');
       setReason('');
       setSelectedUser(null); // Clear selected user as well
     } catch (err) {
-      alert('Submission failed. Please try again later.')
+      alert(t('contact.errorMessage'))
     }
   };
 
@@ -49,14 +51,14 @@ const ContactContent = () => {
       {/* Contact Section */}
       <section className="bg-white px-4 sm:px-6 lg:px-12 py-12 sm:py-16">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-black mb-10 sm:mb-12">
-          Contact Us
+          {t('contact.title')}
         </h1>
 
         <div className="bg-white shadow-lg border border-gray-300 rounded-2xl p-6 sm:p-10 max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 lg:gap-12">
           {/* Left Side */}
           <div className="lg:w-1/2 flex flex-col justify-center text-center lg:text-left">
             <p className="text-gray-600 mb-6 leading-relaxed text-sm sm:text-base">
-              ¡Hola! We're here to help you on your Spanish learning journey. Whether you're a future student ready to discover the beauty of Spanish, an educator interested in our methodology, or a potential collaborator looking to connect, we'd love to hear from you. Vamos a conversar!
+              {t('contact.intro')}
             </p>
             <img
               src="/Contact/image 53.svg"
@@ -69,7 +71,7 @@ const ContactContent = () => {
           <div className="lg:w-1/2 w-full">
             {/* Tabs */}
             <label className="block text-gray-700 font-medium mb-3 text-center lg:text-left">
-              You are a:
+              {t('contact.youAre')}
             </label>
             <div className="flex justify-center md:justify-center my-6">
               <div className="inline-flex flex-wrap justify-center gap-3 sm:gap-4 border border-red-200 rounded-full px-3 w-full md:w-auto">
@@ -78,21 +80,21 @@ const ContactContent = () => {
                   onClick={() => handleUserSelect('Teacher')}
                   className={`px-6 sm:px-8 py-2 text-sm sm:text-base font-medium rounded-full transition-all ${selectedUser === 'Teacher' ? 'bg-[rgba(173,21,24,1)] text-white' : 'text-gray-600 '}`}
                 >
-                  Teacher
+                  {t('contact.teacher')}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleUserSelect('Student')}
                   className={`px-6 sm:px-8 py-2 text-sm sm:text-base font-medium rounded-full transition-all ${selectedUser === 'Student' ? 'bg-[rgba(173,21,24,1)] text-white' : 'text-gray-600  '}`}
                 >
-                  Student
+                  {t('contact.student')}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleUserSelect('Collaborator')}
                   className={`px-6 sm:px-8 py-2 text-sm sm:text-base font-medium rounded-full transition-all ${selectedUser === 'Collaborator' ? 'bg-[rgba(173,21,24,1)] text-white' : 'text-gray-600 '}`}
                 >
-                  Collaborator
+                  {t('contact.collaborator')}
                 </button>
               </div>
             </div>
@@ -101,27 +103,27 @@ const ContactContent = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 type="text"
-                placeholder="Name"
+                placeholder={t('contact.namePlaceholder')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
               />
               <input
                 type="email"
-                placeholder="Email"
+                placeholder={t('contact.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
               />
               <input
                 type="text"
-                placeholder="Country"
+                placeholder={t('contact.countryPlaceholder')}
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
               />
               <textarea
-                placeholder="Reason to contact"
+                placeholder={t('contact.reasonPlaceholder')}
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 h-28 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -131,7 +133,7 @@ const ContactContent = () => {
                 type="submit"
                 className="bg-[rgba(173,21,24,1)] text-white px-5 sm:px-6 py-3 rounded-full w-full hover:bg-red-700 transition text-sm sm:text-base font-medium"
               >
-                Send
+                {t('contact.sendButton')}
               </button>
             </form>
           </div>

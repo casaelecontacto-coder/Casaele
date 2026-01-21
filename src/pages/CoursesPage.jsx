@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react'; // Import useMemo
 // Banner removed from CoursesPage to avoid confusion with shop page
-import Filters from '../components/Shop/Filters'; 
+import Filters from '../components/Shop/Filters';
 import ProductGrid from '../components/Shop/ProductGrid';
 import Pagination from '../components/Shop/Pagination';
 import { apiGet } from '../utils/api';
 import Spinner from '../components/Common/Spinner';
+import { useCurrency } from '../context/CurrencyContext';
 
 function CoursesPage() {
+  const { getPriceValue, currency } = useCurrency();
   const [allCourses, setAllCourses] = useState([]); // Store ALL fetched courses
   const [filteredCourses, setFilteredCourses] = useState([]); // Store courses after ALL filters
   const [loading, setLoading] = useState(true); // Combined loading state
@@ -43,20 +45,21 @@ function CoursesPage() {
       const fetchedCourses = Array.isArray(allCoursesData?.courses) ? allCoursesData.courses : (Array.isArray(allCoursesData) ? allCoursesData : []);
       setAllCourses(fetchedCourses); // Store all raw courses
 
-      // --- Calculate Price Range ---
+      // --- Calculate Price Range (currency-aware) ---
       let min = Infinity;
       let max = 0;
       fetchedCourses.forEach(item => {
-        const price = Number(item.discountPrice || item.price || 0);
+        // Use currency-aware price value
+        const price = item.prices?.[currency]?.discountPrice || item.prices?.[currency]?.price || item.discountPrice || item.price || 0;
         if (price < min) min = price;
         if (price > max) max = price;
       });
-      const finalMin = min === Infinity ? 0 : Math.floor(min / 10) * 10; 
-      const finalMax = max === 0 ? 1000 : Math.ceil(max / 10) * 10;   
+      const finalMin = min === Infinity ? 0 : Math.floor(min / 10) * 10;
+      const finalMax = max === 0 ? 1000 : Math.ceil(max / 10) * 10;
       setActualMinPrice(finalMin);
       setActualMaxPrice(finalMax);
-      setMinPrice(finalMin); 
-      setMaxPrice(finalMax); 
+      setMinPrice(finalMin);
+      setMaxPrice(finalMax);
       // --- End Price Range ---
 
       // Build Category Map (counts based on ALL courses)
@@ -76,9 +79,9 @@ function CoursesPage() {
       setAllCourses([]);
       setCategoriesMap({ '': 0 });
     }).finally(() => {
-      setLoading(false); 
+      setLoading(false);
     });
-  }, []); // Run only once on mount
+  }, [currency]); // Rerun when currency changes to recalculate price ranges
 
   // --- Apply Filters and Sort (Client-Side) ---
   useEffect(() => {
@@ -90,16 +93,16 @@ function CoursesPage() {
         tempFiltered = tempFiltered.filter(course => course.category === selectedCategory);
     }
 
-    // 2. Filter by Price Range
+    // 2. Filter by Price Range (currency-aware)
     tempFiltered = tempFiltered.filter(course => {
-        const price = Number(course.discountPrice || course.price || 0);
+        const price = course.prices?.[currency]?.discountPrice || course.prices?.[currency]?.price || course.discountPrice || course.price || 0;
         return price >= minPrice && price <= maxPrice;
     });
 
-    // 3. Sort
+    // 3. Sort (currency-aware)
     tempFiltered.sort((a, b) => {
-      const priceA = Number(a.discountPrice || a.price || 0);
-      const priceB = Number(b.discountPrice || b.price || 0);
+      const priceA = a.prices?.[currency]?.discountPrice || a.prices?.[currency]?.price || a.discountPrice || a.price || 0;
+      const priceB = b.prices?.[currency]?.discountPrice || b.prices?.[currency]?.price || b.discountPrice || b.price || 0;
       switch (sortOrder) {
         case 'price-asc':
           return priceA - priceB;
@@ -107,14 +110,14 @@ function CoursesPage() {
           return priceB - priceA;
         case 'newest':
         default:
-          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); 
+          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
       }
     });
 
     setFilteredCourses(tempFiltered); // Update the state with fully filtered list
     setCurrentPage(1); // Reset page whenever filters change
 
-  }, [selectedCategory, minPrice, maxPrice, sortOrder, allCourses]); // Rerun when filters or base data change
+  }, [selectedCategory, minPrice, maxPrice, sortOrder, allCourses, currency]); // Rerun when filters, currency, or base data change
 
 
   // --- Pagination Logic ---

@@ -76,7 +76,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><Link to="/contact">Contact Us</Link></li>
               <li><Link to="/privacy-policy">Privacy Policy</Link></li>
-              <li><Link to="/">How to use</Link></li>
+              <li><Link to="/page/how-to-use">How to Use</Link></li>
               <li><Link to="/terms-and-conditions">Terms & Conditions</Link></li>
             </ul>
           </div>

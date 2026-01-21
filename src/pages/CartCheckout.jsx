@@ -3,6 +3,7 @@ import CartSection from '../components/CartCheckout/CartSection';
 import BillingDetails from '../components/CartCheckout/BillingDetails';
 import CouponSection from '../components/CartCheckout/CouponSection';
 import { useCart } from '../context/CartContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { apiSend, apiGet } from '../utils/api'; // Import apiSend for POST requests
 import { useNavigate } from 'react-router-dom'; // For redirecting after payment
 import Spinner from '../components/Common/Spinner'; // For loading state
@@ -24,13 +25,17 @@ const loadRazorpayScript = (src) => {
 
 function CartCheckout() {
   const { cartItems, totalItems, totalPrice, clearCart } = useCart();
+  const { getCurrencySymbol } = useCurrency();
   const navigate = useNavigate();
   const [loadingPayment, setLoadingPayment] = useState(false); // Loading state for payment process
   const [paymentError, setPaymentError] = useState(''); // State for payment errors
-  
+
   // Coupon state
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [discountAmount, setDiscountAmount] = useState(0);
+
+  // Newsletter opt-in state
+  const [newsletterOptIn, setNewsletterOptIn] = useState(false);
   
   // Calculate final total after discount
   const finalTotal = Math.max(0, totalPrice - discountAmount);
@@ -134,11 +139,12 @@ function CartCheckout() {
                     razorpay_payment_id: response.razorpay_payment_id,
                     razorpay_signature: response.razorpay_signature,
                     // --- Include Billing Info and Cart Items ---
-                    billingDetails: billingInfo, 
+                    billingDetails: billingInfo,
                     cartItems: cartItems, // Send cart items for order creation on backend
                     totalAmount: finalTotal, // Send final amount paid (after discount)
                     couponCode: appliedCoupon?.code || null, // Include coupon code if applied
-                    discountAmount: discountAmount // Include discount amount
+                    discountAmount: discountAmount, // Include discount amount
+                    newsletterOptIn: newsletterOptIn // Include newsletter opt-in preference
                 };
                 
                 // Use the correct backend endpoint: /api/orders/verify (POST)
@@ -236,6 +242,29 @@ function CartCheckout() {
                 />
               )}
 
+              {/* Newsletter Opt-in Section */}
+              {cartItems && cartItems.length > 0 && (
+                <div className="bg-white rounded-lg shadow p-6">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id="newsletterOptIn"
+                      checked={newsletterOptIn}
+                      onChange={(e) => setNewsletterOptIn(e.target.checked)}
+                      className="mt-1 h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500 cursor-pointer"
+                    />
+                    <label htmlFor="newsletterOptIn" className="flex-1 cursor-pointer">
+                      <span className="text-sm font-medium text-gray-900">
+                        Subscribe to our newsletter
+                      </span>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Get exclusive Spanish learning content, special offers, and updates delivered to your inbox. Unsubscribe anytime.
+                      </p>
+                    </label>
+                  </div>
+                </div>
+              )}
+
               {/* Order Summary & Proceed Button */}
               {cartItems && cartItems.length > 0 && (
                 <div className="bg-white rounded-lg shadow p-6">
@@ -243,18 +272,18 @@ function CartCheckout() {
                    <div className="space-y-2 text-sm text-gray-600">
                      <div className="flex justify-between">
                        <span>Subtotal ({totalItems} {totalItems === 1 ? 'item' : 'items'})</span>
-                       <span>₹{totalPrice.toFixed(2)}</span>
+                       <span>{getCurrencySymbol()}{totalPrice.toFixed(2)}</span>
                      </div>
                      {appliedCoupon && discountAmount > 0 && (
                        <div className="flex justify-between text-green-600">
                          <span>Discount ({appliedCoupon.code})</span>
-                         <span>-₹{discountAmount.toFixed(2)}</span>
+                         <span>-{getCurrencySymbol()}{discountAmount.toFixed(2)}</span>
                        </div>
                      )}
                    </div>
                    <div className="flex justify-between font-semibold text-gray-800 mt-4 pt-4 border-t">
                      <span>Total</span>
-                     <span>₹{finalTotal.toFixed(2)}</span> 
+                     <span>{getCurrencySymbol()}{finalTotal.toFixed(2)}</span>
                    </div>
 
                    {/* Display Payment Error */}

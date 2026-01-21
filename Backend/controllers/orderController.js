@@ -2,8 +2,12 @@ import Razorpay from 'razorpay';
 import dotenv from 'dotenv';
 import Order from '../models/Order.js';
 import Coupon from '../models/Coupon.js';
+import Product from '../models/Product.js';
 import crypto from 'crypto';
 import mongoose from 'mongoose';
+import { createDownloadRecords } from './digitalDownloadController.js';
+import { sendDigitalProductEmail } from '../services/digitalDeliveryEmailService.js';
+import { subscribeToBeehive } from '../services/beehiveService.js';
 
 dotenv.config();
 
@@ -207,10 +211,119 @@ export const verifyPayment = async (req, res) => {
         isPaid: true,
         paidAt: new Date(),
         razorpayOrderId: razorpay_order_id,
-        orderStatus: 'Processing', // <-- THIS IS THE ADDED LINE
+        orderStatus: 'Processing',
+        newsletterOptIn: req.body.newsletterOptIn || false,
       });
 
       const savedOrder = await newOrder.save();
+
+      // --- Digital Delivery & Newsletter Integration ---
+      // Handle newsletter subscription if opted in
+      if (req.body.newsletterOptIn) {
+        try {
+          console.log('[Order] Newsletter opt-in detected, subscribing to Beehive...');
+          const beehiveResult = await subscribeToBeehive({
+            email: billingDetails.email,
+            customFields: {
+              name: `${billingDetails.firstName} ${billingDetails.lastName}`,
+              role: 'Customer',
+              source: 'checkout',
+              tags: 'customer,purchase'
+            }
+          });
+          console.log('[Order] Beehive subscription result:', beehiveResult.success ? 'Success' : 'Failed');
+        } catch (newsletterError) {
+          console.error('[Order] Newsletter subscription failed:', newsletterError.message);
+          // Don't block order completion if newsletter fails
+        }
+      }
+
+      // Check if order contains digital products
+      try {
+        // Populate product details to check productType
+        const productIds = orderItems
+          .filter(item => item.itemModel === 'Product')
+          .map(item => item.product);
+
+        if (productIds.length > 0) {
+          const products = await Product.find({ _id: { $in: productIds } });
+          const digitalProducts = products.filter(
+            p => p.productType === 'Digital' || p.productType === 'Both'
+          );
+
+          if (digitalProducts.length > 0) {
+            console.log(`[Order] Found ${digitalProducts.length} digital product(s), initiating delivery...`);
+
+            // Update order status to pending delivery
+            savedOrder.digitalDeliveryStatus = 'pending';
+            await savedOrder.save();
+
+            // Create download records for each digital product
+            const downloadRecordsData = {
+              orderId: savedOrder._id.toString(),
+              customerEmail: billingDetails.email,
+              customerName: `${billingDetails.firstName} ${billingDetails.lastName}`,
+              products: digitalProducts.map(product => {
+                const orderItem = orderItems.find(item => item.product.toString() === product._id.toString());
+                return {
+                  productId: product._id.toString(),
+                  productName: product.name,
+                  digitalFiles: product.digitalFiles,
+                  maxDownloads: product.downloadSettings?.maxDownloads || 3,
+                  linkExpiryDays: product.downloadSettings?.linkExpiryDays || 30,
+                  selectedLevel: orderItem?.selectedLevel,
+                  selectedFormat: orderItem?.selectedFormat
+                };
+              })
+            };
+
+            const downloadRecords = await createDownloadRecords(downloadRecordsData);
+            console.log(`[Order] Created ${downloadRecords.length} download record(s)`);
+
+            // Build download links for email
+            const downloadLinks = downloadRecords.map(record => ({
+              productName: record.productName,
+              accessToken: record.accessToken,
+              fileCount: record.files.length,
+              downloadsRemaining: record.maxDownloads,
+              maxDownloads: record.maxDownloads,
+              expiryDate: record.expiresAt
+            }));
+
+            // Send delivery email
+            const emailResult = await sendDigitalProductEmail({
+              customerEmail: billingDetails.email,
+              customerName: `${billingDetails.firstName} ${billingDetails.lastName}`,
+              downloadLinks,
+              orderId: savedOrder._id.toString()
+            });
+
+            if (emailResult.success) {
+              console.log('[Order] Digital delivery email sent successfully');
+              savedOrder.digitalDeliveryStatus = 'sent';
+              savedOrder.digitalDeliverySentAt = new Date();
+            } else {
+              console.error('[Order] Digital delivery email failed:', emailResult.error);
+              savedOrder.digitalDeliveryStatus = 'failed';
+            }
+
+            await savedOrder.save();
+          } else {
+            console.log('[Order] No digital products in this order');
+          }
+        }
+      } catch (digitalDeliveryError) {
+        console.error('[Order] Digital delivery process failed:', digitalDeliveryError);
+        // Update order status to failed but don't block order completion
+        try {
+          savedOrder.digitalDeliveryStatus = 'failed';
+          await savedOrder.save();
+        } catch (saveError) {
+          console.error('[Order] Failed to update delivery status:', saveError);
+        }
+      }
+      // --- End Digital Delivery Integration ---
+
       res.status(201).json({
         success: true,
         message: 'Payment verified, order created.',

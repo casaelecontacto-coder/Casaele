@@ -1,20 +1,26 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes, FaShoppingCart } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import AuthForm from "../../pages/LogIn";
 import { auth, onAuthStateChanged, signOut } from "../../firebase";
 import { apiGet } from "../../utils/api";
 import { useLanguage } from "../../context/LanguageContext"; // 1. Import Hook
+import { useCart } from "../../context/CartContext";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
-  
+  const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
+
   // 2. Use global context instead of local state
   const { language, setLanguage, t } = useLanguage();
-  
+  const { totalItems } = useCart();
+  const { currency, setCurrency, currencyConfig } = useCurrency();
+
   const langDropdownRef = useRef(null);
+  const currencyDropdownRef = useRef(null);
   const { pathname } = useLocation();
   const [showAuth, setShowAuth] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -38,12 +44,18 @@ const Header = () => {
       ) {
         setIsLangOpen(false);
       }
+      if (
+        currencyDropdownRef.current &&
+        !currencyDropdownRef.current.contains(event.target)
+      ) {
+        setIsCurrencyOpen(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [langDropdownRef]);
+  }, [langDropdownRef, currencyDropdownRef]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -72,6 +84,11 @@ const Header = () => {
   const handleLangSelect = (lang) => {
     setLanguage(lang); // 4. Update global context
     setIsLangOpen(false);
+  };
+
+  const handleCurrencySelect = (curr) => {
+    setCurrency(curr);
+    setIsCurrencyOpen(false);
   };
 
   const handleLogout = () => {
@@ -121,6 +138,43 @@ const Header = () => {
             </div>
           )}
         </div>
+
+        {/* Currency Dropdown */}
+        <div className="relative" ref={currencyDropdownRef}>
+          <button
+            onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
+            className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-black transition-colors"
+          >
+            <span>{currencyConfig[currency]?.symbol} {currency}</span>
+            <IoIosArrowDown
+              className={`transition-transform duration-200 ${
+                isCurrencyOpen ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+          {isCurrencyOpen && (
+            <div className="absolute top-full mt-2 w-36 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-10">
+              <button
+                onClick={() => handleCurrencySelect("USD")}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                $ USD
+              </button>
+              <button
+                onClick={() => handleCurrencySelect("EUR")}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                € EUR
+              </button>
+              <button
+                onClick={() => handleCurrencySelect("INR")}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                ₹ INR
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Desktop Navbar */}
@@ -153,8 +207,19 @@ const Header = () => {
         )}
       </nav>
 
-      {/* Auth button / user dropdown */}
-      <div className="hidden md:flex items-center">
+      {/* Cart and Auth section */}
+      <div className="hidden md:flex items-center gap-4">
+        {/* Cart Icon with Badge */}
+        <Link to="/cart-checkout" className="relative">
+          <FaShoppingCart className="text-2xl text-gray-600 hover:text-red-700 transition-colors" />
+          {totalItems > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-700 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+              {totalItems}
+            </span>
+          )}
+        </Link>
+
+        {/* Auth button / user dropdown */}
         {!currentUser ? (
           <button
             onClick={() => setShowAuth(true)}
@@ -177,13 +242,26 @@ const Header = () => {
         )}
       </div>
 
-      {/* Hamburger Button (only for mobile) */}
-      <button
-        className="md:hidden text-gray-600 text-2xl z-50"
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-      >
-        {isMenuOpen ? <FaTimes /> : <FaBars />}
-      </button>
+      {/* Mobile Cart and Hamburger */}
+      <div className="md:hidden flex items-center gap-4 z-50">
+        {/* Cart Icon for Mobile Header */}
+        <Link to="/cart-checkout" className="relative">
+          <FaShoppingCart className="text-xl text-gray-600" />
+          {totalItems > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-700 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+              {totalItems}
+            </span>
+          )}
+        </Link>
+
+        {/* Hamburger Button */}
+        <button
+          className="text-gray-600 text-2xl"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          {isMenuOpen ? <FaTimes /> : <FaBars />}
+        </button>
+      </div>
 
       {/* Mobile Navbar */}
       {isMenuOpen && (
@@ -202,6 +280,25 @@ const Header = () => {
               {link.name}
             </Link>
           ))}
+
+          {/* Cart Link for Mobile */}
+          <Link
+            to="/cart-checkout"
+            className={`text-2xl transition-colors flex items-center gap-2 ${
+              pathname === "/cart-checkout"
+                ? "text-black font-semibold"
+                : "text-gray-500 hover:text-black"
+            }`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <FaShoppingCart />
+            <span>Cart</span>
+            {totalItems > 0 && (
+              <span className="bg-red-700 text-white text-sm font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </Link>
 
           {isAdmin && (
             <Link

@@ -1,6 +1,14 @@
 import React from 'react';
+import { useCurrency } from '../../context/CurrencyContext';
 
-const Card = ({ image, title, description, tags, price, onClick }) => {
+const Card = ({ image, title, description, tags, price, discountPrice, prices, onClick }) => {
+    const { getCurrencySymbol, currency } = useCurrency();
+
+    // Get currency-aware prices
+    const currentPrice = prices?.[currency]?.price || price || 0;
+    const currentDiscountPrice = prices?.[currency]?.discountPrice || discountPrice || 0;
+    const hasDiscount = currentDiscountPrice > 0 && currentDiscountPrice < currentPrice;
+
     return (
         <div className="bg-white rounded-lg shadow-md w-full overflow-hidden">
             <img
@@ -24,9 +32,16 @@ const Card = ({ image, title, description, tags, price, onClick }) => {
                         ))}
                     </div>
                 )}
-                {typeof price === "number" && (
-                    <div>
-                        <span className="text-md font-semibold text-gray-800">${price}</span>
+                {(typeof price === "number" || typeof currentPrice === "number") && currentPrice > 0 && (
+                    <div className="flex items-center gap-2">
+                        {hasDiscount ? (
+                            <>
+                                <span className="text-md font-semibold text-gray-800">{getCurrencySymbol()}{currentDiscountPrice}</span>
+                                <span className="text-sm text-gray-400 line-through">{getCurrencySymbol()}{currentPrice}</span>
+                            </>
+                        ) : (
+                            <span className="text-md font-semibold text-gray-800">{getCurrencySymbol()}{currentPrice}</span>
+                        )}
                     </div>
                 )}
             </div>

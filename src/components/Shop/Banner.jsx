@@ -1,4 +1,5 @@
 import React from "react";
+import { useLanguage } from "../../context/LanguageContext";
 
 const StatItem = ({ value, label }) => (
   <div className="text-center lg:text-left">
@@ -8,6 +9,7 @@ const StatItem = ({ value, label }) => (
 );
 
 function Banner() {
+  const { t } = useLanguage();
   return (
     // The main section is now the positioning container for the image
     <section className="bg-white relative">
@@ -16,17 +18,15 @@ function Banner() {
         <div className="relative z-10 lg:w-3/5 py-16 sm:py-24">
           <div className="text-center lg:text-left">
             <h1 className="text-4xl sm:text-5xl lg:text-5xl font-bold text-gray-900 leading-tight">
-              Tienda Casa de ELE
+              {t('products.banner.title')}
             </h1>
 
             <p className="mt-4 text-gray-600 text-lg max-w-lg mx-auto lg:mx-0">
-              Discover creative and inclusive Spanish resources for learners
-              and teachers. All digital downloads and subscriptions designed
-              with real classroom experience.
+              {t('products.banner.description')}
             </p>
 
             <button className="my-10 bg-[rgba(173,21,24,1)] text-white py-3 px-12 rounded-xl text-lg font-semibold hover:bg-red-700 transition-colors duration-300 shadow-md">
-              Shop Now
+              {t('products.banner.shopNow')}
             </button>
           </div>
 

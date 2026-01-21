@@ -109,10 +109,26 @@ const orderSchema = new mongoose.Schema(
         
         // *** CHANGED: Use razorpayOrderId ***
         razorpayOrderId: { // Store Razorpay's order ID
-            type: String, 
+            type: String,
             required: true, // Make required as it's part of verification
         },
         // Removed 'orderId' field if 'razorpayOrderId' replaces it
+
+        // Newsletter opt-in from checkout
+        newsletterOptIn: {
+            type: Boolean,
+            default: false
+        },
+
+        // Digital product delivery tracking
+        digitalDeliveryStatus: {
+            type: String,
+            enum: ['pending', 'sent', 'failed', 'not_applicable'],
+            default: 'not_applicable' // Only 'pending' if order contains digital products
+        },
+        digitalDeliverySentAt: {
+            type: Date
+        }
     },
     {
         timestamps: true, // Adds createdAt and updatedAt automatically

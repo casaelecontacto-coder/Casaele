@@ -6,6 +6,24 @@ export const useCart = () => {
   return useContext(CartContext);
 };
 
+// Helper function to get price value from product (currency-aware)
+const getPriceFromProduct = (item, currency = 'USD') => {
+  // Handle new multi-currency format
+  if (item.prices && typeof item.prices === 'object') {
+    const currencyPrice = item.prices[currency];
+    if (currencyPrice) {
+      return currencyPrice.discountPrice || currencyPrice.price || 0;
+    }
+    // Fallback to USD
+    if (item.prices.USD) {
+      return item.prices.USD.discountPrice || item.prices.USD.price || 0;
+    }
+  }
+
+  // Handle old format (backward compatibility)
+  return item.discountPrice || item.price || 0;
+};
+
 // Helper to generate a unique ID based on item properties
 const generateUniqueId = (item) => {
   // Use _id, selectedLevel (or 'none'), selectedFormat (or 'none')
@@ -13,6 +31,11 @@ const generateUniqueId = (item) => {
 };
 
 export const CartProvider = ({ children }) => {
+  // Get current currency from localStorage (same as CurrencyContext)
+  const getCurrentCurrency = () => {
+    return localStorage.getItem("siteCurrency") || "USD";
+  };
+
   const [cartItems, setCartItems] = useState(() => {
     try {
       const localData = localStorage.getItem('cartItems');
@@ -98,10 +121,11 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
-  // Calculate totals
+  // Calculate totals (currency-aware)
   const totalItems = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
   const totalPrice = cartItems.reduce((total, item) => {
-    const price = Number(item.discountPrice || item.price || 0);
+    const currency = getCurrentCurrency();
+    const price = getPriceFromProduct(item, currency);
     const quantity = Number(item.quantity || 0);
     return total + price * quantity;
   }, 0);

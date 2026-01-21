@@ -2,11 +2,27 @@ import nodemailer from 'nodemailer';
 
 // Create transporter using environment variables
 const createTransporter = () => {
+  // Log to help debug
+  console.log('[Email Config] Creating transporter with:', {
+    service: process.env.EMAIL_SERVICE || 'gmail',
+    user: process.env.EMAIL_USER ? '***' + process.env.EMAIL_USER.slice(-10) : 'MISSING',
+    pass: process.env.EMAIL_PASS ? '***' : 'MISSING'
+  });
+
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.error('[Email Config] ERROR: EMAIL_USER or EMAIL_PASS not set in environment variables!');
+  }
+
   return nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE || 'gmail',
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
+    },
+    // Add some additional options for Gmail
+    secure: false, // Use TLS
+    tls: {
+      rejectUnauthorized: false // Allow self-signed certificates (for development)
     }
   });
 };

@@ -35,6 +35,9 @@ import pickRoutes from './routes/pickRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import chapterRoutes from './routes/chapterRoutes.js';
+import digitalDownloadRoutes from './routes/digitalDownloadRoutes.js';
+import testEmailRoutes from './routes/testEmailRoutes.js';
 
 dotenv.config();
 
@@ -50,6 +53,8 @@ dotenv.config();
 ("FIREBASE_SERVICE_ACCOUNT_PATH:", process.env.FIREBASE_SERVICE_ACCOUNT_PATH ? "Loaded" : "Missing");
 ("FIREBASE_SERVICE_ACCOUNT:", process.env.FIREBASE_SERVICE_ACCOUNT ? "Loaded" : "Missing");
 ("CORS_ORIGIN:", process.env.CORS_ORIGIN ? "Loaded" : "Missing");
+("EMAIL_USER:", process.env.EMAIL_USER ? "Loaded" : "Missing");
+("EMAIL_PASS:", process.env.EMAIL_PASS ? "Loaded" : "Missing");
 ("--------------------------");
 
 // Cloudinary Configuration
@@ -114,15 +119,16 @@ app.use((req, res, next) => {
   // Fix for Cross-Origin-Opener-Policy error
   res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
 
-  // Content-Security-Policy for Firebase, Google APIs, Razorpay, etc.
+  // Content-Security-Policy for Firebase, Google APIs, Razorpay, HTML activities, etc.
   const csp = [
     "default-src 'self';",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://js.stripe.com https://checkout.razorpay.com;",
-    "frame-src 'self' https://apis.google.com https://www.google.com https://js.stripe.com https://api.razorpay.com;",
-    "connect-src 'self' " + (process.env.CORS_ORIGIN || "http://localhost:5173") + " http://localhost:" + (process.env.PORT || 5000) + " https://*.firebaseio.com wss://*.firebaseio.com https://www.googleapis.com;",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://js.stripe.com https://checkout.razorpay.com https://res.cloudinary.com blob: data:;",
+    "frame-src 'self' https://apis.google.com https://www.google.com https://js.stripe.com https://api.razorpay.com https://res.cloudinary.com blob: data:;",
+    "connect-src 'self' " + (process.env.CORS_ORIGIN || "http://localhost:5173") + " http://localhost:" + (process.env.PORT || 5000) + " https://*.firebaseio.com wss://*.firebaseio.com https://www.googleapis.com https://res.cloudinary.com;",
     "font-src 'self' https: data:;",
-    "img-src 'self' https: data:;",
-    "style-src 'self' 'unsafe-inline' https:;"
+    "img-src 'self' https: data: blob:;",
+    "style-src 'self' 'unsafe-inline' https:;",
+    "child-src 'self' blob: data:;"
   ].join(' ');
 
   res.setHeader('Content-Security-Policy', csp);
@@ -248,6 +254,37 @@ app.get('/api/cloudinary-signature', (req, res) => {
   res.json({ timestamp, signature });
 });
 
+// HTML Proxy Route - Serves HTML files with proper headers for iframe embedding
+app.get('/api/html-proxy', async (req, res) => {
+  try {
+    const { url } = req.query;
+
+    if (!url) {
+      return res.status(400).json({ message: 'URL parameter is required' });
+    }
+
+    // Fetch the HTML content from the provided URL
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      return res.status(response.status).json({ message: 'Failed to fetch HTML content' });
+    }
+
+    const htmlContent = await response.text();
+
+    // Set headers to allow iframe embedding and proper content type
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('X-Frame-Options', 'ALLOWALL');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+
+    res.send(htmlContent);
+  } catch (error) {
+    console.error('HTML Proxy Error:', error);
+    res.status(500).json({ message: 'Failed to proxy HTML content' });
+  }
+});
+
 // Disable caching for all /api responses
 app.use('/api', (req, res, next) => {
   res.set('Cache-Control', 'no-store');
@@ -265,6 +302,7 @@ app.use('/api/home-data', homeDataRoutes);
 app.use('/api/pages', pagesRoutes);
 app.use('/api/forms', formRoutes);
 app.use('/api/embeds', embedRoutes);
+app.use('/api/chapters', chapterRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/teachers', teacherRoutes);
@@ -281,6 +319,8 @@ app.use('/api/posts', postRoutes);
 app.use('/api/picks', pickRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/uploads', uploadRoutes);
+app.use('/api/digital-downloads', digitalDownloadRoutes);
+app.use('/api', testEmailRoutes);
 
 // Error Handlers
 app.use(notFound);

@@ -1,9 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import CmsContent from "../CmsContent";
+import { useLanguage } from "../../context/LanguageContext";
 
 function HeroSection() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleButtonClickRight = (keyword) => {
     navigate('/material', { state: { keyword: keyword } });
@@ -50,17 +52,14 @@ function HeroSection() {
         {/* Left Card */}
         <div className="p-8 border-2 border-dashed border-gray-300 rounded-2xl w-full max-w-md shadow-sm bg-white">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-snug">
-            Spanish For <br /> Students
+            {t('home.hero.studentsTitle')}
           </h2>
           <p className="text-gray-600 mb-6 text-base md:text-lg leading-relaxed">
-            Learn business Spanish from the best teachers worldwide. Fully adaptive curriculum for your needs. 100% online courses.
-
-
-
+            {t('home.hero.studentsDesc')}
           </p>
           <button onClick={handleButtonClick} className="bg-[rgba(173,21,24,1)] hover:bg-red-700 text-white px-6 py-3 rounded-lg flex items-center gap-3 text-sm md:text-base">
             <span className="leading-tight">
-              Start now to unlock <br /> high-paying jobs
+              {t('home.hero.studentsButton')}
             </span>
             <span className="text-2xl">→</span>
           </button>
@@ -77,15 +76,13 @@ function HeroSection() {
 
         {/* Right Card */}
         <div className="p-8 border-2 border-dashed border-gray-300 rounded-2xl w-full max-w-md shadow-sm bg-white">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Teacher Material</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('home.hero.teachersTitle')}</h2>
           <p className="text-gray-600 mb-6 text-base md:text-lg leading-relaxed">
-            Upgrade your teaching skills with Business Spanish materials. Adaptive resources designed for teachers. 100% online.
+            {t('home.hero.teachersDesc')}
           </p>
-          <button onClick={handleButtonClickRight} className="bg-[rgba(173,21,24,1)] hover:bg-red-700 text-white px-6 py-3 rounded-lg flex items-center gap-3 text-sm md:text-base">
+          <button onClick={() => handleButtonClickRight("Teacher Material")} className="bg-[rgba(173,21,24,1)] hover:bg-red-700 text-white px-6 py-3 rounded-lg flex items-center gap-3 text-sm md:text-base">
             <span className="leading-tight">
-              Attract long-term, high-paying students now.
-
-
+              {t('home.hero.teachersButton')}
             </span>
             <span className="text-2xl">→</span>
           </button>

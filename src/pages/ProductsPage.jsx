@@ -5,8 +5,10 @@ import ProductGrid from '../components/Shop/ProductGrid';
 import Pagination from '../components/Shop/Pagination';
 import { apiGet } from '../utils/api';
 import Spinner from '../components/Common/Spinner';
+import { useCurrency } from '../context/CurrencyContext';
 
 function ProductsPage() {
+  const { getPriceValue, currency } = useCurrency();
   const [allProducts, setAllProducts] = useState([]); // Store ALL fetched products
   const [filteredProducts, setFilteredProducts] = useState([]); // Store products after ALL filters
   const [loading, setLoading] = useState(true); // Combined loading state
@@ -46,11 +48,12 @@ function ProductsPage() {
       const fetchedProducts = Array.isArray(allProductsData?.products) ? allProductsData.products : (Array.isArray(allProductsData) ? allProductsData : []);
       setAllProducts(fetchedProducts); // Store all raw products
 
-      // --- Calculate Price Range ---
+      // --- Calculate Price Range (currency-aware) ---
       let min = Infinity;
       let max = 0;
       fetchedProducts.forEach(item => {
-        const price = Number(item.discountPrice || item.price || 0);
+        // Use currency-aware price value
+        const price = item.prices?.[currency]?.discountPrice || item.prices?.[currency]?.price || item.discountPrice || item.price || 0;
         if (price < min) min = price;
         if (price > max) max = price;
       });
@@ -82,7 +85,7 @@ function ProductsPage() {
     }).finally(() => {
       setLoading(false); // Stop loading only after all calculations are done
     });
-  }, []); // Run only once on mount
+  }, [currency]); // Rerun when currency changes to recalculate price ranges
 
   // --- Apply Filters and Sort (Client-Side) ---
   useEffect(() => {
@@ -93,9 +96,9 @@ function ProductsPage() {
         tempFiltered = tempFiltered.filter(product => product.category === selectedCategory);
     }
 
-    // 2. Filter by Price Range
+    // 2. Filter by Price Range (currency-aware)
     tempFiltered = tempFiltered.filter(product => {
-        const price = Number(product.discountPrice || product.price || 0);
+        const price = product.prices?.[currency]?.discountPrice || product.prices?.[currency]?.price || product.discountPrice || product.price || 0;
         return price >= minPrice && price <= maxPrice;
     });
 
@@ -107,10 +110,10 @@ function ProductsPage() {
         });
     }
 
-    // 4. Sort
+    // 4. Sort (currency-aware)
     tempFiltered.sort((a, b) => {
-      const priceA = Number(a.discountPrice || a.price || 0);
-      const priceB = Number(b.discountPrice || b.price || 0);
+      const priceA = a.prices?.[currency]?.discountPrice || a.prices?.[currency]?.price || a.discountPrice || a.price || 0;
+      const priceB = b.prices?.[currency]?.discountPrice || b.prices?.[currency]?.price || b.discountPrice || b.price || 0;
       switch (sortOrder) {
         case 'price-asc':
           return priceA - priceB;
@@ -119,14 +122,14 @@ function ProductsPage() {
         case 'newest':
         default:
            // Assuming createdAt exists, otherwise sort doesn't work for 'newest'
-          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); 
+          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
       }
     });
 
     setFilteredProducts(tempFiltered); // Update the state with fully filtered list
     setCurrentPage(1); // Reset page whenever filters change
 
-  }, [selectedCategory, minPrice, maxPrice, sortOrder, selectedLevels, allProducts]); // Rerun when filters or base data change
+  }, [selectedCategory, minPrice, maxPrice, sortOrder, selectedLevels, allProducts, currency]); // Rerun when filters, currency, or base data change
 
 
   // --- Pagination Logic ---

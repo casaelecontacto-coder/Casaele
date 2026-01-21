@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import QuantitySelector from "./QuantitySelector";
+import { useCurrency } from "../../context/CurrencyContext";
 
 function ProductInfo({ item, quantity, setQuantity, added, handleAddToCart, itemType = 'product' }) {
   const [selectedFormat, setSelectedFormat] = useState(null);
   const isCourse = itemType === 'course';
+  const { getPriceValue, getCurrencySymbol, currency } = useCurrency();
 
-  const hasDiscount = item?.discountPrice > 0 && item?.discountPrice < item?.price;
-  const discountPercentage = hasDiscount ? Math.round(((item.price - item.discountPrice) / item.price) * 100) : 0;
+  // Get prices from the new multi-currency format or fall back to old format
+  const currentPrice = item?.prices?.[currency]?.price || item?.price || 0;
+  const currentDiscountPrice = item?.prices?.[currency]?.discountPrice || item?.discountPrice || 0;
+
+  const hasDiscount = currentDiscountPrice > 0 && currentDiscountPrice < currentPrice;
+  const discountPercentage = hasDiscount ? Math.round(((currentPrice - currentDiscountPrice) / currentPrice) * 100) : 0;
 
   useEffect(() => {
     // Set default format based on productType, allow selection if 'Both'
@@ -50,12 +56,12 @@ function ProductInfo({ item, quantity, setQuantity, added, handleAddToCart, item
         <div className="flex items-center space-x-3 pt-2">
           {hasDiscount ? (
             <>
-              <span className="font-bold text-4xl lg:text-5xl text-black">₹{item.discountPrice}</span>
-              <span className="text-2xl text-gray-400 line-through">₹{item.price}</span>
+              <span className="font-bold text-4xl lg:text-5xl text-black">{getCurrencySymbol()}{currentDiscountPrice}</span>
+              <span className="text-2xl text-gray-400 line-through">{getCurrencySymbol()}{currentPrice}</span>
               <span className="bg-[#FDF2F2] text-red-600 text-sm font-semibold px-3 py-1 rounded-full">-{discountPercentage}%</span>
             </>
           ) : (
-            <span className="font-bold text-4xl lg:text-5xl text-black">₹{item?.price}</span>
+            <span className="font-bold text-4xl lg:text-5xl text-black">{getCurrencySymbol()}{currentPrice}</span>
           )}
         </div>
       )}
