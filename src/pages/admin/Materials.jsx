@@ -27,9 +27,12 @@ export default function Materials() {
   })
   
   const [embeds, setEmbeds] = useState([])
-  const [materialEmbeds, setMaterialEmbeds] = useState([]) 
-  const [uploading, setUploading] = useState(false); 
-  const [uploadingBanner, setUploadingBanner] = useState(false); 
+  const [chapters, setChapters] = useState([])
+  const [selectedChapterFilter, setSelectedChapterFilter] = useState('all')
+  const [embedSearchTerm, setEmbedSearchTerm] = useState('')
+  const [materialEmbeds, setMaterialEmbeds] = useState([])
+  const [uploading, setUploading] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
   const [imgMode, setImgMode] = useState('local');
   const [pinUrl, setPinUrl] = useState('');
   const [pinPreview, setPinPreview] = useState(null);
@@ -39,16 +42,19 @@ export default function Materials() {
   useEffect(() => {
     Promise.all([
       apiGet('/api/materials'),
-      apiGet('/api/embeds')
-    ]).then(([materialsData, embedsData]) => {
+      apiGet('/api/embeds'),
+      apiGet('/api/chapters')
+    ]).then(([materialsData, embedsData, chaptersData]) => {
       const materials = Array.isArray(materialsData) ? materialsData : materialsData.materials || [];
       setItems(materials)
       setEmbeds(embedsData)
+      setChapters(chaptersData.chapters || [])
     }).catch((error) => {
       console.error('Error fetching data:', error);
       setError(error.message || 'Failed to load materials');
       setItems([])
       setEmbeds([])
+      setChapters([])
     }).finally(() => setLoading(false))
   }, [])
 
@@ -266,21 +272,24 @@ export default function Materials() {
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
             <p className="text-red-600">Error: {error}</p>
-            <button 
+            <button
               onClick={() => {
                 setError(null);
                 setLoading(true);
                 Promise.all([
                   apiGet('/api/materials'),
-                  apiGet('/api/embeds')
-                ]).then(([materialsData, embedsData]) => {
+                  apiGet('/api/embeds'),
+                  apiGet('/api/chapters')
+                ]).then(([materialsData, embedsData, chaptersData]) => {
                   const materials = Array.isArray(materialsData) ? materialsData : materialsData.materials || [];
                   setItems(materials)
                   setEmbeds(embedsData)
+                  setChapters(chaptersData.chapters || [])
                 }).catch((error) => {
                   setError(error.message || 'Failed to load materials');
                   setItems([])
                   setEmbeds([])
+                  setChapters([])
                 }).finally(() => setLoading(false))
               }}
               className="mt-2 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
@@ -441,22 +450,127 @@ export default function Materials() {
                 )}
               </div>
 
-              {/* Legacy Embed Selection (No change) */}
+              {/* Embed Selection with Chapter Filter */}
               <div className="block">
-                <span className="text-sm text-gray-700">Select Legacy Embeds (from /embeds)</span>
-                 <div className="mt-2 grid grid-cols-3 gap-2 border rounded-lg p-2 max-h-40 overflow-y-auto">
-                  {embeds.map(embed => (
-                    <label key={embed._id} className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100">
-                      <input 
-                        type="checkbox"
-                        checked={form.embedIds.includes(embed._id)}
-                        onChange={() => handleEmbedSelection(embed._id)}
-                        className="rounded text-red-600 focus:ring-red-500"
-                      />
-                      <span className="text-sm text-gray-800">{embed.title}</span>
-                    </label>
-                  ))}
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-700 font-medium">Select Embeds from Library</span>
+                  <span className="text-xs text-gray-500">{form.embedIds.length} selected</span>
                 </div>
+
+                {/* Search and Filter Controls */}
+                <div className="flex flex-col sm:flex-row gap-2 mb-3">
+                  {/* Search Input */}
+                  <div className="relative flex-1">
+                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input
+                      type="text"
+                      placeholder="Search embeds..."
+                      value={embedSearchTerm}
+                      onChange={(e) => setEmbedSearchTerm(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 text-sm focus:border-red-500 focus:ring-2 focus:ring-red-400/50 outline-none"
+                    />
+                  </div>
+
+                  {/* Chapter Filter Dropdown */}
+                  <select
+                    value={selectedChapterFilter}
+                    onChange={(e) => setSelectedChapterFilter(e.target.value)}
+                    className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:border-red-500 focus:ring-2 focus:ring-red-400/50 outline-none bg-white min-w-[150px]"
+                  >
+                    <option value="all">All Chapters</option>
+                    <option value="uncategorized">Uncategorized</option>
+                    {chapters.map(chapter => (
+                      <option key={chapter._id} value={chapter._id}>{chapter.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Embed List */}
+                <div className="border rounded-lg max-h-60 overflow-y-auto">
+                  {(() => {
+                    // Filter embeds based on search and chapter
+                    let filteredEmbeds = embeds.filter(embed => {
+                      const matchesSearch = !embedSearchTerm.trim() ||
+                        embed.title?.toLowerCase().includes(embedSearchTerm.toLowerCase()) ||
+                        embed.type?.toLowerCase().includes(embedSearchTerm.toLowerCase());
+
+                      // Get the chapter ID as a string for comparison
+                      const embedChapterId = embed.chapterId?._id?.toString?.() ||
+                                            embed.chapterId?._id ||
+                                            (typeof embed.chapterId === 'string' ? embed.chapterId : null);
+
+                      const matchesChapter = selectedChapterFilter === 'all' ||
+                        (selectedChapterFilter === 'uncategorized' && !embed.chapterId) ||
+                        (embedChapterId === selectedChapterFilter);
+
+                      return matchesSearch && matchesChapter;
+                    });
+
+                    if (filteredEmbeds.length === 0) {
+                      return (
+                        <div className="p-4 text-center text-gray-500 text-sm">
+                          {embedSearchTerm || selectedChapterFilter !== 'all'
+                            ? 'No embeds match your filters'
+                            : 'No embeds available'}
+                        </div>
+                      );
+                    }
+
+                    // Group by chapter for better organization
+                    const groupedEmbeds = {};
+                    filteredEmbeds.forEach(embed => {
+                      const chapterName = embed.chapterId?.name || 'Uncategorized';
+                      if (!groupedEmbeds[chapterName]) {
+                        groupedEmbeds[chapterName] = [];
+                      }
+                      groupedEmbeds[chapterName].push(embed);
+                    });
+
+                    return Object.entries(groupedEmbeds).map(([chapterName, chapterEmbeds]) => (
+                      <div key={chapterName}>
+                        <div className="px-3 py-2 bg-gray-50 text-xs font-semibold text-gray-600 sticky top-0 border-b">
+                          {chapterName} ({chapterEmbeds.length})
+                        </div>
+                        <div className="divide-y divide-gray-100">
+                          {chapterEmbeds.map(embed => (
+                            <label
+                              key={embed._id}
+                              className={`flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50 transition ${
+                                form.embedIds.includes(embed._id) ? 'bg-red-50' : ''
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={form.embedIds.includes(embed._id)}
+                                onChange={() => handleEmbedSelection(embed._id)}
+                                className="rounded text-red-600 focus:ring-red-500"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-sm text-gray-800 truncate">{embed.title}</div>
+                                <div className="text-xs text-gray-500">{embed.type}</div>
+                              </div>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    ));
+                  })()}
+                </div>
+
+                {/* Quick Actions */}
+                {form.embedIds.length > 0 && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, embedIds: [] })}
+                      className="text-xs text-red-600 hover:text-red-800"
+                    >
+                      Clear all selections
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Dropdown Title Input */}
