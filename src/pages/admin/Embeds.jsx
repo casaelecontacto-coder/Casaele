@@ -21,6 +21,8 @@ export default function Embeds() {
   const [showChapterModal, setShowChapterModal] = useState(false)
   const [chapterForm, setChapterForm] = useState({ name: '', description: '' })
   const [editingChapterId, setEditingChapterId] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortOrder, setSortOrder] = useState('newest') // 'newest', 'oldest', 'a-z', 'z-a'
   const fileInputRef = useRef(null)
   const pageSize = 5
   const headers = useAuthHeaders()
@@ -229,6 +231,46 @@ export default function Embeds() {
     setChapterForm({ name: chapter.name, description: chapter.description })
     setShowChapterModal(true)
   }
+
+  // Filter and sort items
+  const filteredAndSortedItems = React.useMemo(() => {
+    let result = [...items];
+
+    // Apply search filter
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase().trim();
+      result = result.filter(item =>
+        item.title?.toLowerCase().includes(searchLower) ||
+        item.type?.toLowerCase().includes(searchLower) ||
+        item.chapterId?.name?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Apply sort
+    switch (sortOrder) {
+      case 'newest':
+        result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
+      case 'oldest':
+        result.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        break;
+      case 'a-z':
+        result.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        break;
+      case 'z-a':
+        result.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+        break;
+      default:
+        break;
+    }
+
+    return result;
+  }, [items, searchTerm, sortOrder]);
+
+  // Reset page when search/sort changes
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, sortOrder]);
 
   // Embed preview
   function Preview({ code }) {
@@ -475,14 +517,63 @@ export default function Embeds() {
 
         {/* List */}
         <div className="rounded-xl bg-white shadow-sm border border-gray-200">
-          <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-            <div className="text-sm font-medium text-gray-700">Embeds ({items.length})</div>
-            <button onClick={fetchEmbeds} className="text-sm text-red-700 hover:underline">Refresh</button>
+          {/* Search and Sort Controls */}
+          <div className="px-4 py-3 border-b border-gray-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium text-gray-700">
+                Embeds ({filteredAndSortedItems.length}{searchTerm && ` of ${items.length}`})
+              </div>
+              <button onClick={fetchEmbeds} className="text-sm text-red-700 hover:underline">Refresh</button>
+            </div>
+
+            {/* Search and Sort Row */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              {/* Search Input */}
+              <div className="relative flex-1">
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search embeds by title, type, or chapter..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 text-sm focus:border-red-600 focus:ring-2 focus:ring-red-200 transition-all outline-none"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
+              {/* Sort Dropdown */}
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="px-4 py-2 rounded-lg border border-gray-300 text-sm focus:border-red-600 focus:ring-2 focus:ring-red-200 transition-all outline-none bg-white min-w-[160px]"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="a-z">Title: A → Z</option>
+                <option value="z-a">Title: Z → A</option>
+              </select>
+            </div>
           </div>
+
           <div className="divide-y divide-gray-100">
             {loading && <div className="p-4 text-sm text-gray-500">Loading…</div>}
-            {!loading && items.length === 0 && <div className="p-4 text-sm text-gray-500">No embeds yet.</div>}
-            {items
+            {!loading && filteredAndSortedItems.length === 0 && (
+              <div className="p-4 text-sm text-gray-500">
+                {searchTerm ? `No embeds found matching "${searchTerm}"` : 'No embeds yet.'}
+              </div>
+            )}
+            {filteredAndSortedItems
               .slice((page - 1) * pageSize, page * pageSize)
               .map(item => (
               <div key={item._id} className="p-4 space-y-3">
@@ -506,9 +597,9 @@ export default function Embeds() {
           </div>
 
           {/* Pagination */}
-          {items.length > pageSize && (
+          {filteredAndSortedItems.length > pageSize && (
             <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between text-sm">
-              <div className="text-gray-500">Page {page} of {Math.ceil(items.length / pageSize)}</div>
+              <div className="text-gray-500">Page {page} of {Math.ceil(filteredAndSortedItems.length / pageSize)}</div>
               <div className="flex items-center gap-2">
                 <button
                   disabled={page === 1}
@@ -518,8 +609,8 @@ export default function Embeds() {
                   Prev
                 </button>
                 <button
-                  disabled={page >= Math.ceil(items.length / pageSize)}
-                  onClick={() => setPage(p => Math.min(Math.ceil(items.length / pageSize), p + 1))}
+                  disabled={page >= Math.ceil(filteredAndSortedItems.length / pageSize)}
+                  onClick={() => setPage(p => Math.min(Math.ceil(filteredAndSortedItems.length / pageSize), p + 1))}
                   className="px-3 py-1 rounded border text-gray-700 disabled:opacity-50"
                 >
                   Next
