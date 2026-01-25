@@ -76,7 +76,7 @@ function Searchbar({ onSearch, activeButton }) {
         onSearch({ keyword });
       } else {
         // If no keyword, don't search (or show message)
-        ("No keyword provided for search");
+        console.log("No keyword provided for search");
         return;
       }
     }
@@ -134,11 +134,9 @@ function Searchbar({ onSearch, activeButton }) {
             </div>
             {openMenu === "room" && (
               <div className="absolute left-0 top-12 w-full max-h-60 overflow-auto bg-white shadow-lg rounded-lg z-30 p-2">
-                {["Music", "Videos", "Podcast", "Resources/Chapters",
-                  "Spanish for corporate", "Spanish for health professionals",
-                  "Spanish for IB students"].map(item => (
+                {getDropdownItems('room').map((item, index) => (
                     <div
-                      key={item}
+                      key={index}
                       className="px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer"
                       onClick={() => handleSelect("room", item)}
                     >
@@ -158,9 +156,9 @@ function Searchbar({ onSearch, activeButton }) {
             </div>
             {openMenu === "subcategory" && (
               <div className="absolute left-0 top-12 w-full max-h-60 overflow-auto bg-white shadow-lg rounded-lg z-30 p-2">
-                {["Active learning", "For leisure", "Short movies", "Long movies", "Reels / Shorts"].map(item => (
+                {getDropdownItems('subcategory').map((item, index) => (
                   <div
-                    key={item}
+                    key={index}
                     className="px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer"
                     onClick={() => handleSelect("subcategory", item)}
                   >
@@ -180,9 +178,9 @@ function Searchbar({ onSearch, activeButton }) {
             </div>
             {openMenu === "theme" && (
               <div className="absolute left-0 top-12 w-full max-h-60 overflow-auto bg-white shadow-lg rounded-lg z-30 p-2">
-                {["Type 1", "Type 2", "Type 3", "Type 4"].map(item => (
+                {getDropdownItems('theme').map((item, index) => (
                   <div
-                    key={item}
+                    key={index}
                     className="px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer"
                     onClick={() => handleSelect("theme", item)}
                   >
@@ -311,15 +309,15 @@ function Searchbar({ onSearch, activeButton }) {
             )}
             {renderMenuItem(
               "level",
-              <div className="absolute grid-cols-2 gap-3 justify-center grid top-20 left-0 w-[166px] bg-white shadow-lg rounded-xl h-[189px] px-7 py-4 z-20">
+              <div className="absolute top-20 left-0 w-48 bg-white shadow-lg rounded-xl p-4 z-20 grid grid-cols-2 gap-2">
                 {getDropdownItems('level').map((level, index) => (
-                  <img
+                  <div
                     key={index}
-                    src={`/Searchbar/${level}.svg`}
-                    alt={level}
-                    className="w-8 h-8 cursor-pointer"
+                    className="text-center py-2 px-3 rounded-md hover:bg-gray-100 cursor-pointer text-gray-700 font-medium"
                     onClick={() => handleSelect("level", level)}
-                  />
+                  >
+                    {level}
+                  </div>
                 ))}
               </div>
             )}

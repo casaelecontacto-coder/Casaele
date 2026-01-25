@@ -7,7 +7,7 @@ const router = Router()
 // Create (admin)
 router.post('/', verifyFirebaseToken, async (req, res) => {
   try {
-    ('📝 Creating new material with data size:', JSON.stringify(req.body).length, 'characters');
+    console.log('📝 Creating new material with data size:', JSON.stringify(req.body).length, 'characters');
     // Extract all fields including new categorization fields
     const { 
       title, 
@@ -155,8 +155,8 @@ router.get('/', async (req, res) => {
       // \b ensures word boundaries, so "hand" won't match "handsome" or "shorthand"
       const exactWordRegex = new RegExp(`\\b${cleanKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
       
-      (`🔍 Keyword search for: "${cleanKeyword}"`);
-      (`🔍 Using regex pattern: ${exactWordRegex}`);
+      console.log(`🔍 Keyword search for: "${cleanKeyword}"`);
+      console.log(`🔍 Using regex pattern: ${exactWordRegex}`);
       
       // For keyword search, we need to ensure it's the primary filter
       // If there are other filters, combine them with $and
@@ -193,7 +193,7 @@ router.get('/', async (req, res) => {
     
     // If no filters are applied, return all materials (for admin panel)
     if (!hasFilters) {
-      (`🔍 No filters applied, returning all materials`);
+      console.log(`🔍 No filters applied, returning all materials`);
       const allItems = await Material.find({}).populate('embedIds').sort({ createdAt: -1 });
       return res.json(allItems);
     }
@@ -213,9 +213,9 @@ router.get('/', async (req, res) => {
     
     // Debug logging for search results
     if (keyword && keyword.trim()) {
-      (`🔍 Found ${items.length} results for keyword: "${keyword}"`);
+      console.log(`🔍 Found ${items.length} results for keyword: "${keyword}"`);
       items.forEach((item, index) => {
-        (`🔍 Result ${index + 1}: "${item.title}" - Category: "${item.category}" - Tags: [${item.tags?.join(', ') || 'none'}]`);
+        console.log(`🔍 Result ${index + 1}: "${item.title}" - Category: "${item.category}" - Tags: [${item.tags?.join(', ') || 'none'}]`);
       });
     }
     
@@ -254,7 +254,7 @@ router.get('/:id', async (req, res) => {
 // Update (admin)
 router.put('/:id', verifyFirebaseToken, async (req, res) => {
   try {
-    ('📝 Updating material with ID:', req.params.id, 'Data size:', JSON.stringify(req.body).length, 'characters');
+    console.log('📝 Updating material with ID:', req.params.id, 'Data size:', JSON.stringify(req.body).length, 'characters');
     // Extract all fields including new categorization fields
     const { 
       title, 
