@@ -7,6 +7,7 @@ import crypto from 'crypto';
 import mongoose from 'mongoose';
 import { createDownloadRecords } from './digitalDownloadController.js';
 import { sendDigitalProductEmail } from '../services/digitalDeliveryEmailService.js';
+import { sendPurchaseConfirmationEmail } from '../services/purchaseConfirmationEmailService.js';
 import { subscribeToBeehive } from '../services/beehiveService.js';
 
 dotenv.config();
@@ -216,6 +217,41 @@ export const verifyPayment = async (req, res) => {
       });
 
       const savedOrder = await newOrder.save();
+
+      // --- Send Purchase Confirmation Email ---
+      try {
+        console.log('[Order] Sending purchase confirmation email...');
+        const purchaseEmailResult = await sendPurchaseConfirmationEmail({
+          customerEmail: billingDetails.email,
+          customerName: `${billingDetails.firstName} ${billingDetails.lastName}`,
+          orderId: savedOrder._id.toString(),
+          orderItems: orderItems,
+          totalPrice: calculatedTotalPrice,
+          itemsPrice: calculatedItemsPrice,
+          discountAmount: appliedDiscount,
+          shippingAddress: {
+            fullName: `${billingDetails.firstName} ${billingDetails.lastName}`,
+            address: billingDetails.address,
+            city: billingDetails.city,
+            state: billingDetails.state || '',
+            postalCode: billingDetails.postalCode,
+            country: billingDetails.country,
+            email: billingDetails.email,
+            phone: billingDetails.phone
+          },
+          currency: req.body.currency || 'INR'
+        });
+
+        if (purchaseEmailResult.success) {
+          console.log('[Order] Purchase confirmation email sent successfully');
+        } else {
+          console.error('[Order] Purchase confirmation email failed:', purchaseEmailResult.error);
+        }
+      } catch (emailError) {
+        console.error('[Order] Failed to send purchase confirmation email:', emailError.message);
+        // Don't block order completion if email fails
+      }
+      // --- End Purchase Confirmation Email ---
 
       // --- Digital Delivery & Newsletter Integration ---
       // Handle newsletter subscription if opted in
