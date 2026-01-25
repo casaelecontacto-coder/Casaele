@@ -31,18 +31,18 @@ const Newsletter = () => {
         {/* Beehiiv Subscription Form */}
         <div className="flex flex-col items-center justify-center gap-4 max-w-xl mx-auto">
           <iframe
-            src="https://subscribe-forms.beehiiv.com/1e7851ea-9c81-434a-b4d8-20c2de4688a9"
+            src="https://subscribe-forms.beehiiv.com/d64078b6-51f1-4490-8080-7da9acf3dbf5"
             className="beehiiv-embed"
             data-test-id="beehiiv-embed"
             frameBorder="0"
             scrolling="no"
             style={{
-              width: '560px',
-              height: '291px',
+              width: '563px',
+              height: '318px',
               margin: 0,
               borderRadius: '0px',
               backgroundColor: 'transparent',
-              boxShadow: 'none',
+              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
               maxWidth: '100%'
             }}
           />
