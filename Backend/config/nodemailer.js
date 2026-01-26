@@ -6,12 +6,17 @@ let cachedTransporter = null;
 const createTransporter = () => {
   if (cachedTransporter) return cachedTransporter;
 
+  console.log('[Email] ====== EMAIL CONFIGURATION ======');
+  console.log('[Email] EMAIL_USER:', process.env.EMAIL_USER || 'NOT SET');
+  console.log('[Email] EMAIL_PASS:', process.env.EMAIL_PASS ? 'SET (' + process.env.EMAIL_PASS.length + ' chars)' : 'NOT SET');
+  console.log('[Email] NODE_ENV:', process.env.NODE_ENV || 'NOT SET');
+
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.error('[Email] ERROR: EMAIL_USER or EMAIL_PASS not set!');
     return null;
   }
 
-  console.log('[Email] Creating Gmail transporter for:', process.env.EMAIL_USER);
+  console.log('[Email] Creating Gmail transporter...');
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -21,16 +26,24 @@ const createTransporter = () => {
     },
     tls: {
       rejectUnauthorized: false
-    }
+    },
+    debug: true, // Enable debug output
+    logger: true  // Log to console
   });
 
   cachedTransporter = transporter;
+  console.log('[Email] Transporter created successfully');
   return transporter;
 };
 
 // Send email function
 export const sendEmail = async (emailOptions) => {
   const startTime = Date.now();
+  console.log('[Email] ====== SENDING EMAIL ======');
+  console.log('[Email] To:', emailOptions.to);
+  console.log('[Email] Subject:', emailOptions.subject);
+  console.log('[Email] From:', emailOptions.from || process.env.EMAIL_USER);
+
   try {
     const transporter = createTransporter();
 
@@ -39,13 +52,23 @@ export const sendEmail = async (emailOptions) => {
       return { success: false, error: 'Email not configured' };
     }
 
+    console.log('[Email] Attempting to send...');
     const result = await transporter.sendMail(emailOptions);
     const duration = Date.now() - startTime;
-    console.log(`[Email] Sent successfully in ${duration}ms:`, result.messageId);
+    console.log(`[Email] ✅ SUCCESS in ${duration}ms`);
+    console.log('[Email] Message ID:', result.messageId);
+    console.log('[Email] Response:', result.response);
     return { success: true, messageId: result.messageId };
   } catch (error) {
     const duration = Date.now() - startTime;
-    console.error(`[Email] Failed after ${duration}ms:`, error.message);
+    console.error(`[Email] ❌ FAILED after ${duration}ms`);
+    console.error('[Email] Error name:', error.name);
+    console.error('[Email] Error message:', error.message);
+    console.error('[Email] Error code:', error.code);
+    console.error('[Email] Error command:', error.command);
+    if (error.responseCode) console.error('[Email] Response code:', error.responseCode);
+    if (error.response) console.error('[Email] Response:', error.response);
+    console.error('[Email] Full error:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
     return { success: false, error: error.message };
   }
 };
