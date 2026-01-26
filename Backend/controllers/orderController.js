@@ -22,7 +22,7 @@ try {
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
-    ("Razorpay initialized successfully.");
+    console.log("Razorpay initialized successfully.");
   }
 } catch (initError) {
   console.error("Backend Error: Failed to initialize Razorpay.", initError);
@@ -45,7 +45,7 @@ const handleValidationError = (error, res) => {
 // @route   POST /api/orders
 // @access  Public
 export const createOrder = async (req, res) => {
-  ("Backend: Received POST /api/orders request");
+  console.log("Backend: Received POST /api/orders request");
 
   if (!razorpay) {
     console.error("Backend: Attempted to create order, but Razorpay is not initialized.");
@@ -91,7 +91,7 @@ export const createOrder = async (req, res) => {
 // @route   POST /api/orders/verify
 // @access  Public
 export const verifyPayment = async (req, res) => {
-  ("Backend: Received POST /api/orders/verify request");
+  console.log("Backend: Received POST /api/orders/verify request");
   try {
     const {
       razorpay_order_id,
@@ -103,6 +103,18 @@ export const verifyPayment = async (req, res) => {
       couponCode,
       discountAmount,
     } = req.body;
+
+    // Debug: Log cart items to see their structure
+    console.log('[Order] Cart items received from frontend:');
+    cartItems.forEach((item, idx) => {
+      console.log(`[Order] CartItem ${idx + 1}:`, {
+        _id: item._id,
+        name: item.name,
+        title: item.title,
+        itemType: item.itemType,
+        productType: item.productType
+      });
+    });
 
     if (
       !razorpay_order_id ||
@@ -149,22 +161,35 @@ export const verifyPayment = async (req, res) => {
         });
       }
 
-      const orderItems = cartItems.map((item) => ({
-        name: item.title || item.name || 'Item',
-        qty: item.quantity || 1,
-        price: Number(item.discountPrice || item.price || 0),
-        product: item._id,
-        itemModel:
-          item.itemType === 'course'
-            ? 'Course'
-            : item.itemType === 'product'
-            ? 'Product'
-            : item.title
-            ? 'Course'
-            : 'Product',
-        selectedLevel: item.selectedLevel,
-        selectedFormat: item.selectedFormat,
-      }));
+      const orderItems = cartItems.map((item) => {
+        // Determine itemModel - check multiple indicators
+        let itemModel = 'Product'; // Default to Product
+
+        if (item.itemType === 'course') {
+          itemModel = 'Course';
+        } else if (item.itemType === 'product') {
+          itemModel = 'Product';
+        } else if (item.productType) {
+          // If item has productType (Digital/Physical/Both), it's a Product
+          itemModel = 'Product';
+        } else if (item.title && !item.name) {
+          // Only treat as Course if it has title but NO name
+          itemModel = 'Course';
+        }
+        // If it has 'name' field, keep it as Product (default)
+
+        console.log(`[Order] Mapping cart item: _id=${item._id}, name=${item.name}, title=${item.title}, itemType=${item.itemType}, productType=${item.productType} => itemModel=${itemModel}`);
+
+        return {
+          name: item.title || item.name || 'Item',
+          qty: item.quantity || 1,
+          price: Number(item.discountPrice || item.price || 0),
+          product: item._id,
+          itemModel,
+          selectedLevel: item.selectedLevel,
+          selectedFormat: item.selectedFormat,
+        };
+      });
 
       const calculatedItemsPrice = orderItems.reduce((acc, item) => acc + item.price * item.qty, 0);
       const calculatedTotalPrice = Number(totalAmount);
@@ -276,16 +301,50 @@ export const verifyPayment = async (req, res) => {
 
       // Check if order contains digital products
       try {
+        // Debug: Log all order items and their itemModels
+        console.log('[Order] Processing order items for digital delivery:');
+        orderItems.forEach((item, idx) => {
+          console.log(`[Order] Item ${idx + 1}: name="${item.name}", itemModel="${item.itemModel}", productId="${item.product}", selectedFormat="${item.selectedFormat || 'N/A'}"`);
+        });
+
         // Populate product details to check productType
         const productIds = orderItems
           .filter(item => item.itemModel === 'Product')
           .map(item => item.product);
 
+        console.log(`[Order] Found ${productIds.length} Product items (not Course), productIds:`, productIds);
+
         if (productIds.length > 0) {
           const products = await Product.find({ _id: { $in: productIds } });
-          const digitalProducts = products.filter(
-            p => p.productType === 'Digital' || p.productType === 'Both'
-          );
+          console.log(`[Order] Fetched ${products.length} products from database`);
+
+          // Debug: Log each product's type and digital files
+          products.forEach(p => {
+            const orderItem = orderItems.find(item => item.product.toString() === p._id.toString());
+            console.log(`[Order] Product "${p.name}": productType="${p.productType}", selectedFormat="${orderItem?.selectedFormat || 'N/A'}", digitalFiles=${p.digitalFiles?.length || 0} files`);
+          });
+
+          // Filter for digital products - also check selectedFormat for 'Both' products
+          const digitalProducts = products.filter(p => {
+            const orderItem = orderItems.find(item => item.product.toString() === p._id.toString());
+
+            // Pure digital products always get digital delivery
+            if (p.productType === 'Digital') {
+              return true;
+            }
+
+            // For 'Both' products, only deliver digitally if user selected Digital format
+            if (p.productType === 'Both') {
+              const selectedFormat = orderItem?.selectedFormat;
+              // If Digital format selected, or if no format specified (default to digital)
+              return selectedFormat === 'Digital' || !selectedFormat;
+            }
+
+            // Physical only products don't get digital delivery
+            return false;
+          });
+
+          console.log(`[Order] Filtered to ${digitalProducts.length} digital product(s) (considering selectedFormat)`);
 
           if (digitalProducts.length > 0) {
             console.log(`[Order] Found ${digitalProducts.length} digital product(s), initiating delivery...`);
@@ -313,8 +372,15 @@ export const verifyPayment = async (req, res) => {
               })
             };
 
+            console.log('[Order] Calling createDownloadRecords with data:', JSON.stringify(downloadRecordsData, null, 2));
+
             const downloadRecords = await createDownloadRecords(downloadRecordsData);
             console.log(`[Order] Created ${downloadRecords.length} download record(s)`);
+            console.log('[Order] Download records:', JSON.stringify(downloadRecords.map(r => ({
+              productName: r.productName,
+              accessToken: r.accessToken?.substring(0, 10) + '...',
+              filesCount: r.files?.length || 0
+            })), null, 2));
 
             // Build download links for email
             const downloadLinks = downloadRecords.map(record => ({
@@ -386,9 +452,9 @@ export const verifyPayment = async (req, res) => {
 // @route   GET /api/orders
 // @access  Admin
 export const getOrders = async (req, res) => {
-  ('\n--- [DEBUG] /api/orders GET CONTROLLER HIT ---');
-  (`[DEBUG] Time: ${new Date().toISOString()}`);
-  ('[DEBUG] Raw Query Params:', JSON.stringify(req.query, null, 2));
+  console.log('\n--- [DEBUG] /api/orders GET CONTROLLER HIT ---');
+  console.log(`[DEBUG] Time: ${new Date().toISOString()}`);
+  console.log('[DEBUG] Raw Query Params:', JSON.stringify(req.query, null, 2));
 
   const pageSize = 10;
   const page = Number(req.query.page) || 1;
@@ -421,7 +487,7 @@ export const getOrders = async (req, res) => {
     } else if (orderStatus === 'delivered') filter.isDelivered = true;
   }
 
-  ('[DEBUG] Final MongoDB Filter Object:', JSON.stringify(filter, null, 2));
+  console.log('[DEBUG] Final MongoDB Filter Object:', JSON.stringify(filter, null, 2));
 
   try {
     const count = await Order.countDocuments(filter);
@@ -438,8 +504,8 @@ export const getOrders = async (req, res) => {
       totalOrders: count,
     };
 
-    (`[DEBUG] Sending response with ${orders.length} orders.`);
-    (`[DEBUG] getOrders: Sending response:`, JSON.stringify(responseJson, null, 2));
+    console.log(`[DEBUG] Sending response with ${orders.length} orders.`);
+    console.log(`[DEBUG] getOrders: Sending response:`, JSON.stringify(responseJson, null, 2));
     res.status(200).json(responseJson);
   } catch (error) {
     console.error('--- [DEBUG] ERROR IN getOrders CATCH BLOCK ---');
@@ -490,7 +556,7 @@ export const updateOrder = async (req, res) => {
     if (order) {
       const { isDelivered, status } = req.body;
       if (status) {
-        (`[DEBUG] Updating order ${req.params.id} with status: ${status}`);
+        console.log(`[DEBUG] Updating order ${req.params.id} with status: ${status}`);
         if (status === 'delivered') {
           order.isDelivered = true;
           order.deliveredAt = Date.now();
@@ -504,11 +570,11 @@ export const updateOrder = async (req, res) => {
           order.deliveredAt = null;
         }
       } else if (typeof isDelivered === 'boolean') {
-        (`[DEBUG] Updating order ${req.params.id} with isDelivered: ${isDelivered}`);
+        console.log(`[DEBUG] Updating order ${req.params.id} with isDelivered: ${isDelivered}`);
         order.isDelivered = isDelivered;
         order.deliveredAt = isDelivered ? Date.now() : null;
       } else {
-        ("Backend: updateOrder called without specific action for ID:", req.params.id);
+        console.log("Backend: updateOrder called without specific action for ID:", req.params.id);
       }
 
       const updatedOrder = await order.save();
@@ -536,10 +602,10 @@ export const deleteOrder = async (req, res) => {
     }
     const order = await Order.findByIdAndDelete(req.params.id);
     if (order) {
-      ("Backend: Order deleted:", req.params.id);
+      console.log("Backend: Order deleted:", req.params.id);
       res.json({ success: true, message: 'Order removed' });
     } else {
-      res.status(4404).json({ success: false, message: 'Order not found' });
+      res.status(404).json({ success: false, message: 'Order not found' });
     }
   } catch (error) {
     console.error('Backend: Error deleting order:', error);

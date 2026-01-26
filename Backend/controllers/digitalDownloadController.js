@@ -53,10 +53,13 @@ function generateSignedUrl(publicId, resourceType = 'raw') {
  * @access  Internal (called after order verification)
  */
 export async function createDownloadRecords(orderData) {
-  const { orderId, customerEmail, customerName, digitalProducts } = orderData;
+  const { orderId, customerEmail, customerName, products } = orderData;
 
   try {
     const downloadRecords = [];
+
+    // Support both 'products' and 'digitalProducts' for backward compatibility
+    const digitalProducts = products || orderData.digitalProducts || [];
 
     for (const item of digitalProducts) {
       const product = await Product.findById(item.productId);
@@ -85,13 +88,18 @@ export async function createDownloadRecords(orderData) {
         emailDeliveryStatus: 'pending'
       });
 
-      downloadRecords.push(downloadRecord);
+      // Add product info for email template
+      downloadRecords.push({
+        ...downloadRecord.toObject(),
+        productName: product.name,
+        files: product.digitalFiles || [],
+        maxDownloads,
+        expiresAt: downloadRecord.expiresAt
+      });
     }
 
-    return {
-      success: true,
-      records: downloadRecords
-    };
+    // Return array directly for backward compatibility with orderController
+    return downloadRecords;
   } catch (error) {
     console.error('[DigitalDownload] Create records error:', error);
     throw error;

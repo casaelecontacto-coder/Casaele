@@ -28,13 +28,12 @@ function ProductInfo({ item, quantity, setQuantity, added, handleAddToCart, item
       alert("Please select a format before adding to cart.");
       return;
     }
-    
-    // Add item to cart, including selected options
+
+    // Add item to cart, including selected options and itemType
     handleAddToCart({
       ...item,
+      itemType: isCourse ? 'course' : 'product', // Explicitly set itemType for backend identification
       selectedFormat: isCourse ? undefined : selectedFormat, // Don't include format for courses
-      // Ensure quantity is included if the handler expects it
-      // quantity: quantity 
     });
   };
 

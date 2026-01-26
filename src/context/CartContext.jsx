@@ -40,7 +40,7 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
     try {
       const localData = localStorage.getItem('cartItems');
-      ("Loading cart from localStorage:", localData); // Debug log
+      console.log("Loading cart from localStorage:", localData); // Debug log
       return localData ? JSON.parse(localData) : [];
     } catch (error) {
       console.error("Failed to parse cart from local storage", error);
@@ -51,7 +51,7 @@ export const CartProvider = ({ children }) => {
   // Save to local storage whenever cart changes
   useEffect(() => {
     try {
-       ("Saving cart to localStorage:", cartItems); // Debug log
+       console.log("Saving cart to localStorage:", cartItems); // Debug log
        localStorage.setItem('cartItems', JSON.stringify(cartItems));
     } catch (error) {
         console.error("Failed to save cart to local storage", error);
@@ -80,25 +80,25 @@ export const CartProvider = ({ children }) => {
           // Add quantityToAdd to existing quantity
           quantity: (updatedItems[existingItemIndex].quantity || 0) + quantityToAdd
         };
-        ("Updating item quantity in cart:", uniqueId, updatedItems[existingItemIndex].quantity); // Debug log
+        console.log("Updating item quantity in cart:", uniqueId, updatedItems[existingItemIndex].quantity); // Debug log
         return updatedItems;
       } else {
         // Add new item with uniqueId and ensure quantity
         const newItem = { ...item, quantity: quantityToAdd, uniqueId };
-        ("Adding new item to cart:", newItem); // Debug log
+        console.log("Adding new item to cart:", newItem); // Debug log
         return [...prevItems, newItem];
       }
     });
   };
 
   const removeFromCart = (uniqueId) => {
-    ("Removing item from cart:", uniqueId); // Debug log
+    console.log("Removing item from cart:", uniqueId); // Debug log
     setCartItems((prevItems) => prevItems.filter(item => item.uniqueId !== uniqueId));
   };
 
   const updateQuantity = (uniqueId, newQuantity) => {
     const quantity = parseInt(newQuantity, 10);
-    ("Attempting to update quantity:", uniqueId, quantity); // Debug log
+    console.log("Attempting to update quantity:", uniqueId, quantity); // Debug log
 
     if (isNaN(quantity) || quantity < 1) {
       removeFromCart(uniqueId);
@@ -118,7 +118,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const clearCart = () => {
-    ("Clearing cart"); // Debug log
+    console.log("Clearing cart"); // Debug log
     setCartItems([]);
   };
 

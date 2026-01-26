@@ -148,13 +148,13 @@ function CartCheckout() {
                 };
                 
                 // Use the correct backend endpoint: /api/orders/verify (POST)
-                const verifyResult = await apiSend('/api/orders/verify', 'POST', verificationPayload); 
-                
-                ("Backend verification result:", verifyResult);
+                const verifyResult = await apiSend('/api/orders/verify', 'POST', verificationPayload);
+
+                console.log("Backend verification result:", verifyResult);
 
                 if (verifyResult?.success) {
                     // 6. Payment Verified - Clear Cart & Redirect
-                    ("Payment Verified Successfully!");
+                    console.log("Payment Verified Successfully!");
                     clearCart(); // Clear cart from context/localStorage
                     // Redirect to a success page (create this page if it doesn't exist)
                     navigate('/order-success', { state: { orderId: verifyResult.orderId } }); // Pass order ID if needed

@@ -74,7 +74,7 @@ export const sendEmail = async (emailOptions) => {
   try {
     const transporter = createTransporter();
     const result = await transporter.sendMail(emailOptions);
-    ('Email sent successfully:', result.messageId);
+    console.log('Email sent successfully:', result.messageId);
     return { success: true, messageId: result.messageId };
   } catch (error) {
     console.error('Error sending email:', error);
@@ -87,7 +87,7 @@ export const testEmailConfig = async () => {
   try {
     const transporter = createTransporter();
     await transporter.verify();
-    ('Email configuration is valid');
+    console.log('Email configuration is valid');
     return { success: true };
   } catch (error) {
     console.error('Email configuration error:', error);
