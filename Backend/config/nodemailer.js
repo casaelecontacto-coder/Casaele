@@ -1,22 +1,68 @@
 import nodemailer from 'nodemailer';
+import * as brevo from '@getbrevo/brevo';
 
-// Create Gmail transporter
-let cachedTransporter = null;
+// ============================================
+// BREVO HTTP API (Production - Works on Render)
+// ============================================
+let brevoApiInstance = null;
 
-const createTransporter = () => {
-  if (cachedTransporter) return cachedTransporter;
+const getBrevoApi = () => {
+  if (brevoApiInstance) return brevoApiInstance;
 
-  console.log('[Email] ====== EMAIL CONFIGURATION ======');
-  console.log('[Email] EMAIL_USER:', process.env.EMAIL_USER || 'NOT SET');
-  console.log('[Email] EMAIL_PASS:', process.env.EMAIL_PASS ? 'SET (' + process.env.EMAIL_PASS.length + ' chars)' : 'NOT SET');
-  console.log('[Email] NODE_ENV:', process.env.NODE_ENV || 'NOT SET');
-
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.error('[Email] ERROR: EMAIL_USER or EMAIL_PASS not set!');
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) {
     return null;
   }
 
-  console.log('[Email] Creating Gmail transporter...');
+  brevoApiInstance = new brevo.TransactionalEmailsApi();
+  brevoApiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, apiKey);
+  return brevoApiInstance;
+};
+
+const sendViaBrevoApi = async (emailOptions) => {
+  const api = getBrevoApi();
+  if (!api) return null;
+
+  const sendSmtpEmail = new brevo.SendSmtpEmail();
+  sendSmtpEmail.subject = emailOptions.subject;
+  sendSmtpEmail.htmlContent = emailOptions.html;
+
+  // Handle 'from' field - can be string or object
+  let fromEmail = process.env.EMAIL_USER;
+  let fromName = 'Casa De ELE';
+
+  if (emailOptions.from) {
+    if (typeof emailOptions.from === 'string') {
+      fromEmail = emailOptions.from;
+    } else if (emailOptions.from.address) {
+      fromEmail = emailOptions.from.address;
+      fromName = emailOptions.from.name || 'Casa De ELE';
+    }
+  }
+
+  sendSmtpEmail.sender = { email: fromEmail, name: fromName };
+  sendSmtpEmail.to = [{ email: emailOptions.to }];
+
+  try {
+    const result = await api.sendTransacEmail(sendSmtpEmail);
+    return { success: true, messageId: result.body?.messageId || 'sent' };
+  } catch (error) {
+    console.error('[Email] Brevo API error:', error.body?.message || error.message);
+    return { success: false, error: error.body?.message || error.message };
+  }
+};
+
+// ============================================
+// GMAIL SMTP (Development/Local only)
+// ============================================
+let cachedTransporter = null;
+
+const createGmailTransporter = () => {
+  if (cachedTransporter) return cachedTransporter;
+
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    return null;
+  }
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -24,56 +70,60 @@ const createTransporter = () => {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
     },
-    tls: {
-      rejectUnauthorized: false
-    },
-    debug: true, // Enable debug output
-    logger: true  // Log to console
+    tls: { rejectUnauthorized: false }
   });
 
   cachedTransporter = transporter;
-  console.log('[Email] Transporter created successfully');
   return transporter;
 };
 
-// Send email function
+// ============================================
+// MAIN EMAIL FUNCTION
+// ============================================
 export const sendEmail = async (emailOptions) => {
   const startTime = Date.now();
-  console.log('[Email] ====== SENDING EMAIL ======');
-  console.log('[Email] To:', emailOptions.to);
+
+  console.log('[Email] Sending to:', emailOptions.to);
   console.log('[Email] Subject:', emailOptions.subject);
-  console.log('[Email] From:', emailOptions.from || process.env.EMAIL_USER);
 
+  // PRODUCTION: Use Brevo HTTP API (works on Render)
+  if (process.env.BREVO_API_KEY) {
+    console.log('[Email] Using Brevo HTTP API...');
+    const result = await sendViaBrevoApi(emailOptions);
+    if (result) {
+      const duration = Date.now() - startTime;
+      if (result.success) {
+        console.log(`[Email] ✅ Sent via Brevo in ${duration}ms`);
+      } else {
+        console.error(`[Email] ❌ Brevo failed: ${result.error}`);
+      }
+      return result;
+    }
+  }
+
+  // DEVELOPMENT: Use Gmail SMTP (only works locally)
+  console.log('[Email] Using Gmail SMTP...');
   try {
-    const transporter = createTransporter();
-
+    const transporter = createGmailTransporter();
     if (!transporter) {
-      console.error('[Email] Transporter not configured');
+      console.error('[Email] Gmail not configured');
       return { success: false, error: 'Email not configured' };
     }
 
-    console.log('[Email] Attempting to send...');
     const result = await transporter.sendMail(emailOptions);
     const duration = Date.now() - startTime;
-    console.log(`[Email] ✅ SUCCESS in ${duration}ms`);
-    console.log('[Email] Message ID:', result.messageId);
-    console.log('[Email] Response:', result.response);
+    console.log(`[Email] ✅ Sent via Gmail in ${duration}ms`);
     return { success: true, messageId: result.messageId };
   } catch (error) {
     const duration = Date.now() - startTime;
-    console.error(`[Email] ❌ FAILED after ${duration}ms`);
-    console.error('[Email] Error name:', error.name);
-    console.error('[Email] Error message:', error.message);
-    console.error('[Email] Error code:', error.code);
-    console.error('[Email] Error command:', error.command);
-    if (error.responseCode) console.error('[Email] Response code:', error.responseCode);
-    if (error.response) console.error('[Email] Response:', error.response);
-    console.error('[Email] Full error:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+    console.error(`[Email] ❌ Gmail failed after ${duration}ms: ${error.message}`);
     return { success: false, error: error.message };
   }
 };
 
-// Email templates
+// ============================================
+// EMAIL TEMPLATES
+// ============================================
 export const emailTemplates = {
   adminOTP: (email, otp) => ({
     from: process.env.EMAIL_USER,
@@ -85,29 +135,15 @@ export const emailTemplates = {
           <h1 style="margin: 0; font-size: 24px;">Casa De ELE</h1>
           <p style="margin: 10px 0 0 0; font-size: 16px;">Admin Account Verification</p>
         </div>
-
         <div style="padding: 30px; background-color: #f9f9f9;">
           <h2 style="color: #333; margin-bottom: 20px;">Welcome to Casa De ELE Admin Panel</h2>
-
           <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-            You have been invited to join the Casa De ELE admin panel. To complete your account setup,
-            please use the OTP code below to verify your email address.
+            Please use the OTP code below to verify your email address.
           </p>
-
           <div style="background-color: white; border: 2px solid #AD1518; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0;">
             <p style="margin: 0; font-size: 14px; color: #666;">Your verification code is:</p>
             <h1 style="margin: 10px 0; font-size: 32px; color: #AD1518; letter-spacing: 5px; font-family: monospace;">${otp}</h1>
             <p style="margin: 0; font-size: 12px; color: #999;">This code will expire in 10 minutes</p>
-          </div>
-
-          <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-            If you didn't request this admin account, please ignore this email or contact the main administrator.
-          </p>
-
-          <div style="border-top: 1px solid #ddd; padding-top: 20px; margin-top: 30px;">
-            <p style="color: #999; font-size: 12px; margin: 0;">
-              This is an automated message from Casa De ELE. Please do not reply to this email.
-            </p>
           </div>
         </div>
       </div>
@@ -117,16 +153,24 @@ export const emailTemplates = {
 
 // Test email configuration
 export const testEmailConfig = async () => {
-  try {
-    const transporter = createTransporter();
-    if (!transporter) {
-      return { success: false, error: 'Email not configured - check environment variables' };
+  if (process.env.BREVO_API_KEY) {
+    const api = getBrevoApi();
+    if (api) {
+      console.log('[Email] Brevo API configured');
+      return { success: true, method: 'brevo-api' };
     }
-    await transporter.verify();
-    console.log('[Email] Configuration is valid');
-    return { success: true };
-  } catch (error) {
-    console.error('[Email] Configuration error:', error.message);
-    return { success: false, error: error.message };
   }
+
+  const transporter = createGmailTransporter();
+  if (transporter) {
+    try {
+      await transporter.verify();
+      console.log('[Email] Gmail SMTP configured');
+      return { success: true, method: 'gmail' };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  return { success: false, error: 'No email method configured' };
 };
