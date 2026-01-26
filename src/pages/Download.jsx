@@ -20,19 +20,33 @@ const Download = () => {
     const verifyToken = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${apiBaseUrl}/api/digital-downloads/verify/${token}`);
+        console.log('[Download] Verifying token:', token);
+        console.log('[Download] API Base URL:', apiBaseUrl);
+
+        const url = `${apiBaseUrl}/api/digital-downloads/verify/${token}`;
+        console.log('[Download] Fetching:', url);
+
+        const response = await fetch(url);
+        console.log('[Download] Response status:', response.status);
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Invalid or expired download link');
+          let errorMessage = 'Invalid or expired download link';
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorMessage;
+          } catch (parseError) {
+            console.error('[Download] Failed to parse error response:', parseError);
+          }
+          throw new Error(errorMessage);
         }
 
         const data = await response.json();
+        console.log('[Download] Received data:', data);
         setDownloadRecord(data);
         setError(null);
       } catch (err) {
-        console.error('Token verification error:', err);
-        setError(err.message);
+        console.error('[Download] Token verification error:', err);
+        setError(err.message || 'Failed to verify download link');
       } finally {
         setLoading(false);
       }
@@ -40,6 +54,10 @@ const Download = () => {
 
     if (token) {
       verifyToken();
+    } else {
+      console.error('[Download] No token provided');
+      setError('No download token provided');
+      setLoading(false);
     }
   }, [token, apiBaseUrl]);
 
@@ -68,8 +86,13 @@ const Download = () => {
 
       const data = await response.json();
 
-      // Open signed URL in new tab to download
-      window.open(data.signedUrl, '_blank');
+      // Build full URL - signedUrl is now a relative path to our proxy endpoint
+      const downloadUrl = data.signedUrl.startsWith('/')
+        ? `${apiBaseUrl}${data.signedUrl}`
+        : data.signedUrl;
+
+      // Open download URL in new tab
+      window.open(downloadUrl, '_blank');
 
       // Update download count in UI
       setDownloadRecord(prev => ({
@@ -136,8 +159,27 @@ const Download = () => {
     );
   }
 
+  // Check if downloadRecord has required data
+  if (!downloadRecord || !downloadRecord.files) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+          <FiX className="w-16 h-16 text-red-600 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Download Unavailable</h1>
+          <p className="text-gray-600 mb-6">The download information could not be loaded. Please try again or contact support.</p>
+          <button
+            onClick={() => navigate('/')}
+            className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Return to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const isExpired = downloadRecord.status === 'expired' || new Date(downloadRecord.expiresAt) < new Date();
-  const isExhausted = downloadRecord.status === 'exhausted' || downloadRecord.downloadsRemaining <= 0;
+  const isExhausted = downloadRecord.status === 'exhausted' || (downloadRecord.downloadsRemaining !== undefined && downloadRecord.downloadsRemaining <= 0);
   const canDownload = !isExpired && !isExhausted;
 
   return (
@@ -271,7 +313,7 @@ const Download = () => {
                       {file.fileName}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {file.fileType.toUpperCase()} • {formatFileSize(file.fileSize)}
+                      {(file.fileType || 'FILE').toUpperCase()} • {formatFileSize(file.fileSize)}
                     </p>
                   </div>
                 </div>
@@ -286,7 +328,7 @@ const Download = () => {
                 >
                   {downloadingFile === file.fileName ? (
                     <>
-                      <Spinner size="sm" />
+                      <Spinner size="sm" className="text-white" />
                       <span>Downloading...</span>
                     </>
                   ) : (

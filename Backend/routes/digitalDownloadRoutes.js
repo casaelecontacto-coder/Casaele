@@ -3,6 +3,7 @@ import { verifyFirebaseToken } from '../middleware/auth.js';
 import {
   verifyDownloadToken,
   trackDownload,
+  serveFile,
   getOrderDownloads,
   getAllDownloads,
   resetDownloadCount
@@ -13,6 +14,7 @@ const router = express.Router();
 // Public routes (no authentication required)
 router.get('/verify/:token', verifyDownloadToken);
 router.post('/track/:token', trackDownload);
+router.get('/file/:token/:fileIndex', serveFile);  // Proxy endpoint to serve files with correct headers
 
 // Admin routes (authentication required)
 router.get('/admin', verifyFirebaseToken, getAllDownloads);

@@ -323,7 +323,7 @@ function CartCheckout() {
                       className="mt-6 w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       disabled={!cartItems || cartItems.length === 0 || loadingPayment} // Disable if cart empty or payment loading
                    >
-                     {loadingPayment ? <Spinner size="sm" /> : (finalTotal === 0 ? 'Complete Free Order' : 'Proceed to Payment')}
+                     {loadingPayment ? <Spinner size="sm" className="text-white" /> : (finalTotal === 0 ? 'Complete Free Order' : 'Proceed to Payment')}
                    </button> 
                 </div>
               )}

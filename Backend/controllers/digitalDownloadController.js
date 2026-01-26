@@ -115,18 +115,33 @@ export async function verifyDownloadToken(req, res) {
   try {
     const { token } = req.params;
 
+    console.log('[DigitalDownload] Verifying token:', token);
+
     const downloadRecord = await DigitalDownload.findOne({ accessToken: token })
       .populate('productId', 'name digitalFiles downloadSettings');
 
     if (!downloadRecord) {
+      console.log('[DigitalDownload] Token not found in database');
       return res.status(404).json({
         success: false,
         message: 'Download link not found'
       });
     }
 
+    console.log('[DigitalDownload] Found download record:', downloadRecord._id);
+
+    // Check if product still exists (populate worked)
+    if (!downloadRecord.productId) {
+      console.log('[DigitalDownload] Product not found for download record');
+      return res.status(404).json({
+        success: false,
+        message: 'Product no longer available'
+      });
+    }
+
     // Check if can download
     const canDownload = downloadRecord.canDownload();
+    console.log('[DigitalDownload] Can download check:', canDownload);
 
     if (!canDownload.allowed) {
       return res.status(403).json({
@@ -136,15 +151,19 @@ export async function verifyDownloadToken(req, res) {
       });
     }
 
+    // Get files array safely
+    const digitalFiles = downloadRecord.productId.digitalFiles || [];
+    console.log('[DigitalDownload] Digital files count:', digitalFiles.length);
+
     // Return download info (flat structure for frontend compatibility)
     res.status(200).json({
-      productName: downloadRecord.productId.name,
+      productName: downloadRecord.productId.name || 'Unknown Product',
       orderId: downloadRecord.orderId,
-      files: downloadRecord.productId.digitalFiles.map(file => ({
-        fileName: file.fileName,
-        fileType: file.fileType,
-        fileSize: file.fileSize,
-        fileUrl: file.fileUrl  // Include fileUrl for download tracking
+      files: digitalFiles.map(file => ({
+        fileName: file.fileName || 'Unknown File',
+        fileType: file.fileType || 'file',
+        fileSize: file.fileSize || 0,
+        fileUrl: file.fileUrl || ''
       })),
       downloadCount: downloadRecord.downloadCount,
       maxDownloads: downloadRecord.maxDownloads,
@@ -164,7 +183,7 @@ export async function verifyDownloadToken(req, res) {
 
 /**
  * @route   POST /api/digital-downloads/track/:token
- * @desc    Track download and return signed Cloudinary URL
+ * @desc    Track download and return download endpoint URL
  * @access  Public
  */
 export async function trackDownload(req, res) {
@@ -221,31 +240,24 @@ export async function trackDownload(req, res) {
       fileName: file.fileName
     });
 
-    // Generate signed URL for Cloudinary
-    let signedUrl;
-    try {
-      // Extract public ID from Cloudinary URL
-      const urlParts = file.fileUrl.split('/');
-      const versionIndex = urlParts.findIndex(part => part.startsWith('v'));
-      const publicIdWithExtension = urlParts.slice(versionIndex + 1).join('/');
-      const publicId = publicIdWithExtension.substring(0, publicIdWithExtension.lastIndexOf('.'));
+    console.log('[DigitalDownload] File details:', {
+      fileName: file.fileName,
+      fileUrl: file.fileUrl,
+      fileType: file.fileType
+    });
 
-      // Determine resource type
-      let resourceType = 'raw';
-      if (['mp3', 'wav', 'mp4'].includes(file.fileType)) {
-        resourceType = 'video';
-      }
+    // Find file index for the proxy endpoint
+    const fileIndex = downloadRecord.productId.digitalFiles.findIndex(f => f.fileUrl === fileUrl);
 
-      signedUrl = generateSignedUrl(publicId, resourceType);
-    } catch (urlError) {
-      console.error('[DigitalDownload] Signed URL generation error:', urlError);
-      // Fallback to original URL (less secure but functional)
-      signedUrl = file.fileUrl;
-    }
+    // Return proxy endpoint URL instead of Cloudinary URL directly
+    // This allows us to set proper Content-Disposition header
+    const proxyUrl = `/api/digital-downloads/file/${token}/${fileIndex}`;
+
+    console.log('[DigitalDownload] Returning proxy URL:', proxyUrl);
 
     res.status(200).json({
       success: true,
-      signedUrl,
+      signedUrl: proxyUrl,  // Now returns proxy URL
       fileName: file.fileName,
       downloadsRemaining: downloadRecord.maxDownloads - downloadRecord.downloadCount
     });
@@ -255,6 +267,109 @@ export async function trackDownload(req, res) {
       success: false,
       message: 'Download failed. Please try again.'
     });
+  }
+}
+
+/**
+ * @route   GET /api/digital-downloads/file/:token/:fileIndex
+ * @desc    Proxy endpoint to serve file with correct Content-Disposition header
+ * @access  Public
+ */
+export async function serveFile(req, res) {
+  try {
+    const { token, fileIndex } = req.params;
+
+    console.log('[DigitalDownload] Serving file:', { token, fileIndex });
+
+    const downloadRecord = await DigitalDownload.findOne({ accessToken: token })
+      .populate('productId', 'digitalFiles');
+
+    if (!downloadRecord) {
+      return res.status(404).json({
+        success: false,
+        message: 'Download link not found'
+      });
+    }
+
+    // Check if can download (but don't increment count - already done in track)
+    const canDownloadCheck = downloadRecord.canDownload();
+    // Allow if status is active OR if they just downloaded (count might be at max now)
+    if (!canDownloadCheck.allowed && downloadRecord.status !== 'exhausted') {
+      return res.status(403).json({
+        success: false,
+        message: canDownloadCheck.reason
+      });
+    }
+
+    const index = parseInt(fileIndex, 10);
+    const files = downloadRecord.productId.digitalFiles || [];
+
+    if (isNaN(index) || index < 0 || index >= files.length) {
+      return res.status(404).json({
+        success: false,
+        message: 'File not found'
+      });
+    }
+
+    const file = files[index];
+    const fileUrl = file.fileUrl;
+    const fileName = file.fileName || 'download';
+
+    console.log('[DigitalDownload] Fetching file from Cloudinary:', fileUrl);
+
+    // Fetch the file from Cloudinary
+    const response = await fetch(fileUrl);
+
+    if (!response.ok) {
+      console.error('[DigitalDownload] Failed to fetch from Cloudinary:', response.status, response.statusText);
+      return res.status(502).json({
+        success: false,
+        message: 'Failed to fetch file from storage'
+      });
+    }
+
+    // Determine content type
+    const contentType = response.headers.get('content-type') || 'application/octet-stream';
+
+    // Sanitize filename for Content-Disposition header
+    const sanitizedFileName = fileName.replace(/[^\w\s.-]/g, '_');
+
+    // Set headers for download
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `attachment; filename="${sanitizedFileName}"; filename*=UTF-8''${encodeURIComponent(fileName)}`);
+
+    // Get content length if available
+    const contentLength = response.headers.get('content-length');
+    if (contentLength) {
+      res.setHeader('Content-Length', contentLength);
+    }
+
+    // Stream the file to the client
+    const reader = response.body.getReader();
+
+    const pump = async () => {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          res.end();
+          break;
+        }
+        res.write(Buffer.from(value));
+      }
+    };
+
+    await pump();
+
+    console.log('[DigitalDownload] File served successfully:', fileName);
+
+  } catch (error) {
+    console.error('[DigitalDownload] Serve file error:', error);
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to serve file'
+      });
+    }
   }
 }
 

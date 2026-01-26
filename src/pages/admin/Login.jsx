@@ -111,7 +111,7 @@ export default function AdminLogin() {
             disabled={loading} 
             className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-red-700 text-white hover:bg-red-800 disabled:opacity-60 transition"
           >
-            {loading ? <Spinner /> : null}Sign in
+            {loading ? <Spinner className="text-white" /> : null}Sign in
           </button>
         </form>
       </div>
