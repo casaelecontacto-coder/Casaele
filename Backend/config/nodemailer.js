@@ -2,50 +2,86 @@ import nodemailer from 'nodemailer';
 
 // Cache the transporter to reuse connections
 let cachedTransporter = null;
+let cachedSmtpHost = null; // Track which config was used
 
 // Create transporter using environment variables
 const createTransporter = () => {
-  // Reuse cached transporter in production for better performance
-  if (cachedTransporter && process.env.NODE_ENV === 'production') {
+  // Check if config changed (e.g., SMTP_HOST was added)
+  const currentSmtpHost = process.env.SMTP_HOST || 'gmail';
+  if (cachedTransporter && cachedSmtpHost === currentSmtpHost) {
     return cachedTransporter;
   }
 
-  // Log to help debug (only on first creation)
-  if (!cachedTransporter) {
-    console.log('[Email Config] Creating transporter with:', {
-      service: process.env.EMAIL_SERVICE || 'gmail',
-      user: process.env.EMAIL_USER ? '***' + process.env.EMAIL_USER.slice(-10) : 'MISSING',
-      pass: process.env.EMAIL_PASS ? '***' : 'MISSING'
-    });
-  }
+  // Config changed or first run - create new transporter
+  cachedTransporter = null;
 
+  // Check for required credentials
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.error('[Email Config] ERROR: EMAIL_USER or EMAIL_PASS not set in environment variables!');
     return null;
   }
 
+  let transportConfig;
+
+  // Debug: Log all SMTP-related env vars
+  console.log('[Email Config] Environment check:', {
+    SMTP_HOST: process.env.SMTP_HOST || 'NOT SET',
+    SMTP_PORT: process.env.SMTP_PORT || 'NOT SET',
+    SMTP_USER: process.env.SMTP_USER ? 'SET' : 'NOT SET',
+    SMTP_PASS: process.env.SMTP_PASS ? 'SET' : 'NOT SET',
+    NODE_ENV: process.env.NODE_ENV || 'NOT SET'
+  });
+
+  // Check if using custom SMTP (for production with Brevo, SendGrid, etc.)
+  if (process.env.SMTP_HOST) {
+    // Production: Use explicit SMTP settings (Brevo, SendGrid, Mailgun, etc.)
+    transportConfig = {
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT) || 587,
+      secure: process.env.SMTP_SECURE === 'true', // true for 465, false for 587
+      auth: {
+        user: process.env.SMTP_USER || process.env.EMAIL_USER,
+        pass: process.env.SMTP_PASS || process.env.EMAIL_PASS
+      }
+    };
+    console.log('[Email Config] Using SMTP:', {
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT || 587,
+      user: transportConfig.auth.user ? '***' + transportConfig.auth.user.slice(-10) : 'MISSING'
+    });
+  } else {
+    // Development: Use Gmail service
+    transportConfig = {
+      service: process.env.EMAIL_SERVICE || 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    };
+    console.log('[Email Config] Using Gmail service:', {
+      user: process.env.EMAIL_USER ? '***' + process.env.EMAIL_USER.slice(-10) : 'MISSING'
+    });
+  }
+
+  // Add common settings
   const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE || 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    },
+    ...transportConfig,
     // Connection settings for reliability
-    pool: true, // Use pooled connections
+    pool: true,
     maxConnections: 5,
     maxMessages: 100,
     // Timeouts to prevent hanging
-    connectionTimeout: 10000, // 10 seconds to connect
-    greetingTimeout: 10000,   // 10 seconds for greeting
-    socketTimeout: 30000,     // 30 seconds for socket operations
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 30000,
     // TLS settings
-    secure: false,
     tls: {
       rejectUnauthorized: false
     }
   });
 
   cachedTransporter = transporter;
+  cachedSmtpHost = process.env.SMTP_HOST || 'gmail';
   return transporter;
 };
 
