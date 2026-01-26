@@ -242,9 +242,31 @@ export const verifyPayment = async (req, res) => {
       });
 
       const savedOrder = await newOrder.save();
+      console.log('[Order] Order saved:', savedOrder._id);
 
-      // --- Send Purchase Confirmation Email ---
-      try {
+      // RESPOND IMMEDIATELY - don't make user wait for emails
+      res.status(201).json({
+        success: true,
+        message: 'Payment verified, order created.',
+        orderId: savedOrder._id,
+      });
+
+      // ============================================
+      // BACKGROUND PROCESSING (after response sent)
+      // ============================================
+      // All operations below run asynchronously without blocking the response
+
+      // Helper function to run background tasks with error handling
+      const runBackgroundTask = async (taskName, taskFn) => {
+        try {
+          await taskFn();
+        } catch (error) {
+          console.error(`[Order] Background task "${taskName}" failed:`, error.message);
+        }
+      };
+
+      // --- Send Purchase Confirmation Email (background) ---
+      runBackgroundTask('Purchase Confirmation Email', async () => {
         console.log('[Order] Sending purchase confirmation email...');
         const purchaseEmailResult = await sendPurchaseConfirmationEmail({
           customerEmail: billingDetails.email,
@@ -272,16 +294,11 @@ export const verifyPayment = async (req, res) => {
         } else {
           console.error('[Order] Purchase confirmation email failed:', purchaseEmailResult.error);
         }
-      } catch (emailError) {
-        console.error('[Order] Failed to send purchase confirmation email:', emailError.message);
-        // Don't block order completion if email fails
-      }
-      // --- End Purchase Confirmation Email ---
+      });
 
-      // --- Digital Delivery & Newsletter Integration ---
-      // Handle newsletter subscription if opted in
+      // --- Handle Newsletter Subscription (background) ---
       if (req.body.newsletterOptIn) {
-        try {
+        runBackgroundTask('Newsletter Subscription', async () => {
           console.log('[Order] Newsletter opt-in detected, subscribing to Beehive...');
           const beehiveResult = await subscribeToBeehive({
             email: billingDetails.email,
@@ -293,21 +310,16 @@ export const verifyPayment = async (req, res) => {
             }
           });
           console.log('[Order] Beehive subscription result:', beehiveResult.success ? 'Success' : 'Failed');
-        } catch (newsletterError) {
-          console.error('[Order] Newsletter subscription failed:', newsletterError.message);
-          // Don't block order completion if newsletter fails
-        }
+        });
       }
 
-      // Check if order contains digital products
-      try {
-        // Debug: Log all order items and their itemModels
+      // --- Digital Delivery (background) ---
+      runBackgroundTask('Digital Delivery', async () => {
         console.log('[Order] Processing order items for digital delivery:');
         orderItems.forEach((item, idx) => {
           console.log(`[Order] Item ${idx + 1}: name="${item.name}", itemModel="${item.itemModel}", productId="${item.product}", selectedFormat="${item.selectedFormat || 'N/A'}"`);
         });
 
-        // Populate product details to check productType
         const productIds = orderItems
           .filter(item => item.itemModel === 'Product')
           .map(item => item.product);
@@ -318,29 +330,23 @@ export const verifyPayment = async (req, res) => {
           const products = await Product.find({ _id: { $in: productIds } });
           console.log(`[Order] Fetched ${products.length} products from database`);
 
-          // Debug: Log each product's type and digital files
           products.forEach(p => {
             const orderItem = orderItems.find(item => item.product.toString() === p._id.toString());
             console.log(`[Order] Product "${p.name}": productType="${p.productType}", selectedFormat="${orderItem?.selectedFormat || 'N/A'}", digitalFiles=${p.digitalFiles?.length || 0} files`);
           });
 
-          // Filter for digital products - also check selectedFormat for 'Both' products
           const digitalProducts = products.filter(p => {
             const orderItem = orderItems.find(item => item.product.toString() === p._id.toString());
 
-            // Pure digital products always get digital delivery
             if (p.productType === 'Digital') {
               return true;
             }
 
-            // For 'Both' products, only deliver digitally if user selected Digital format
             if (p.productType === 'Both') {
               const selectedFormat = orderItem?.selectedFormat;
-              // If Digital format selected, or if no format specified (default to digital)
               return selectedFormat === 'Digital' || !selectedFormat;
             }
 
-            // Physical only products don't get digital delivery
             return false;
           });
 
@@ -349,11 +355,9 @@ export const verifyPayment = async (req, res) => {
           if (digitalProducts.length > 0) {
             console.log(`[Order] Found ${digitalProducts.length} digital product(s), initiating delivery...`);
 
-            // Update order status to pending delivery
             savedOrder.digitalDeliveryStatus = 'pending';
             await savedOrder.save();
 
-            // Create download records for each digital product
             const downloadRecordsData = {
               orderId: savedOrder._id.toString(),
               customerEmail: billingDetails.email,
@@ -372,17 +376,10 @@ export const verifyPayment = async (req, res) => {
               })
             };
 
-            console.log('[Order] Calling createDownloadRecords with data:', JSON.stringify(downloadRecordsData, null, 2));
-
+            console.log('[Order] Calling createDownloadRecords...');
             const downloadRecords = await createDownloadRecords(downloadRecordsData);
             console.log(`[Order] Created ${downloadRecords.length} download record(s)`);
-            console.log('[Order] Download records:', JSON.stringify(downloadRecords.map(r => ({
-              productName: r.productName,
-              accessToken: r.accessToken?.substring(0, 10) + '...',
-              filesCount: r.files?.length || 0
-            })), null, 2));
 
-            // Build download links for email
             const downloadLinks = downloadRecords.map(record => ({
               productName: record.productName,
               accessToken: record.accessToken,
@@ -392,7 +389,6 @@ export const verifyPayment = async (req, res) => {
               expiryDate: record.expiresAt
             }));
 
-            // Send delivery email
             const emailResult = await sendDigitalProductEmail({
               customerEmail: billingDetails.email,
               customerName: `${billingDetails.firstName} ${billingDetails.lastName}`,
@@ -414,22 +410,6 @@ export const verifyPayment = async (req, res) => {
             console.log('[Order] No digital products in this order');
           }
         }
-      } catch (digitalDeliveryError) {
-        console.error('[Order] Digital delivery process failed:', digitalDeliveryError);
-        // Update order status to failed but don't block order completion
-        try {
-          savedOrder.digitalDeliveryStatus = 'failed';
-          await savedOrder.save();
-        } catch (saveError) {
-          console.error('[Order] Failed to update delivery status:', saveError);
-        }
-      }
-      // --- End Digital Delivery Integration ---
-
-      res.status(201).json({
-        success: true,
-        message: 'Payment verified, order created.',
-        orderId: savedOrder._id,
       });
     } else {
       res.status(400).json({ success: false, message: 'Payment signature verification failed.' });
@@ -730,8 +710,29 @@ export const createFreeOrder = async (req, res) => {
     const savedOrder = await newOrder.save();
     console.log('[FreeOrder] Order created:', savedOrder._id);
 
-    // --- Send Purchase Confirmation Email ---
-    try {
+    // RESPOND IMMEDIATELY - don't make user wait for emails
+    res.status(201).json({
+      success: true,
+      message: 'Free order created successfully.',
+      orderId: savedOrder._id,
+    });
+
+    // ============================================
+    // BACKGROUND PROCESSING (after response sent)
+    // ============================================
+    // All operations below run asynchronously without blocking the response
+
+    // Helper function to run background tasks with error handling
+    const runBackgroundTask = async (taskName, taskFn) => {
+      try {
+        await taskFn();
+      } catch (error) {
+        console.error(`[FreeOrder] Background task "${taskName}" failed:`, error.message);
+      }
+    };
+
+    // --- Send Purchase Confirmation Email (background) ---
+    runBackgroundTask('Purchase Confirmation Email', async () => {
       console.log('[FreeOrder] Sending purchase confirmation email...');
       const purchaseEmailResult = await sendPurchaseConfirmationEmail({
         customerEmail: billingDetails.email,
@@ -759,13 +760,11 @@ export const createFreeOrder = async (req, res) => {
       } else {
         console.error('[FreeOrder] Purchase confirmation email failed:', purchaseEmailResult.error);
       }
-    } catch (emailError) {
-      console.error('[FreeOrder] Failed to send purchase confirmation email:', emailError.message);
-    }
+    });
 
-    // --- Handle Newsletter Subscription ---
+    // --- Handle Newsletter Subscription (background) ---
     if (newsletterOptIn) {
-      try {
+      runBackgroundTask('Newsletter Subscription', async () => {
         console.log('[FreeOrder] Newsletter opt-in detected, subscribing to Beehive...');
         const beehiveResult = await subscribeToBeehive({
           email: billingDetails.email,
@@ -777,13 +776,11 @@ export const createFreeOrder = async (req, res) => {
           }
         });
         console.log('[FreeOrder] Beehive subscription result:', beehiveResult.success ? 'Success' : 'Failed');
-      } catch (newsletterError) {
-        console.error('[FreeOrder] Newsletter subscription failed:', newsletterError.message);
-      }
+      });
     }
 
-    // --- Digital Delivery for Free Products ---
-    try {
+    // --- Digital Delivery for Free Products (background) ---
+    runBackgroundTask('Digital Delivery', async () => {
       console.log('[FreeOrder] Processing order items for digital delivery:');
       orderItems.forEach((item, idx) => {
         console.log(`[FreeOrder] Item ${idx + 1}: name="${item.name}", itemModel="${item.itemModel}", productId="${item.product}", selectedFormat="${item.selectedFormat || 'N/A'}"`);
@@ -879,21 +876,8 @@ export const createFreeOrder = async (req, res) => {
           console.log('[FreeOrder] No digital products in this order');
         }
       }
-    } catch (digitalDeliveryError) {
-      console.error('[FreeOrder] Digital delivery process failed:', digitalDeliveryError);
-      try {
-        savedOrder.digitalDeliveryStatus = 'failed';
-        await savedOrder.save();
-      } catch (saveError) {
-        console.error('[FreeOrder] Failed to update delivery status:', saveError);
-      }
-    }
-
-    res.status(201).json({
-      success: true,
-      message: 'Free order created successfully.',
-      orderId: savedOrder._id,
     });
+
   } catch (error) {
     console.error('Backend: Error creating free order:', error);
     if (error.name === 'ValidationError') return handleValidationError(error, res);

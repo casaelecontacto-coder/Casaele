@@ -1,30 +1,52 @@
 import nodemailer from 'nodemailer';
 
+// Cache the transporter to reuse connections
+let cachedTransporter = null;
+
 // Create transporter using environment variables
 const createTransporter = () => {
-  // Log to help debug
-  console.log('[Email Config] Creating transporter with:', {
-    service: process.env.EMAIL_SERVICE || 'gmail',
-    user: process.env.EMAIL_USER ? '***' + process.env.EMAIL_USER.slice(-10) : 'MISSING',
-    pass: process.env.EMAIL_PASS ? '***' : 'MISSING'
-  });
+  // Reuse cached transporter in production for better performance
+  if (cachedTransporter && process.env.NODE_ENV === 'production') {
+    return cachedTransporter;
+  }
+
+  // Log to help debug (only on first creation)
+  if (!cachedTransporter) {
+    console.log('[Email Config] Creating transporter with:', {
+      service: process.env.EMAIL_SERVICE || 'gmail',
+      user: process.env.EMAIL_USER ? '***' + process.env.EMAIL_USER.slice(-10) : 'MISSING',
+      pass: process.env.EMAIL_PASS ? '***' : 'MISSING'
+    });
+  }
 
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.error('[Email Config] ERROR: EMAIL_USER or EMAIL_PASS not set in environment variables!');
+    return null;
   }
 
-  return nodemailer.createTransport({
+  const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE || 'gmail',
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
     },
-    // Add some additional options for Gmail
-    secure: false, // Use TLS
+    // Connection settings for reliability
+    pool: true, // Use pooled connections
+    maxConnections: 5,
+    maxMessages: 100,
+    // Timeouts to prevent hanging
+    connectionTimeout: 10000, // 10 seconds to connect
+    greetingTimeout: 10000,   // 10 seconds for greeting
+    socketTimeout: 30000,     // 30 seconds for socket operations
+    // TLS settings
+    secure: false,
     tls: {
-      rejectUnauthorized: false // Allow self-signed certificates (for development)
+      rejectUnauthorized: false
     }
   });
+
+  cachedTransporter = transporter;
+  return transporter;
 };
 
 // Email templates
@@ -69,15 +91,34 @@ export const emailTemplates = {
   })
 };
 
-// Send email function
+// Send email function with timeout
 export const sendEmail = async (emailOptions) => {
+  const startTime = Date.now();
   try {
     const transporter = createTransporter();
-    const result = await transporter.sendMail(emailOptions);
-    console.log('Email sent successfully:', result.messageId);
+
+    if (!transporter) {
+      console.error('[Email] Transporter not configured - check EMAIL_USER and EMAIL_PASS');
+      return { success: false, error: 'Email not configured' };
+    }
+
+    // Add timeout wrapper to prevent hanging
+    const sendWithTimeout = (timeout = 30000) => {
+      return Promise.race([
+        transporter.sendMail(emailOptions),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Email send timeout after ' + timeout + 'ms')), timeout)
+        )
+      ]);
+    };
+
+    const result = await sendWithTimeout(30000); // 30 second timeout
+    const duration = Date.now() - startTime;
+    console.log(`[Email] Sent successfully in ${duration}ms:`, result.messageId);
     return { success: true, messageId: result.messageId };
   } catch (error) {
-    console.error('Error sending email:', error);
+    const duration = Date.now() - startTime;
+    console.error(`[Email] Failed after ${duration}ms:`, error.message);
     return { success: false, error: error.message };
   }
 };
@@ -86,11 +127,14 @@ export const sendEmail = async (emailOptions) => {
 export const testEmailConfig = async () => {
   try {
     const transporter = createTransporter();
+    if (!transporter) {
+      return { success: false, error: 'Email not configured - check environment variables' };
+    }
     await transporter.verify();
-    console.log('Email configuration is valid');
+    console.log('[Email] Configuration is valid');
     return { success: true };
   } catch (error) {
-    console.error('Email configuration error:', error);
+    console.error('[Email] Configuration error:', error.message);
     return { success: false, error: error.message };
   }
 };
