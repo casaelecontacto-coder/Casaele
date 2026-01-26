@@ -76,18 +76,45 @@ function CartCheckout() {
   // --- Updated handleProceedToPayment ---
   const handleProceedToPayment = async () => {
     setPaymentError(''); // Clear previous errors
-    
+
     // 1. Validate Billing Form
     if (!validateBillingInfo()) {
-       ("Billing validation failed:", formErrors);
+       console.log("Billing validation failed:", formErrors);
        // Scroll to the first error field if needed
-       return; 
+       return;
     }
 
     setLoadingPayment(true); // Start loading indicator
 
     try {
-      // 2. Load Razorpay Script
+      // Check if this is a free order (total is 0)
+      if (finalTotal === 0) {
+        console.log("Processing free order...");
+        // Handle free order directly without Razorpay
+        const freeOrderPayload = {
+          billingDetails: billingInfo,
+          cartItems: cartItems,
+          totalAmount: 0,
+          couponCode: appliedCoupon?.code || null,
+          discountAmount: discountAmount,
+          newsletterOptIn: newsletterOptIn
+        };
+
+        const freeOrderResult = await apiSend('/api/orders/free', 'POST', freeOrderPayload);
+        console.log("Free order result:", freeOrderResult);
+
+        if (freeOrderResult?.success) {
+          console.log("Free order created successfully!");
+          clearCart();
+          navigate('/order-success', { state: { orderId: freeOrderResult.orderId } });
+        } else {
+          throw new Error(freeOrderResult?.message || 'Failed to create free order.');
+        }
+        setLoadingPayment(false);
+        return;
+      }
+
+      // 2. Load Razorpay Script (for paid orders)
       const res = await loadRazorpayScript('https://checkout.razorpay.com/v1/checkout.js');
       if (!res) {
         throw new Error('Razorpay SDK failed to load. Are you online?');
@@ -96,17 +123,17 @@ function CartCheckout() {
       // 3. Create Razorpay Order via Backend
       // Amount should be in the smallest currency unit (e.g., paise for INR)
       // Use finalTotal (after discount) instead of totalPrice
-      const amountInPaise = Math.round(finalTotal * 100); 
+      const amountInPaise = Math.round(finalTotal * 100);
       const orderPayload = { amount: amountInPaise, currency: 'INR' }; // Adjust currency if needed
-      
+
       // *** DEBUG: Log order payload ***
-      ("Creating Razorpay order with payload:", orderPayload);
+      console.log("Creating Razorpay order with payload:", orderPayload);
 
       // Use the correct backend endpoint: /api/orders (POST)
-      const orderResult = await apiSend('/api/orders', 'POST', orderPayload); 
-      
+      const orderResult = await apiSend('/api/orders', 'POST', orderPayload);
+
       // *** DEBUG: Log order result ***
-      ("Razorpay order creation result:", orderResult);
+      console.log("Razorpay order creation result:", orderResult);
 
       if (!orderResult || !orderResult.order || !orderResult.order.id) {
         throw new Error('Failed to create Razorpay order.');
@@ -130,7 +157,7 @@ function CartCheckout() {
         order_id: order_id, // From backend
         // --- Payment Handler Callback ---
         handler: async function (response) {
-            ("Razorpay payment successful:", response);
+            console.log("Razorpay payment successful:", response);
             setLoadingPayment(true); // Show loading while verifying
             try {
                 // 5. Verify Payment Signature via Backend
@@ -146,7 +173,7 @@ function CartCheckout() {
                     discountAmount: discountAmount, // Include discount amount
                     newsletterOptIn: newsletterOptIn // Include newsletter opt-in preference
                 };
-                
+
                 // Use the correct backend endpoint: /api/orders/verify (POST)
                 const verifyResult = await apiSend('/api/orders/verify', 'POST', verificationPayload);
 
@@ -184,7 +211,7 @@ function CartCheckout() {
         // --- Modal Close Handler ---
         modal: {
             ondismiss: function() {
-                ('Razorpay checkout form closed.');
+                console.log('Razorpay checkout form closed.');
                 setLoadingPayment(false); // Stop loading if user closes modal
             }
         }
@@ -291,12 +318,12 @@ function CartCheckout() {
                         <p className="mt-4 text-sm text-red-600 text-center">{paymentError}</p>
                     )}
 
-                   <button 
-                      onClick={handleProceedToPayment} 
+                   <button
+                      onClick={handleProceedToPayment}
                       className="mt-6 w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       disabled={!cartItems || cartItems.length === 0 || loadingPayment} // Disable if cart empty or payment loading
                    >
-                     {loadingPayment ? <Spinner size="sm" /> : 'Proceed to Payment'} 
+                     {loadingPayment ? <Spinner size="sm" /> : (finalTotal === 0 ? 'Complete Free Order' : 'Proceed to Payment')}
                    </button> 
                 </div>
               )}

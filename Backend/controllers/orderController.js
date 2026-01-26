@@ -616,3 +616,291 @@ export const deleteOrder = async (req, res) => {
     });
   }
 };
+
+/* -------------------------------------------------------------------------- */
+/* CREATE FREE ORDER                                                           */
+/* -------------------------------------------------------------------------- */
+// @desc    Create order for free products (no payment required)
+// @route   POST /api/orders/free
+// @access  Public
+export const createFreeOrder = async (req, res) => {
+  console.log("Backend: Received POST /api/orders/free request");
+  try {
+    const {
+      billingDetails,
+      cartItems,
+      totalAmount,
+      couponCode,
+      discountAmount,
+      newsletterOptIn
+    } = req.body;
+
+    // Validate that total is actually 0 or very close to 0
+    if (totalAmount > 0.01) {
+      return res.status(400).json({
+        success: false,
+        message: 'This endpoint is only for free orders. Please use the payment flow for paid orders.'
+      });
+    }
+
+    if (
+      !billingDetails ||
+      !cartItems ||
+      !Array.isArray(cartItems) ||
+      cartItems.length === 0
+    ) {
+      return res.status(400).json({ success: false, message: 'Missing billing details or cart items.' });
+    }
+
+    if (
+      !billingDetails.firstName ||
+      !billingDetails.lastName ||
+      !billingDetails.email ||
+      !billingDetails.phone ||
+      !billingDetails.address ||
+      !billingDetails.city ||
+      !billingDetails.postalCode ||
+      !billingDetails.country
+    ) {
+      return res.status(400).json({ success: false, message: 'Incomplete billing details.' });
+    }
+
+    // Map cart items to order items
+    const orderItems = cartItems.map((item) => {
+      let itemModel = 'Product';
+
+      if (item.itemType === 'course') {
+        itemModel = 'Course';
+      } else if (item.itemType === 'product') {
+        itemModel = 'Product';
+      } else if (item.productType) {
+        itemModel = 'Product';
+      } else if (item.title && !item.name) {
+        itemModel = 'Course';
+      }
+
+      console.log(`[FreeOrder] Mapping cart item: _id=${item._id}, name=${item.name}, title=${item.title}, itemType=${item.itemType} => itemModel=${itemModel}`);
+
+      return {
+        name: item.title || item.name || 'Item',
+        qty: item.quantity || 1,
+        price: 0, // Free order
+        product: item._id,
+        itemModel,
+        selectedLevel: item.selectedLevel,
+        selectedFormat: item.selectedFormat,
+      };
+    });
+
+    // Generate a unique order reference for free orders
+    const freeOrderRef = `FREE_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
+
+    const newOrder = new Order({
+      orderItems,
+      shippingAddress: {
+        fullName: `${billingDetails.firstName} ${billingDetails.lastName}`,
+        address: billingDetails.address,
+        city: billingDetails.city,
+        state: billingDetails.state || '',
+        postalCode: billingDetails.postalCode,
+        country: billingDetails.country,
+        phone: billingDetails.phone,
+        email: billingDetails.email,
+      },
+      paymentMethod: 'Free',
+      paymentResult: {
+        id: freeOrderRef,
+        status: 'completed',
+        update_time: new Date().toISOString(),
+        email_address: billingDetails.email,
+      },
+      itemsPrice: 0,
+      taxPrice: 0,
+      shippingPrice: 0,
+      totalPrice: 0,
+      couponCode: couponCode || null,
+      discountAmount: Number(discountAmount) || 0,
+      isPaid: true,
+      paidAt: new Date(),
+      razorpayOrderId: freeOrderRef,
+      orderStatus: 'Processing',
+      newsletterOptIn: newsletterOptIn || false,
+    });
+
+    const savedOrder = await newOrder.save();
+    console.log('[FreeOrder] Order created:', savedOrder._id);
+
+    // --- Send Purchase Confirmation Email ---
+    try {
+      console.log('[FreeOrder] Sending purchase confirmation email...');
+      const purchaseEmailResult = await sendPurchaseConfirmationEmail({
+        customerEmail: billingDetails.email,
+        customerName: `${billingDetails.firstName} ${billingDetails.lastName}`,
+        orderId: savedOrder._id.toString(),
+        orderItems: orderItems,
+        totalPrice: 0,
+        itemsPrice: 0,
+        discountAmount: Number(discountAmount) || 0,
+        shippingAddress: {
+          fullName: `${billingDetails.firstName} ${billingDetails.lastName}`,
+          address: billingDetails.address,
+          city: billingDetails.city,
+          state: billingDetails.state || '',
+          postalCode: billingDetails.postalCode,
+          country: billingDetails.country,
+          email: billingDetails.email,
+          phone: billingDetails.phone
+        },
+        currency: 'INR'
+      });
+
+      if (purchaseEmailResult.success) {
+        console.log('[FreeOrder] Purchase confirmation email sent successfully');
+      } else {
+        console.error('[FreeOrder] Purchase confirmation email failed:', purchaseEmailResult.error);
+      }
+    } catch (emailError) {
+      console.error('[FreeOrder] Failed to send purchase confirmation email:', emailError.message);
+    }
+
+    // --- Handle Newsletter Subscription ---
+    if (newsletterOptIn) {
+      try {
+        console.log('[FreeOrder] Newsletter opt-in detected, subscribing to Beehive...');
+        const beehiveResult = await subscribeToBeehive({
+          email: billingDetails.email,
+          customFields: {
+            name: `${billingDetails.firstName} ${billingDetails.lastName}`,
+            role: 'Customer',
+            source: 'checkout',
+            tags: 'customer,free-order'
+          }
+        });
+        console.log('[FreeOrder] Beehive subscription result:', beehiveResult.success ? 'Success' : 'Failed');
+      } catch (newsletterError) {
+        console.error('[FreeOrder] Newsletter subscription failed:', newsletterError.message);
+      }
+    }
+
+    // --- Digital Delivery for Free Products ---
+    try {
+      console.log('[FreeOrder] Processing order items for digital delivery:');
+      orderItems.forEach((item, idx) => {
+        console.log(`[FreeOrder] Item ${idx + 1}: name="${item.name}", itemModel="${item.itemModel}", productId="${item.product}", selectedFormat="${item.selectedFormat || 'N/A'}"`);
+      });
+
+      const productIds = orderItems
+        .filter(item => item.itemModel === 'Product')
+        .map(item => item.product);
+
+      console.log(`[FreeOrder] Found ${productIds.length} Product items, productIds:`, productIds);
+
+      if (productIds.length > 0) {
+        const products = await Product.find({ _id: { $in: productIds } });
+        console.log(`[FreeOrder] Fetched ${products.length} products from database`);
+
+        products.forEach(p => {
+          const orderItem = orderItems.find(item => item.product.toString() === p._id.toString());
+          console.log(`[FreeOrder] Product "${p.name}": productType="${p.productType}", selectedFormat="${orderItem?.selectedFormat || 'N/A'}", digitalFiles=${p.digitalFiles?.length || 0} files`);
+        });
+
+        const digitalProducts = products.filter(p => {
+          const orderItem = orderItems.find(item => item.product.toString() === p._id.toString());
+
+          if (p.productType === 'Digital') {
+            return true;
+          }
+
+          if (p.productType === 'Both') {
+            const selectedFormat = orderItem?.selectedFormat;
+            return selectedFormat === 'Digital' || !selectedFormat;
+          }
+
+          return false;
+        });
+
+        console.log(`[FreeOrder] Filtered to ${digitalProducts.length} digital product(s)`);
+
+        if (digitalProducts.length > 0) {
+          console.log(`[FreeOrder] Found ${digitalProducts.length} digital product(s), initiating delivery...`);
+
+          savedOrder.digitalDeliveryStatus = 'pending';
+          await savedOrder.save();
+
+          const downloadRecordsData = {
+            orderId: savedOrder._id.toString(),
+            customerEmail: billingDetails.email,
+            customerName: `${billingDetails.firstName} ${billingDetails.lastName}`,
+            products: digitalProducts.map(product => {
+              const orderItem = orderItems.find(item => item.product.toString() === product._id.toString());
+              return {
+                productId: product._id.toString(),
+                productName: product.name,
+                digitalFiles: product.digitalFiles,
+                maxDownloads: product.downloadSettings?.maxDownloads || 3,
+                linkExpiryDays: product.downloadSettings?.linkExpiryDays || 30,
+                selectedLevel: orderItem?.selectedLevel,
+                selectedFormat: orderItem?.selectedFormat
+              };
+            })
+          };
+
+          console.log('[FreeOrder] Calling createDownloadRecords...');
+          const downloadRecords = await createDownloadRecords(downloadRecordsData);
+          console.log(`[FreeOrder] Created ${downloadRecords.length} download record(s)`);
+
+          const downloadLinks = downloadRecords.map(record => ({
+            productName: record.productName,
+            accessToken: record.accessToken,
+            fileCount: record.files.length,
+            downloadsRemaining: record.maxDownloads,
+            maxDownloads: record.maxDownloads,
+            expiryDate: record.expiresAt
+          }));
+
+          const emailResult = await sendDigitalProductEmail({
+            customerEmail: billingDetails.email,
+            customerName: `${billingDetails.firstName} ${billingDetails.lastName}`,
+            downloadLinks,
+            orderId: savedOrder._id.toString()
+          });
+
+          if (emailResult.success) {
+            console.log('[FreeOrder] Digital delivery email sent successfully');
+            savedOrder.digitalDeliveryStatus = 'sent';
+            savedOrder.digitalDeliverySentAt = new Date();
+          } else {
+            console.error('[FreeOrder] Digital delivery email failed:', emailResult.error);
+            savedOrder.digitalDeliveryStatus = 'failed';
+          }
+
+          await savedOrder.save();
+        } else {
+          console.log('[FreeOrder] No digital products in this order');
+        }
+      }
+    } catch (digitalDeliveryError) {
+      console.error('[FreeOrder] Digital delivery process failed:', digitalDeliveryError);
+      try {
+        savedOrder.digitalDeliveryStatus = 'failed';
+        await savedOrder.save();
+      } catch (saveError) {
+        console.error('[FreeOrder] Failed to update delivery status:', saveError);
+      }
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Free order created successfully.',
+      orderId: savedOrder._id,
+    });
+  } catch (error) {
+    console.error('Backend: Error creating free order:', error);
+    if (error.name === 'ValidationError') return handleValidationError(error, res);
+    res.status(500).json({
+      success: false,
+      message: 'Server error creating free order',
+      error: error.message,
+    });
+  }
+};

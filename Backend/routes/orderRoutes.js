@@ -1,10 +1,11 @@
 import express from 'express';
-import { verifyFirebaseToken } from '../middleware/auth.js'; 
+import { verifyFirebaseToken } from '../middleware/auth.js';
 // *** FIX: Import all the functions that are actually exported ***
-import { 
-    createOrder, 
-    verifyPayment, 
-    getOrders, 
+import {
+    createOrder,
+    verifyPayment,
+    createFreeOrder,  // For free product orders
+    getOrders,
     getOrderById,
     updateOrder,  // Now exists
     deleteOrder   // Now exists
@@ -13,8 +14,9 @@ import {
 const router = express.Router();
 
 // Public routes for creating order and verifying payment
-router.post('/', createOrder); 
+router.post('/', createOrder);
 router.post('/verify', verifyPayment);
+router.post('/free', createFreeOrder);  // For free product orders (no payment)
 
 // Admin routes for managing orders
 router.get('/', verifyFirebaseToken, getOrders); 

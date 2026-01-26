@@ -136,23 +136,22 @@ export async function verifyDownloadToken(req, res) {
       });
     }
 
-    // Return download info
+    // Return download info (flat structure for frontend compatibility)
     res.status(200).json({
-      success: true,
-      data: {
-        productName: downloadRecord.productId.name,
-        files: downloadRecord.productId.digitalFiles.map(file => ({
-          fileName: file.fileName,
-          fileType: file.fileType,
-          fileSize: file.fileSize
-        })),
-        downloadCount: downloadRecord.downloadCount,
-        maxDownloads: downloadRecord.maxDownloads,
-        downloadsRemaining: downloadRecord.maxDownloads - downloadRecord.downloadCount,
-        expiresAt: downloadRecord.expiresAt,
-        customerName: downloadRecord.customerName,
-        status: downloadRecord.status
-      }
+      productName: downloadRecord.productId.name,
+      orderId: downloadRecord.orderId,
+      files: downloadRecord.productId.digitalFiles.map(file => ({
+        fileName: file.fileName,
+        fileType: file.fileType,
+        fileSize: file.fileSize,
+        fileUrl: file.fileUrl  // Include fileUrl for download tracking
+      })),
+      downloadCount: downloadRecord.downloadCount,
+      maxDownloads: downloadRecord.maxDownloads,
+      downloadsRemaining: downloadRecord.maxDownloads - downloadRecord.downloadCount,
+      expiresAt: downloadRecord.expiresAt,
+      customerName: downloadRecord.customerName,
+      status: downloadRecord.status
     });
   } catch (error) {
     console.error('[DigitalDownload] Verify token error:', error);
