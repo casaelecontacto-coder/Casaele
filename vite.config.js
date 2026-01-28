@@ -22,44 +22,46 @@ export default defineConfig({
   base: "/",
 
   build: {
-    chunkSizeWarningLimit: 800,
+    chunkSizeWarningLimit: 500,
 
     rollupOptions: {
       output: {
         manualChunks(id) {
           // Split node_modules into separate chunks
           if (id.includes("node_modules")) {
-            // Firebase modules - split into separate chunk
-            if (id.includes("firebase/app") || id.includes("firebase/auth") || id.includes("firebase/firestore") || id.includes("firebase/storage")) {
-              return "firebase";
+            // Firebase - split by module for better caching
+            if (id.includes("@firebase") || id.includes("firebase")) {
+              if (id.includes("auth")) return "firebase-auth";
+              if (id.includes("firestore")) return "firebase-firestore";
+              return "firebase-core";
             }
-            
-            // React and React DOM - separate chunks
-            if (id.includes("react-dom")) {
-              return "react-dom";
-            }
-            if (id.includes("react") && !id.includes("react-dom")) {
-              return "react";
-            }
-            
-            // Large third-party libraries - separate chunks
-            if (id.includes("recharts")) return "charts";
+
+            // React core - separate chunks
+            if (id.includes("react-dom")) return "react-dom";
+            if (id.includes("react/") || id.includes("react-is") || id.includes("scheduler")) return "react";
+
+            // Large libraries - separate chunks (lazy loaded)
+            if (id.includes("recharts") || id.includes("d3-")) return "charts";
             if (id.includes("tinymce")) return "editor";
             if (id.includes("@stripe")) return "stripe";
+
+            // Medium libraries
             if (id.includes("react-router")) return "router";
-            if (id.includes("axios")) return "axios";
-            if (id.includes("mongoose")) return "mongoose";
-            
+            if (id.includes("axios")) return "http";
+            if (id.includes("react-icons")) return "icons";
+            if (id.includes("react-hot-toast")) return "toast";
+
             // All other vendor code
             return "vendor";
           }
 
-          // Split admin dashboard into its own chunk
+          // Split admin dashboard into its own chunk (lazy loaded)
           if (id.includes("/src/pages/admin/")) return "admin";
-          
-          // Split heavy components into their own chunks
+
+          // Split components by feature
           if (id.includes("/src/components/CourseDetail/")) return "course-detail";
           if (id.includes("/src/components/Material/")) return "material";
+          if (id.includes("/src/components/Admin/")) return "admin-components";
 
           return undefined;
         },
