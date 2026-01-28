@@ -22,46 +22,34 @@ export default defineConfig({
   base: "/",
 
   build: {
-    chunkSizeWarningLimit: 500,
+    chunkSizeWarningLimit: 800,
 
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // Split node_modules into separate chunks
           if (id.includes("node_modules")) {
-            // Firebase - split by module for better caching
-            if (id.includes("@firebase") || id.includes("firebase")) {
-              if (id.includes("auth")) return "firebase-auth";
-              if (id.includes("firestore")) return "firebase-firestore";
-              return "firebase-core";
-            }
-
-            // React core - separate chunks
+            // Keep React together (don't split - causes issues)
             if (id.includes("react-dom")) return "react-dom";
-            if (id.includes("react/") || id.includes("react-is") || id.includes("scheduler")) return "react";
+            if (id.includes("react")) return "react";
 
-            // Large libraries - separate chunks (lazy loaded)
+            // Firebase in one chunk
+            if (id.includes("@firebase") || id.includes("firebase")) return "firebase";
+
+            // Large libraries - separate chunks
             if (id.includes("recharts") || id.includes("d3-")) return "charts";
             if (id.includes("tinymce")) return "editor";
             if (id.includes("@stripe")) return "stripe";
-
-            // Medium libraries
-            if (id.includes("react-router")) return "router";
-            if (id.includes("axios")) return "http";
-            if (id.includes("react-icons")) return "icons";
-            if (id.includes("react-hot-toast")) return "toast";
 
             // All other vendor code
             return "vendor";
           }
 
-          // Split admin dashboard into its own chunk (lazy loaded)
+          // Split admin dashboard into its own chunk
           if (id.includes("/src/pages/admin/")) return "admin";
 
-          // Split components by feature
+          // Split heavy components
           if (id.includes("/src/components/CourseDetail/")) return "course-detail";
           if (id.includes("/src/components/Material/")) return "material";
-          if (id.includes("/src/components/Admin/")) return "admin-components";
 
           return undefined;
         },
