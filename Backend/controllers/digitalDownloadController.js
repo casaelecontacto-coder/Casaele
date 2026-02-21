@@ -3,6 +3,7 @@ import DigitalDownload from '../models/DigitalDownload.js';
 import Product from '../models/Product.js';
 import Order from '../models/Order.js';
 import cloudinary from '../config/cloudinaryConfig.js';
+import { getFileStreamFromDrive } from '../services/googleDriveService.js';
 
 /**
  * Generate cryptographically secure access token
@@ -315,52 +316,72 @@ export async function serveFile(req, res) {
     const fileUrl = file.fileUrl;
     const fileName = file.fileName || 'download';
 
-    console.log('[DigitalDownload] Fetching file from Cloudinary:', fileUrl);
-
-    // Fetch the file from Cloudinary
-    const response = await fetch(fileUrl);
-
-    if (!response.ok) {
-      console.error('[DigitalDownload] Failed to fetch from Cloudinary:', response.status, response.statusText);
-      return res.status(502).json({
-        success: false,
-        message: 'Failed to fetch file from storage'
-      });
-    }
-
-    // Determine content type
-    const contentType = response.headers.get('content-type') || 'application/octet-stream';
-
     // Sanitize filename for Content-Disposition header
     const sanitizedFileName = fileName.replace(/[^\w\s.-]/g, '_');
 
-    // Set headers for download
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Content-Disposition', `attachment; filename="${sanitizedFileName}"; filename*=UTF-8''${encodeURIComponent(fileName)}`);
+    if (fileUrl.startsWith('gdrive://')) {
+      // --- Google Drive path ---
+      const fileId = fileUrl.replace('gdrive://', '');
+      console.log('[DigitalDownload] Fetching file from Google Drive:', fileId);
 
-    // Get content length if available
-    const contentLength = response.headers.get('content-length');
-    if (contentLength) {
-      res.setHeader('Content-Length', contentLength);
-    }
+      const { stream, mimeType, size } = await getFileStreamFromDrive(fileId);
 
-    // Stream the file to the client
-    const reader = response.body.getReader();
-
-    const pump = async () => {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          res.end();
-          break;
-        }
-        res.write(Buffer.from(value));
+      res.setHeader('Content-Type', mimeType);
+      res.setHeader('Content-Disposition', `attachment; filename="${sanitizedFileName}"; filename*=UTF-8''${encodeURIComponent(fileName)}`);
+      if (size) {
+        res.setHeader('Content-Length', size);
       }
-    };
 
-    await pump();
+      // Pipe the Drive stream directly to the response
+      stream.pipe(res);
 
-    console.log('[DigitalDownload] File served successfully:', fileName);
+      await new Promise((resolve, reject) => {
+        stream.on('end', resolve);
+        stream.on('error', reject);
+      });
+
+      console.log('[DigitalDownload] Google Drive file served successfully:', fileName);
+    } else {
+      // --- Legacy Cloudinary path ---
+      console.log('[DigitalDownload] Fetching file from Cloudinary:', fileUrl);
+
+      const response = await fetch(fileUrl);
+
+      if (!response.ok) {
+        console.error('[DigitalDownload] Failed to fetch from Cloudinary:', response.status, response.statusText);
+        return res.status(502).json({
+          success: false,
+          message: 'Failed to fetch file from storage'
+        });
+      }
+
+      const contentType = response.headers.get('content-type') || 'application/octet-stream';
+
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Disposition', `attachment; filename="${sanitizedFileName}"; filename*=UTF-8''${encodeURIComponent(fileName)}`);
+
+      const contentLength = response.headers.get('content-length');
+      if (contentLength) {
+        res.setHeader('Content-Length', contentLength);
+      }
+
+      const reader = response.body.getReader();
+
+      const pump = async () => {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            res.end();
+            break;
+          }
+          res.write(Buffer.from(value));
+        }
+      };
+
+      await pump();
+
+      console.log('[DigitalDownload] Cloudinary file served successfully:', fileName);
+    }
 
   } catch (error) {
     console.error('[DigitalDownload] Serve file error:', error);

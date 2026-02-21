@@ -1,4 +1,5 @@
 import cloudinary from '../config/cloudinaryConfig.js' // Import the configured cloudinary instance
+import { uploadFileToDrive } from '../services/googleDriveService.js'
 
 // Controller function to handle the image upload to Cloudinary
 export const uploadCmsImage = async (req, res) => {
@@ -104,36 +105,53 @@ export const uploadDigitalProductFile = async (req, res) => {
       })
     }
 
-    // Determine resource type for Cloudinary
-    let resourceType = 'raw' // Default for documents
-    if (req.file.mimetype.startsWith('audio/')) {
-      resourceType = 'video' // Cloudinary uses 'video' for audio files
-    } else if (req.file.mimetype.startsWith('video/')) {
-      resourceType = 'video'
+    // Check if Google Drive is configured - use it for digital products
+    const useGoogleDrive = !!(process.env.GOOGLE_DRIVE_CLIENT_ID && process.env.GOOGLE_DRIVE_CLIENT_SECRET && process.env.GOOGLE_DRIVE_REFRESH_TOKEN && process.env.GOOGLE_DRIVE_FOLDER_ID)
+
+    if (useGoogleDrive) {
+      // Upload to Google Drive
+      const { fileId } = await uploadFileToDrive(req.file.buffer, req.file.originalname, req.file.mimetype)
+
+      console.log('[Upload] Digital product uploaded to Google Drive:', fileId)
+
+      res.status(200).json({
+        success: true,
+        url: `gdrive://${fileId}`,
+        publicId: fileId,
+        fileName: req.file.originalname,
+        fileType: fileExtension,
+        fileSize: req.file.size,
+        resourceType: 'gdrive'
+      })
+    } else {
+      // Fallback: Upload to Cloudinary (legacy behavior)
+      let resourceType = 'raw'
+      if (req.file.mimetype.startsWith('audio/')) {
+        resourceType = 'video'
+      } else if (req.file.mimetype.startsWith('video/')) {
+        resourceType = 'video'
+      }
+
+      const fileBuffer = req.file.buffer.toString('base64')
+      const dataUri = `data:${req.file.mimetype};base64,${fileBuffer}`
+
+      const result = await cloudinary.uploader.upload(dataUri, {
+        folder: `digital-products/${fileExtension}`,
+        resource_type: resourceType,
+        access_mode: 'authenticated',
+        type: 'authenticated'
+      })
+
+      res.status(200).json({
+        success: true,
+        url: result.secure_url,
+        publicId: result.public_id,
+        fileName: req.file.originalname,
+        fileType: fileExtension,
+        fileSize: req.file.size,
+        resourceType: resourceType
+      })
     }
-
-    // Convert file buffer to Base64
-    const fileBuffer = req.file.buffer.toString('base64')
-    const dataUri = `data:${req.file.mimetype};base64,${fileBuffer}`
-
-    // Upload to Cloudinary with authenticated access for security
-    const result = await cloudinary.uploader.upload(dataUri, {
-      folder: `digital-products/${fileExtension}`,
-      resource_type: resourceType,
-      access_mode: 'authenticated', // Requires signed URLs for access
-      type: 'authenticated'
-    })
-
-    // Send response with file details
-    res.status(200).json({
-      success: true,
-      url: result.secure_url,
-      publicId: result.public_id,
-      fileName: req.file.originalname,
-      fileType: fileExtension,
-      fileSize: req.file.size,
-      resourceType: resourceType
-    })
   } catch (error) {
     console.error('Digital Product File Upload Error:', error)
     res.status(500).json({
