@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  slug: { type: String, unique: true, sparse: true },
   description: { type: String, required: true },
   price: { type: Number, required: true }, // Default price (kept for backward compatibility)
   discountPrice: { type: Number, default: 0 },

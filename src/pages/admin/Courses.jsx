@@ -34,7 +34,8 @@ const Courses = () => {
   // *** ADDED availableLevels to default state ***
   const [formData, setFormData] = useState({
     title: '',
-    subtitle: '', // Subtitle field for courses
+    slug: '',
+    subtitle: '',
     description: '',
     category: '',
     images: [],
@@ -194,7 +195,8 @@ const Courses = () => {
     setEditingCourse(course);
     setFormData({
       title: course.title || '',
-      subtitle: course.subtitle || '', // Load subtitle
+      slug: course.slug || '',
+      subtitle: course.subtitle || '',
       description: course.description || '',
       category: course.category || '',
       images: course.images || [], // Default to empty array
@@ -423,7 +425,12 @@ const Courses = () => {
                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Title *</label><input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" required /></div>
                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Category *</label><select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-red-500 focus:border-red-500" required><option value="">Select Category</option>{categories.map(category => (<option key={category._id} value={category.name}>{category.name}</option>))}</select></div>
                 </div>
-                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">URL Slug</label>
+                  <input type="text" value={formData.slug || ''} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder={formData.title ? formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'auto-generated-from-title'} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 font-mono text-sm" />
+                  <p className="mt-1 text-xs text-gray-500">Leave blank to auto-generate from title. Used in page URL for SEO.</p>
+                </div>
+
                 {/* Subtitle */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Subtitle (Optional)</label>

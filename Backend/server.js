@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import compression from 'compression';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import path from 'path';
@@ -113,6 +114,16 @@ app.use(
     credentials: true,
   })
 );
+
+// Gzip/Brotli compression for all responses
+app.use(compression({
+  level: 6,
+  threshold: 1024,
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  }
+}));
 
 // Security Headers (including fix for Cross-Origin-Opener-Policy)
 app.use((req, res, next) => {
@@ -285,9 +296,16 @@ app.get('/api/html-proxy', async (req, res) => {
   }
 });
 
-// Disable caching for all /api responses
+// API Cache-Control headers
 app.use('/api', (req, res, next) => {
-  res.set('Cache-Control', 'no-store');
+  if (req.method === 'GET') {
+    // GET requests: allow short caching with revalidation
+    // Browsers cache for 60s, CDN/proxy for 30s, serve stale while revalidating
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=30, stale-while-revalidate=120');
+  } else {
+    // Mutations (POST, PUT, DELETE): never cache
+    res.set('Cache-Control', 'no-store');
+  }
   next();
 });
 

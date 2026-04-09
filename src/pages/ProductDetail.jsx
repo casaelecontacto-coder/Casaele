@@ -91,7 +91,7 @@ function ProductDetail() {
   // Function passed to LikeSection to handle clicks on recommended products
   const handleLikeCardClick = (card) => {
     // Navigate to the detail page of the clicked recommended product
-    navigate(`/product-detail/${card._id}`);
+    navigate(`/product-detail/${card.slug || card._id}`);
   };
 
   // --- Render Logic ---

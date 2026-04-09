@@ -90,7 +90,7 @@ function CourseDetail() {
   // Function passed to LikeSection to handle clicks on recommended courses
   const handleLikeCardClick = (card) => {
     // Navigate to the detail page of the clicked recommended course
-    navigate(`/course-detail/${card._id}`); 
+    navigate(`/course-detail/${card.slug || card._id}`);
     // No need to setCourse(null) here, the useEffect dependency on courseId handles the reload
   };
 

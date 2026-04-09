@@ -1,6 +1,23 @@
 import { Router } from 'express'
+import mongoose from 'mongoose'
 import Material from '../models/Material.js'
 import { verifyFirebaseToken } from '../middleware/auth.js'
+
+function generateSlug(text) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+async function ensureUniqueSlug(slug, excludeId = null) {
+  let candidate = slug;
+  let counter = 1;
+  while (true) {
+    const query = { slug: candidate };
+    if (excludeId) query._id = { $ne: excludeId };
+    const existing = await Material.findOne(query);
+    if (!existing) return candidate;
+    candidate = `${slug}-${counter++}`;
+  }
+}
 
 const router = Router()
 
@@ -49,8 +66,12 @@ router.post('/', verifyFirebaseToken, async (req, res) => {
       finalEmbedIds = [...finalEmbedIds, ...createdEmbeds]
     }
     
-    const material = await Material.create({ 
-      title, 
+    const baseSlug = req.body.slug ? generateSlug(req.body.slug) : generateSlug(title);
+    const slug = await ensureUniqueSlug(baseSlug);
+
+    const material = await Material.create({
+      title,
+      slug,
       author: author || '',
       description: description || '',
       category: category || '', 
@@ -243,12 +264,21 @@ router.get('/', async (req, res) => {
   }
 })
 
-// Read one (public)
-// No changes needed
+// Read one (public) - supports both ObjectId and slug
 router.get('/:id', async (req, res) => {
-  const item = await Material.findById(req.params.id).populate('embedIds')
-  if (!item) return res.status(404).json({ message: 'Not found' })
-  res.json(item)
+  try {
+    let item;
+    if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+      item = await Material.findById(req.params.id).populate('embedIds');
+    }
+    if (!item) {
+      item = await Material.findOne({ slug: req.params.id }).populate('embedIds');
+    }
+    if (!item) return res.status(404).json({ message: 'Not found' });
+    res.json(item);
+  } catch (e) {
+    res.status(500).json({ message: 'Server error' });
+  }
 })
 
 // Update (admin)
@@ -295,9 +325,17 @@ router.put('/:id', verifyFirebaseToken, async (req, res) => {
       finalEmbedIds = [...finalEmbedIds, ...createdEmbeds]
     }
     
+    // Handle slug
+    let slugValue;
+    if (req.body.slug !== undefined) {
+      const baseSlug = generateSlug(req.body.slug || title || '');
+      if (baseSlug) slugValue = await ensureUniqueSlug(baseSlug, req.params.id);
+    }
+
     // updateData object with all categorization fields
-    const updateData = { 
-      title, 
+    const updateData = {
+      title,
+      ...(slugValue && { slug: slugValue }),
       author: author || '',
       category, 
       subCategory,

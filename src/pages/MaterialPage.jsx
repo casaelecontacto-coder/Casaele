@@ -133,7 +133,7 @@ function MaterialPage() {
                 // *** CHANGED: Wrapped search result in a Link ***
                 <Link 
                   key={item._id} 
-                  to={`/material-detail/${item._id}`}
+                  to={`/material-detail/${item.slug || item._id}`}
                   state={{ material: item }}
                   className="block bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
                 >

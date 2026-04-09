@@ -1,6 +1,22 @@
 import Product from '../models/Product.js';
 import mongoose from 'mongoose';
 
+function generateSlug(text) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+async function ensureUniqueSlug(Model, slug, excludeId = null) {
+  let candidate = slug;
+  let counter = 1;
+  while (true) {
+    const query = { slug: candidate };
+    if (excludeId) query._id = { $ne: excludeId };
+    const existing = await Model.findOne(query);
+    if (!existing) return candidate;
+    candidate = `${slug}-${counter++}`;
+  }
+}
+
 // Utility to handle validation errors (can be shared or duplicated)
 const handleValidationError = (error, res) => {
     let errors = {};
@@ -134,10 +150,14 @@ export const getProducts = async (req, res) => {
 // @access  Public
 export const getProductById = async (req, res) => {
      try {
-        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({ message: 'Invalid product ID format' });
+        let product;
+        if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+            product = await Product.findById(req.params.id);
         }
-        const product = await Product.findById(req.params.id);
+        // Fallback: try slug lookup
+        if (!product) {
+            product = await Product.findOne({ slug: req.params.id });
+        }
         if (product) {
             res.json(product);
         } else {
@@ -156,6 +176,7 @@ export const createProduct = async (req, res) => {
     try {
         const {
             name,
+            slug: customSlug,
             description,
             price,
             discountPrice,
@@ -172,8 +193,12 @@ export const createProduct = async (req, res) => {
             return res.status(400).json({ message: 'Name, description, price, and category are required' });
         }
 
+        const baseSlug = customSlug ? generateSlug(customSlug) : generateSlug(name);
+        const slug = await ensureUniqueSlug(Product, baseSlug);
+
         const newProduct = new Product({
             name,
+            slug,
             description,
             price,
             discountPrice: discountPrice || 0,
@@ -208,6 +233,7 @@ export const updateProduct = async (req, res) => {
 
         const {
             name,
+            slug: customSlug,
             description,
             price,
             discountPrice,
@@ -223,6 +249,10 @@ export const updateProduct = async (req, res) => {
 
         const updateData = {};
         if (name) updateData.name = name;
+        if (customSlug !== undefined) {
+            const baseSlug = generateSlug(customSlug || name || '');
+            if (baseSlug) updateData.slug = await ensureUniqueSlug(Product, baseSlug, req.params.id);
+        }
         if (description) updateData.description = description;
         if (price != null) updateData.price = price;
         if (discountPrice != null) updateData.discountPrice = discountPrice;

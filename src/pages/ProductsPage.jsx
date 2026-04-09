@@ -188,14 +188,24 @@ function ProductsPage() {
         
         {/* Products Grid and Pagination */}
         <div className="w-full lg:w-3/4">
+          {/* Category Description */}
+          {selectedCategory && (() => {
+            const cat = allCategories.find(c => c.name === selectedCategory);
+            return cat?.description ? (
+              <div className="mb-6 p-4 bg-white rounded-xl shadow-sm border border-gray-200">
+                <h2 className="text-xl font-bold text-gray-900 mb-1">{cat.name}</h2>
+                <p className="text-gray-600 text-sm">{cat.description}</p>
+              </div>
+            ) : null;
+          })()}
           {loading ? (
              <div className="flex justify-center items-center h-64"><Spinner /></div>
           ) : (
             <>
               {/* Product Grid now receives the paginated items */}
-              <ProductGrid 
+              <ProductGrid
                   products={currentItems} // Pass paginated items
-                  itemType="product" 
+                  itemType="product"
               /> 
               {/* Pagination */}
               {totalPages > 1 && (

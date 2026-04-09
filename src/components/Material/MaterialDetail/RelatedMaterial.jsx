@@ -48,7 +48,7 @@ function RelatedMaterials({ materials, onCardClick }) {
         {materials.map((card, i) => (
           <Link 
             key={card._id || i} 
-            to={`/material-detail/${card._id}`}
+            to={`/material-detail/${card.slug || card._id}`}
             className="snap-center flex-shrink-0 w-5/6 sm:w-1/2 md:w-1/3 lg:w-1/4 block" 
             onClick={() => onCardClick && onCardClick(card)}
           >

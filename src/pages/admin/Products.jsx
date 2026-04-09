@@ -21,6 +21,7 @@ const Products = () => {
   // --- STATE MODIFIED ---
   const [formData, setFormData] = useState({
     name: '',
+    slug: '',
     description: '',
     category: '',
     imageUrls: [], // Changed from imageUrl: ''
@@ -300,6 +301,7 @@ const Products = () => {
 
     setFormData({
       name: product.name || '',
+      slug: product.slug || '',
       description: product.description || '',
       category: product.category || '',
       imageUrls: images, // Use the new array
@@ -445,6 +447,11 @@ const Products = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label><input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" required /></div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Category *</label><select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-red-500 focus:border-red-500" required><option value="">Select Category</option>{categories.map(category => (<option key={category._id} value={category.name}>{category.name}</option>))}</select></div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">URL Slug</label>
+                  <input type="text" value={formData.slug || ''} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder={formData.name ? formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'auto-generated-from-name'} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 font-mono text-sm" />
+                  <p className="mt-1 text-xs text-gray-500">Leave blank to auto-generate from name. Used in page URL for SEO.</p>
                 </div>
                 <div><label className="block text-sm font-medium text-gray-700 mb-1">Description *</label><textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={4} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" required /></div>
                 

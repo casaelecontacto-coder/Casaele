@@ -14,8 +14,8 @@ function ProductGrid({ products, itemType }) {
       {products && products.length > 0 ? (
         products.map((product) => {
           const detailUrl = itemType === 'course'
-            ? `/course-detail/${product._id}`
-            : `/product-detail/${product._id}`;
+            ? `/course-detail/${product.slug || product._id}`
+            : `/product-detail/${product.slug || product._id}`;
 
           const imageUrl = (product.imageUrls && product.imageUrls[0]) || (product.images && product.images[0]) || product.thumbnail || product.imageUrl || DEFAULT_IMAGE; 
           const title = product.title || product.name;

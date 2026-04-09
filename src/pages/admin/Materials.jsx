@@ -9,8 +9,9 @@ export default function Materials() {
   const [editing, setEditing] = useState(null)
   
   // Form state with all categorization fields
-  const [form, setForm] = useState({ 
-    title: '', 
+  const [form, setForm] = useState({
+    title: '',
+    slug: '',
     author: '',
     description: '', 
     category: '', 
@@ -179,6 +180,7 @@ export default function Materials() {
     setEditing(material);
     setForm({
       title: material.title || '',
+      slug: material.slug || '',
       author: material.author || '',
       description: material.description || '',
       category: material.category || '',
@@ -241,8 +243,9 @@ export default function Materials() {
           <button
             onClick={() => { 
               setEditing(null); 
-              setForm({ 
-                title: '', 
+              setForm({
+                title: '',
+                slug: '',
                 author: '',
                 description: '', 
                 category: '', 
@@ -361,6 +364,7 @@ export default function Materials() {
             <div className="grid grid-cols-1 gap-3">
               {[
                 { label: 'Title', key: 'title' },
+                { label: 'URL Slug', key: 'slug', placeholder: 'auto-generated-from-title (leave blank for auto)' },
                 { label: 'Author', key: 'author', placeholder: 'e.g., Dr. Maria Rodriguez, CasaDeELE Team' },
                 { label: 'Short Description (for cards)', key: 'description' },
                 { label: 'Room/Category', key: 'category', placeholder: 'e.g., Grammar, Vocabulary, Conversation' },

@@ -108,6 +108,9 @@ export const uploadDigitalProductFile = async (req, res) => {
     // Check if Google Drive is configured - use it for digital products
     const useGoogleDrive = !!(process.env.GOOGLE_DRIVE_CLIENT_ID && process.env.GOOGLE_DRIVE_CLIENT_SECRET && process.env.GOOGLE_DRIVE_REFRESH_TOKEN && process.env.GOOGLE_DRIVE_FOLDER_ID)
 
+    console.log('[Upload] Storage backend:', useGoogleDrive ? 'Google Drive' : 'Cloudinary')
+    console.log('[Upload] File:', req.file.originalname, `(${(req.file.size / 1024 / 1024).toFixed(2)}MB)`)
+
     if (useGoogleDrive) {
       // Upload to Google Drive
       const { fileId } = await uploadFileToDrive(req.file.buffer, req.file.originalname, req.file.mimetype)

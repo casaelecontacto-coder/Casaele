@@ -18,7 +18,7 @@ const CardSlider = forwardRef(({ data }, ref) => {
         {data.map((material) => (
           // *** CHANGED: Added Link component back ***
           <Link
-            to={`/material-detail/${material._id}`}
+            to={`/material-detail/${material.slug || material._id}`}
             key={material._id}
             state={{ material }} // Pass material data in state
             className="snap-start flex-shrink-0 w-[200px] sm:w-[220px] md:w-[250px] lg:w-[300px]"

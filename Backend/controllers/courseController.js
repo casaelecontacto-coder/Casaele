@@ -1,6 +1,22 @@
 import Course from '../models/Course.js';
 import mongoose from 'mongoose';
-import cloudinary from '../config/cloudinaryConfig.js'; // <-- 1. IMPORT CLOUDINARY
+import cloudinary from '../config/cloudinaryConfig.js';
+
+function generateSlug(text) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+async function ensureUniqueSlug(Model, slug, excludeId = null) {
+  let candidate = slug;
+  let counter = 1;
+  while (true) {
+    const query = { slug: candidate };
+    if (excludeId) query._id = { $ne: excludeId };
+    const existing = await Model.findOne(query);
+    if (!existing) return candidate;
+    candidate = `${slug}-${counter++}`;
+  }
+}
 
 // Utility to handle validation errors
 const handleValidationError = (error, res) => {
@@ -132,10 +148,13 @@ export const getCourses = async (req, res) => {
 // @access  Public
 export const getCourseById = async (req, res) => {
     try {
-        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({ message: 'Invalid course ID format' });
+        let course;
+        if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+            course = await Course.findById(req.params.id);
         }
-        const course = await Course.findById(req.params.id);
+        if (!course) {
+            course = await Course.findOne({ slug: req.params.id });
+        }
         if (course) {
             res.json(course);
         } else {
@@ -152,15 +171,16 @@ export const getCourseById = async (req, res) => {
 // @access  Admin (Protected by verifyFirebaseToken)
 export const createCourse = async (req, res) => {
     try {
-        const { 
-            title, 
+        const {
+            title,
+            slug: customSlug,
             subtitle,
-            description, 
-            price, 
-            discountPrice, 
-            category, 
-            instructor, 
-            level, 
+            description,
+            price,
+            discountPrice,
+            category,
+            instructor,
+            level,
             availableLevels,
             productType,
             purchaseType,
@@ -213,9 +233,13 @@ export const createCourse = async (req, res) => {
             return res.status(400).json({ message: 'Form URL is required when purchaseType is "form"' });
         }
 
+        const baseSlug = customSlug ? generateSlug(customSlug) : generateSlug(title);
+        const slug = await ensureUniqueSlug(Course, baseSlug);
+
         const newCourse = new Course({
             title,
-            subtitle: subtitle || '', // Add subtitle field
+            slug,
+            subtitle: subtitle || '',
             description,
             price: validPurchaseType === 'price' ? price : 0, // Only set price if purchaseType is 'price'
             discountPrice: validPurchaseType === 'price' ? (discountPrice || 0) : 0,
@@ -258,6 +282,12 @@ export const updateCourse = async (req, res) => {
 
         // Construct update object with fields from req.body
         const updateData = { ...req.body };
+
+        // Handle slug update
+        if (req.body.slug !== undefined) {
+            const baseSlug = generateSlug(req.body.slug || req.body.title || course.title);
+            if (baseSlug) updateData.slug = await ensureUniqueSlug(Course, baseSlug, req.params.id);
+        }
 
         // Validate purchaseType if provided
         if (req.body.purchaseType) {
