@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { FiPlus, FiSearch, FiEdit, FiTrash2, FiImage, FiSave, FiX, FiRefreshCw, FiDollarSign, FiBookOpen, FiFile, FiDownload } from 'react-icons/fi';
 import { apiGet, apiSend } from '../../utils/api';
-import Spinner from '../../components/Common/Spinner'; 
+import Spinner from '../../components/Common/Spinner';
+import LazyTinyMCE from '../../components/Admin/LazyTinyMCE';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -33,7 +34,9 @@ const Products = () => {
     downloadSettings: {
       maxDownloads: 3,
       linkExpiryDays: 30
-    }
+    },
+    subscriptionUrl: '',
+    subscriptionLabel: 'Subscribe'
   });
   // --- END ---
 
@@ -310,7 +313,9 @@ const Products = () => {
       availableLevels: product.availableLevels || [],
       productType: product.productType || 'Digital',
       digitalFiles: product.digitalFiles || [],
-      downloadSettings: product.downloadSettings || { maxDownloads: 3, linkExpiryDays: 30 }
+      downloadSettings: product.downloadSettings || { maxDownloads: 3, linkExpiryDays: 30 },
+      subscriptionUrl: product.subscriptionUrl || '',
+      subscriptionLabel: product.subscriptionLabel || 'Subscribe'
     });
 
     // Populate multi-currency prices
@@ -361,7 +366,8 @@ const Products = () => {
                  setFormData({
                    name: '', description: '', category: '', imageUrls: [],
                    price: 0, discountPrice: 0, availableLevels: [], productType: 'Digital',
-                   digitalFiles: [], downloadSettings: { maxDownloads: 3, linkExpiryDays: 30 }
+                   digitalFiles: [], downloadSettings: { maxDownloads: 3, linkExpiryDays: 30 },
+                   subscriptionUrl: '', subscriptionLabel: 'Subscribe'
                  });
                  // Reset multi-currency prices
                  setPricesUSD({ price: 0, discountPrice: 0 });
@@ -453,7 +459,21 @@ const Products = () => {
                   <input type="text" value={formData.slug || ''} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder={formData.name ? formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'auto-generated-from-name'} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 font-mono text-sm" />
                   <p className="mt-1 text-xs text-gray-500">Leave blank to auto-generate from name. Used in page URL for SEO.</p>
                 </div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Description *</label><textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={4} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" required /></div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                  <LazyTinyMCE
+                    apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+                    value={formData.description}
+                    onEditorChange={(content) => setFormData({ ...formData, description: content })}
+                    init={{
+                      height: 300,
+                      menubar: false,
+                      plugins: 'link lists table code fullscreen image media',
+                      toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist | link image media | code fullscreen',
+                      content_style: 'body { font-family:Inter,sans-serif; font-size:14px }'
+                    }}
+                  />
+                </div>
                 
                  {/* --- MODIFIED IMAGE UPLOAD SECTION --- */}
                  <div>
@@ -704,6 +724,22 @@ const Products = () => {
                   </div>
                 )}
                 {/* --- END NEW --- */}
+
+                {/* Subscription Button (Optional) */}
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <h4 className="text-sm font-semibold text-gray-800 mb-3">Subscription Button (Optional)</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Subscription URL</label>
+                      <input type="url" value={formData.subscriptionUrl} onChange={(e) => setFormData({ ...formData, subscriptionUrl: e.target.value })} placeholder="https://example.com/subscribe" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Button Label</label>
+                      <input type="text" value={formData.subscriptionLabel} onChange={(e) => setFormData({ ...formData, subscriptionLabel: e.target.value })} placeholder="Subscribe" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" />
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">Add a URL to show a subscription button on the product page. Leave blank to hide.</p>
+                </div>
 
                 <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
                   <button type="button" onClick={() => setShowModal(false)} className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>

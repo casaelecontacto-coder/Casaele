@@ -44,6 +44,10 @@ const productSchema = new mongoose.Schema({
     uploadedAt: { type: Date, default: Date.now }
   }],
 
+  // Subscription option (optional external link)
+  subscriptionUrl: { type: String, default: '' },
+  subscriptionLabel: { type: String, default: 'Subscribe' },
+
   // Download settings for digital products
   downloadSettings: {
     maxDownloads: { type: Number, default: 3, min: 1 },

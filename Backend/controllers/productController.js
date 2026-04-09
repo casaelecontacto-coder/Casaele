@@ -186,7 +186,9 @@ export const createProduct = async (req, res) => {
             productType,
             digitalFiles,
             downloadSettings,
-            prices
+            prices,
+            subscriptionUrl,
+            subscriptionLabel
         } = req.body;
 
         if (!name || !description || price == null || !category) {
@@ -208,7 +210,9 @@ export const createProduct = async (req, res) => {
             productType: productType || 'Digital',
             digitalFiles: Array.isArray(digitalFiles) ? digitalFiles : [],
             downloadSettings: downloadSettings || { maxDownloads: 3, linkExpiryDays: 30 },
-            prices: prices || { USD: { price: 0, discountPrice: 0 }, EUR: { price: 0, discountPrice: 0 }, INR: { price: 0, discountPrice: 0 } }
+            prices: prices || { USD: { price: 0, discountPrice: 0 }, EUR: { price: 0, discountPrice: 0 }, INR: { price: 0, discountPrice: 0 } },
+            subscriptionUrl: subscriptionUrl || '',
+            subscriptionLabel: subscriptionLabel || 'Subscribe'
         });
 
         const savedProduct = await newProduct.save();
@@ -244,7 +248,9 @@ export const updateProduct = async (req, res) => {
             isActive,
             digitalFiles,
             downloadSettings,
-            prices
+            prices,
+            subscriptionUrl,
+            subscriptionLabel
         } = req.body;
 
         const updateData = {};
@@ -278,6 +284,10 @@ export const updateProduct = async (req, res) => {
         if (prices) {
             updateData.prices = prices;
         }
+
+        // Subscription fields
+        if (subscriptionUrl !== undefined) updateData.subscriptionUrl = subscriptionUrl;
+        if (subscriptionLabel !== undefined) updateData.subscriptionLabel = subscriptionLabel;
 
         updateData.updatedAt = Date.now();
 
