@@ -2,6 +2,7 @@ import CmsPage from '../models/CmsPage.js';
 import Pick from '../models/Pick.js';
 import Testimonial from '../models/Testimonial.js';
 import Teacher from '../models/Teacher.js';
+import HomeSlide from '../models/HomeSlide.js';
 import { getCachedCms, setCachedCms } from '../middleware/cmsCache.js';
 
 /**
@@ -104,12 +105,13 @@ export async function getHomePage(req, res) {
         cmsFriendly: {},
         picks: [],
         testimonials: [],
-        teachers: []
+        teachers: [],
+        homeSlides: []
       });
     }
 
     // Fetch other homepage data in parallel
-    const [picks, testimonials, teachers] = await Promise.all([
+    const [picks, testimonials, teachers, homeSlides] = await Promise.all([
       Pick.find({ isActive: true })
         .sort({ order: 1, createdAt: -1 })
         .limit(3)
@@ -121,6 +123,10 @@ export async function getHomePage(req, res) {
 
       Teacher.find()
         .sort({ createdAt: -1 })
+        .lean(),
+
+      HomeSlide.find({ isActive: true })
+        .sort({ order: 1, createdAt: -1 })
         .lean()
     ]);
 
@@ -130,7 +136,8 @@ export async function getHomePage(req, res) {
       cmsFriendly,
       picks: picks || [],
       testimonials: testimonials || [],
-      teachers: teachers || []
+      teachers: teachers || [],
+      homeSlides: homeSlides || []
     });
   } catch (error) {
     console.error('Error fetching home page data:', error);
@@ -140,7 +147,8 @@ export async function getHomePage(req, res) {
       cmsFriendly: {},
       picks: [],
       testimonials: [],
-      teachers: []
+      teachers: [],
+      homeSlides: []
     });
   }
 }

@@ -61,6 +61,7 @@ const CommentsManager = lazy(() => import("./pages/admin/CommentsManager"));
 const Teachers = lazy(() => import("./pages/admin/Teachers"));
 const PinterestManager = lazy(() => import("./pages/admin/PinterestManager"));
 const PicksManager = lazy(() => import("./pages/admin/PicksManager"));
+const HomeSlidesManager = lazy(() => import("./pages/admin/HomeSlidesManager"));
 const GardenContent = lazy(() => import("./pages/admin/GardenContent"));
 const GardenPostsList = lazy(() => import("./pages/admin/GardenPostsList"));
 const ContentUpload = lazy(() => import("./pages/admin/ContentUpload"));
@@ -146,6 +147,7 @@ function AppWrapper() {
               <Route path="teachers" element={<Teachers />} />
               <Route path="pinterest" element={<PinterestManager />} />
               <Route path="picks" element={<PicksManager />} />
+              <Route path="home-slides" element={<HomeSlidesManager />} />
               <Route path="magazines" element={<Magazines />} />
               <Route path="*" element={<AdminNotFound />} />
               <Route path="garden-suggestions" element={<GardenContent />} />

@@ -49,7 +49,8 @@ export function HomePageProvider({ children }) {
           cms: {},
           picks: [],
           testimonials: [],
-          teachers: []
+          teachers: [],
+          homeSlides: []
         });
       } finally {
         setLoading(false);

@@ -2,6 +2,7 @@ import CmsPage from '../models/CmsPage.js'
 import Pick from '../models/Pick.js'
 import Testimonial from '../models/Testimonial.js'
 import Teacher from '../models/Teacher.js'
+import HomeSlide from '../models/HomeSlide.js'
 
 /**
  * Aggregated endpoint for Home page data
@@ -28,12 +29,13 @@ export async function getHomeData(req, res) {
         cms: {},
         picks: [],
         testimonials: [],
-        teachers: []
+        teachers: [],
+        homeSlides: []
       });
     }
 
     // Fetch all data in parallel using Promise.all for maximum performance
-    const [cmsResults, picks, testimonials, teachers] = await Promise.all([
+    const [cmsResults, picks, testimonials, teachers, homeSlides] = await Promise.all([
       // Fetch all CMS blocks in parallel
       Promise.all(
         homeCmsSlugs.map(slug =>
@@ -52,6 +54,10 @@ export async function getHomeData(req, res) {
       // Fetch all teachers
       Teacher.find()
         .sort({ createdAt: -1 })
+        .lean(),
+      // Fetch active home slides
+      HomeSlide.find({ isActive: true })
+        .sort({ order: 1, createdAt: -1 })
         .lean()
     ]);
 
@@ -75,16 +81,18 @@ export async function getHomeData(req, res) {
       cms: cmsData,
       picks: picks || [],
       testimonials: testimonials || [],
-      teachers: teachers || []
+      teachers: teachers || [],
+      homeSlides: homeSlides || []
     });
   } catch (error) {
     console.error('Error fetching home data:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       message: 'Failed to fetch home data',
       cms: {},
       picks: [],
       testimonials: [],
-      teachers: []
+      teachers: [],
+      homeSlides: []
     });
   }
 }

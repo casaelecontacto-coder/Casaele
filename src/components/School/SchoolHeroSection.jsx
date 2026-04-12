@@ -30,7 +30,7 @@ function HeroSection() {
       {/* Image */}
       <div className="w-full lg:w-1/2 flex justify-center lg:justify-end mb-8 lg:mb-0">
         <img
-          src="/School/image 56.svg"
+          src="/School/school_page_alient.jpeg"
           alt="Character"
           className="max-w-xs sm:max-w-sm md:max-w-md w-full h-auto"
         />

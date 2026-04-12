@@ -40,6 +40,7 @@ import chapterRoutes from './routes/chapterRoutes.js';
 import digitalDownloadRoutes from './routes/digitalDownloadRoutes.js';
 import magazineRoutes from './routes/magazineRoutes.js';
 import testEmailRoutes from './routes/testEmailRoutes.js';
+import homeSlideRoutes from './routes/homeSlideRoutes.js';
 
 dotenv.config();
 
@@ -340,6 +341,7 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/digital-downloads', digitalDownloadRoutes);
 app.use('/api/magazines', magazineRoutes);
+app.use('/api/home-slides', homeSlideRoutes);
 app.use('/api', testEmailRoutes);
 
 // Error Handlers

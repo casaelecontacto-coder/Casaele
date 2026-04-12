@@ -25,6 +25,7 @@ const links = [
   { to: '/admin/comments', label: 'Comments', icon: FiMail },
   { to: '/admin/teachers', label: 'Teachers', icon: FiUsers },
   { to: '/admin/picks', label: "Ele's Picks", icon: FiStar },
+  { to: '/admin/home-slides', label: 'Home Slideshow', icon: FiImage },
   { to: '/admin/magazines', label: 'Magazines', icon: FiBookOpen },
 ]
 
