@@ -119,7 +119,7 @@ function MagazineDetail() {
             )}
 
             {magazine.description && (
-              <p className="text-lg text-gray-600 pt-1">{magazine.description}</p>
+              <div className="text-lg text-gray-600 pt-1 prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: magazine.description }} />
             )}
 
             {/* Pricing */}
@@ -223,7 +223,7 @@ function MagazineDetail() {
         {magazine.description && (
           <div className="bg-white p-6 md:p-8 rounded-lg shadow-sm border border-gray-200 mb-16">
             <h3 className="text-2xl font-semibold text-gray-900 mb-4">About this Magazine</h3>
-            <p className="text-gray-700 whitespace-pre-wrap">{magazine.description}</p>
+            <div className="text-gray-700 prose max-w-none" dangerouslySetInnerHTML={{ __html: magazine.description }} />
           </div>
         )}
 

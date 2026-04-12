@@ -289,9 +289,7 @@ function MagazinePage() {
                             {magazine.title}
                           </h3>
                           {magazine.description && (
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-3">
-                              {magazine.description}
-                            </p>
+                            <div className="text-sm text-gray-600 mb-3 line-clamp-3 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: magazine.description }} />
                           )}
                           <div className="flex items-center justify-between">
                             {isFree ? (

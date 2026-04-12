@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiPlus, FiEdit, FiTrash2, FiImage, FiX, FiFile, FiDollarSign } from 'react-icons/fi';
 import { apiGet, apiSend } from '../../utils/api';
+import LazyTinyMCE from '../../components/Admin/LazyTinyMCE';
 import Spinner from '../../components/Common/Spinner';
 
 const Magazines = () => {
@@ -275,7 +276,7 @@ const Magazines = () => {
                     )}
                   </div>
                   {magazine.description && (
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{magazine.description}</p>
+                    <div className="text-gray-600 text-sm mb-3 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: magazine.description }} />
                   )}
                   <div className="flex flex-wrap gap-2 mb-3">
                     {magazine.category && (
@@ -345,7 +346,23 @@ const Magazines = () => {
                 {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                  <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" placeholder="Brief description of the magazine issue..." />
+                  <div className="mt-1 rounded-lg overflow-hidden border border-gray-200 focus-within:border-red-600 focus-within:ring-2 focus-within:ring-red-100 transition-all duration-200">
+                    <LazyTinyMCE
+                      apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+                      value={formData.description}
+                      onEditorChange={(v) => setFormData({ ...formData, description: v })}
+                      init={{
+                        height: 250,
+                        menubar: false,
+                        plugins: 'link lists table code fullscreen image media',
+                        toolbar:
+                          'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media | code',
+                        placeholder: 'Brief description of the magazine issue...',
+                        content_style:
+                          'body { font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; font-size:14px; color:#111827; background-color:#fff }'
+                      }}
+                    />
+                  </div>
                 </div>
 
                 {/* Cover Image Upload */}
