@@ -164,3 +164,48 @@ export const uploadDigitalProductFile = async (req, res) => {
     })
   }
 }
+
+// Controller function to handle magazine PDF uploads (Google Drive)
+export const uploadMagazinePdf = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' })
+    }
+
+    // Validate PDF
+    const fileExtension = req.file.originalname.split('.').pop().toLowerCase()
+    if (req.file.mimetype !== 'application/pdf' && fileExtension !== 'pdf') {
+      return res.status(400).json({ success: false, message: 'Only PDF files are allowed' })
+    }
+
+    // Validate file size (max 100MB)
+    if (req.file.size > 100 * 1024 * 1024) {
+      return res.status(400).json({
+        success: false,
+        message: `File size exceeds 100MB limit. File size: ${(req.file.size / 1024 / 1024).toFixed(2)}MB`
+      })
+    }
+
+    console.log('[Upload] Magazine PDF:', req.file.originalname, `(${(req.file.size / 1024 / 1024).toFixed(2)}MB)`)
+
+    // Upload to Google Drive (same as digital products)
+    const { fileId } = await uploadFileToDrive(req.file.buffer, req.file.originalname, req.file.mimetype)
+
+    console.log('[Upload] Magazine PDF uploaded to Google Drive:', fileId)
+
+    res.status(200).json({
+      success: true,
+      url: `gdrive://${fileId}`,
+      fileId: fileId,
+      fileName: req.file.originalname,
+      fileSize: req.file.size
+    })
+  } catch (error) {
+    console.error('Magazine PDF Upload Error:', error)
+    res.status(500).json({
+      success: false,
+      message: 'PDF upload failed. Please try again.',
+      error: error.message
+    })
+  }
+}

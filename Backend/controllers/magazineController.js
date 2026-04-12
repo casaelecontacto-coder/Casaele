@@ -1,5 +1,6 @@
 import Magazine from '../models/Magazine.js';
 import mongoose from 'mongoose';
+import { getFileStreamFromDrive } from '../services/googleDriveService.js';
 
 function generateSlug(text) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -198,5 +199,52 @@ export const deleteMagazine = async (req, res) => {
   } catch (error) {
     console.error('Error deleting magazine:', error);
     res.status(500).json({ message: 'Server error deleting magazine' });
+  }
+};
+
+// @desc    Serve magazine PDF (proxy from Google Drive)
+// @route   GET /api/magazines/:id/pdf
+// @access  Public (for free magazines)
+export const serveMagazinePdf = async (req, res) => {
+  try {
+    let magazine;
+    if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+      magazine = await Magazine.findById(req.params.id);
+    }
+    if (!magazine) {
+      magazine = await Magazine.findOne({ slug: req.params.id });
+    }
+    if (!magazine) {
+      return res.status(404).json({ message: 'Magazine not found' });
+    }
+
+    // Only serve free magazines directly; paid ones need purchase verification
+    if (magazine.accessType === 'paid') {
+      return res.status(403).json({ message: 'This is a paid magazine. Please purchase to access.' });
+    }
+
+    const pdfUrl = magazine.pdfUrl;
+    if (!pdfUrl) {
+      return res.status(404).json({ message: 'No PDF available for this magazine' });
+    }
+
+    if (pdfUrl.startsWith('gdrive://')) {
+      const fileId = pdfUrl.replace('gdrive://', '');
+      const { stream, mimeType, size, fileName } = await getFileStreamFromDrive(fileId);
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="${fileName || 'magazine.pdf'}"`);
+      if (size) res.setHeader('Content-Length', size);
+      // Allow cross-origin access for the flipbook viewer
+      res.setHeader('Access-Control-Allow-Origin', '*');
+
+      stream.pipe(res);
+    } else {
+      // Fallback: redirect to the direct URL (Cloudinary or other)
+      res.redirect(pdfUrl);
+    }
+  } catch (error) {
+    console.error('Error serving magazine PDF:', error);
+    res.status(500).json({ message: 'Server error serving PDF' });
   }
 };

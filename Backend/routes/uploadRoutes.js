@@ -1,5 +1,5 @@
 import express from 'express'
-import { uploadCmsImage, uploadHtmlFile, uploadDigitalProductFile } from '../controllers/uploadController.js'
+import { uploadCmsImage, uploadHtmlFile, uploadDigitalProductFile, uploadMagazinePdf } from '../controllers/uploadController.js'
 import { upload } from '../config/cloudinaryConfig.js'
 
 const router = express.Router()
@@ -16,5 +16,8 @@ router.post('/html-file', upload.single('htmlFile'), uploadHtmlFile)
 // The route: POST /api/uploads/digital-product-file
 // Upload digital product files (PDF, DOC, MP3, MP4, etc.) to Cloudinary
 router.post('/digital-product-file', upload.single('file'), uploadDigitalProductFile)
+
+// Magazine PDF uploads (publicly accessible for viewing)
+router.post('/magazine-pdf', upload.single('file'), uploadMagazinePdf)
 
 export default router

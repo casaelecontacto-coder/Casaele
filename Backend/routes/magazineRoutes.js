@@ -6,6 +6,7 @@ import {
   createMagazine,
   updateMagazine,
   deleteMagazine,
+  serveMagazinePdf,
 } from '../controllers/magazineController.js';
 
 const router = express.Router();
@@ -13,6 +14,9 @@ const router = express.Router();
 router.route('/')
   .get(getMagazines)
   .post(verifyFirebaseToken, createMagazine);
+
+// PDF proxy endpoint must come before /:id to avoid route conflict
+router.get('/:id/pdf', serveMagazinePdf);
 
 router.route('/:id')
   .get(getMagazineById)

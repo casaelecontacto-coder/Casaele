@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { apiGet } from '../utils/api';
 import Spinner from '../components/Common/Spinner';
 import { useCurrency } from '../context/CurrencyContext';
 import { useCart } from '../context/CartContext';
+
+const FlipbookViewer = lazy(() => import('../components/Magazine/FlipbookViewer'));
 
 function MagazineDetail() {
   const { id } = useParams();
@@ -74,6 +76,9 @@ function MagazineDetail() {
   }
 
   const isFree = (magazine.accessType || 'free') === 'free';
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://amrit-project-lms.onrender.com';
+  // Use backend proxy for PDF serving (handles Google Drive + Cloudinary URLs)
+  const pdfProxyUrl = magazine.pdfUrl ? `${API_BASE}/api/magazines/${magazine._id}/pdf` : null;
   const currentPrice = magazine.prices?.[currency]?.price || magazine.price || 0;
   const currentDiscountPrice = magazine.prices?.[currency]?.discountPrice || magazine.discountPrice || 0;
   const hasDiscount = currentDiscountPrice > 0 && currentDiscountPrice < currentPrice;
@@ -143,21 +148,6 @@ function MagazineDetail() {
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-3 pt-4">
-              {/* Read / Open PDF Button - always visible for free, visible after purchase for paid */}
-              {isFree && magazine.pdfUrl && (
-                <a
-                  href={magazine.pdfUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 bg-[rgba(173,21,24,1)] text-white px-8 py-4 rounded-full hover:bg-red-700 transition-colors text-lg font-semibold shadow-md w-full max-w-xs"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                  Read Magazine
-                </a>
-              )}
-
               {/* Buy Button for paid magazines */}
               {!isFree && (
                 <button
@@ -180,10 +170,25 @@ function MagazineDetail() {
                 </button>
               )}
 
-              {/* Download PDF Button for free magazines */}
-              {isFree && magazine.pdfUrl && (
+              {/* Open PDF Button */}
+              {isFree && pdfProxyUrl && (
                 <a
-                  href={magazine.pdfUrl}
+                  href={pdfProxyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 bg-[rgba(173,21,24,1)] text-white px-8 py-4 rounded-full hover:bg-red-700 transition-colors text-lg font-semibold shadow-md w-full max-w-xs"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                  Open PDF
+                </a>
+              )}
+
+              {/* Download PDF Button for free magazines */}
+              {isFree && pdfProxyUrl && (
+                <a
+                  href={pdfProxyUrl}
                   download
                   className="flex items-center justify-center gap-2 bg-gray-900 text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-colors text-lg font-semibold shadow-md w-full max-w-xs"
                 >
@@ -196,6 +201,23 @@ function MagazineDetail() {
             </div>
           </div>
         </div>
+
+        {/* Flipbook Viewer - for free magazines */}
+        {isFree && pdfProxyUrl && (
+          <div className="mb-16">
+            <h3 className="text-2xl font-semibold text-gray-900 mb-6">Read Magazine</h3>
+            <Suspense fallback={
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                  <Spinner />
+                  <p className="text-gray-500 text-sm">Loading flipbook viewer...</p>
+                </div>
+              </div>
+            }>
+              <FlipbookViewer pdfUrl={pdfProxyUrl} title={magazine.title} />
+            </Suspense>
+          </div>
+        )}
 
         {/* Description Section */}
         {magazine.description && (

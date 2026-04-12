@@ -110,26 +110,26 @@ const Magazines = () => {
     }
 
     setUploadingPdf(true);
-    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = 'casadeele_materials';
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
     try {
-      const cloudFormData = new FormData();
-      cloudFormData.append('file', file);
-      cloudFormData.append('upload_preset', uploadPreset);
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
 
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`, {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${apiBaseUrl}/api/uploads/magazine-pdf`, {
         method: 'POST',
-        body: cloudFormData,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: uploadFormData,
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Upload failed');
+        throw new Error(errorData.message || 'Upload failed');
       }
 
       const data = await response.json();
-      setFormData(prev => ({ ...prev, pdfUrl: data.secure_url }));
+      setFormData(prev => ({ ...prev, pdfUrl: data.url }));
     } catch (error) {
       console.error('PDF upload error:', error);
       alert(`PDF upload failed: ${error.message}`);
