@@ -38,6 +38,7 @@ import orderRoutes from './routes/orderRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import chapterRoutes from './routes/chapterRoutes.js';
 import digitalDownloadRoutes from './routes/digitalDownloadRoutes.js';
+import magazineRoutes from './routes/magazineRoutes.js';
 import testEmailRoutes from './routes/testEmailRoutes.js';
 
 dotenv.config();
@@ -338,6 +339,7 @@ app.use('/api/picks', pickRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/digital-downloads', digitalDownloadRoutes);
+app.use('/api/magazines', magazineRoutes);
 app.use('/api', testEmailRoutes);
 
 // Error Handlers

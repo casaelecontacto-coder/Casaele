@@ -32,6 +32,8 @@ const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
 const Garden = lazy(() => import("./pages/GardenOfIdeas"));
 const PostDetail = lazy(() => import("./pages/PostDetail"));
 const CmsPage = lazy(() => import("./pages/CmsPage"));
+const MagazinePage = lazy(() => import("./pages/MagazinePage"));
+const MagazineDetail = lazy(() => import("./pages/MagazineDetail"));
 
 // --- Lazy Load Admin Pages (Heavy components) ---
 const AdminLayout = lazy(() => import("./components/Admin/AdminLayout"));
@@ -62,6 +64,7 @@ const PicksManager = lazy(() => import("./pages/admin/PicksManager"));
 const GardenContent = lazy(() => import("./pages/admin/GardenContent"));
 const GardenPostsList = lazy(() => import("./pages/admin/GardenPostsList"));
 const ContentUpload = lazy(() => import("./pages/admin/ContentUpload"));
+const Magazines = lazy(() => import("./pages/admin/Magazines"));
 const AdminNotFound = lazy(() => import("./pages/admin/NotFound"));
 
 // Guard Stripe initialization
@@ -111,6 +114,8 @@ function AppWrapper() {
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
           <Route path="/garden-of-ideas" element={<Garden />} />
           <Route path="/garden-of-ideas/:id" element={<PostDetail />} />
+          <Route path="/magazine" element={<MagazinePage />} />
+          <Route path="/magazine/:id" element={<MagazineDetail />} />
           <Route path="/page/:slug" element={<CmsPage />} />
 
           {/* Admin Routes */}
@@ -141,6 +146,7 @@ function AppWrapper() {
               <Route path="teachers" element={<Teachers />} />
               <Route path="pinterest" element={<PinterestManager />} />
               <Route path="picks" element={<PicksManager />} />
+              <Route path="magazines" element={<Magazines />} />
               <Route path="*" element={<AdminNotFound />} />
               <Route path="garden-suggestions" element={<GardenContent />} />
               <Route path="garden-posts" element={<GardenPostsList />} />  
