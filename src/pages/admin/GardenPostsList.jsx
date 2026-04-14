@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { apiGet, apiSend } from '../../utils/api';
-import { FiPlus, FiEdit, FiTrash2, FiRefreshCw } from 'react-icons/fi';
+import { FiPlus, FiEdit, FiTrash2, FiRefreshCw, FiEye, FiEyeOff } from 'react-icons/fi';
 import Spinner from '../../components/Common/Spinner';
 
 export default function GardenPostsList() {
@@ -14,7 +14,7 @@ export default function GardenPostsList() {
   const fetchPosts = () => {
     setLoading(true);
     setError('');
-    apiGet('/api/posts')
+    apiGet('/api/posts?all=true')
       .then(data => setPosts(Array.isArray(data) ? data : []))
       .catch(err => {
         console.error("Failed to fetch posts:", err);
@@ -29,14 +29,24 @@ export default function GardenPostsList() {
   }, []);
 
   const handleDelete = async (postId) => {
-    if (window.confirm('Are you sure you want to delete this post?')) {
+    if (window.confirm('This will permanently delete. Are you sure?')) {
       try {
         await apiSend(`/api/posts/${postId}`, 'DELETE');
         setPosts(posts.filter(p => p._id !== postId));
-        // Optionally show a success message
       } catch (err) {
         alert(`Failed to delete post: ${err.message}`);
       }
+    }
+  };
+
+  const handleToggleActive = async (id, currentIsActive) => {
+    try {
+      const newActive = currentIsActive === false ? true : false;
+      const updated = await apiSend(`/api/posts/${id}/toggle-active`, 'PATCH', { isActive: newActive });
+      setPosts(prev => prev.map(item => item._id === id ? { ...item, isActive: updated.isActive } : item));
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
+      alert('Failed to toggle visibility');
     }
   };
 
@@ -80,15 +90,29 @@ export default function GardenPostsList() {
                   <td className="px-4 py-3">
                     <img src={post.imageUrl} alt={post.title} className="w-16 h-12 object-cover rounded"/>
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-800">{post.title}</td>
+                  <td className="px-4 py-3 font-medium text-gray-800">
+                    <div className="flex items-center gap-2">
+                      {post.title}
+                      {post.isActive === false && <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>}
+                    </div>
+                  </td>
                   <td className="px-4 py-3 text-sm text-gray-600">{new Date(post.createdAt).toLocaleDateString()}</td>
-                  <td className="px-4 py-3 space-x-2">
-                    <Link to={`/admin/garden-edit/${post._id}`} className="px-3 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 text-sm inline-flex items-center gap-1">
-                      <FiEdit className="w-3 h-3"/> Edit
-                    </Link>
-                    <button onClick={() => handleDelete(post._id)} className="px-3 py-1 rounded bg-red-50 text-red-700 hover:bg-red-100 text-sm inline-flex items-center gap-1">
-                      <FiTrash2 className="w-3 h-3"/> Delete
-                    </button>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <Link to={`/admin/garden-edit/${post._id}`} className="px-3 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 text-sm inline-flex items-center gap-1">
+                        <FiEdit className="w-3 h-3"/> Edit
+                      </Link>
+                      <button
+                        onClick={() => handleToggleActive(post._id, post.isActive)}
+                        className={post.isActive === false ? "text-yellow-600 hover:text-yellow-800" : "text-gray-400 hover:text-gray-600"}
+                        title={post.isActive === false ? "Show to users" : "Hide from users"}
+                      >
+                        {post.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                      </button>
+                      <button onClick={() => handleDelete(post._id)} className="text-red-600 hover:text-red-900">
+                        <FiTrash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

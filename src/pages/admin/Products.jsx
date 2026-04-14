@@ -1,7 +1,7 @@
 // pages/admin/Products.jsx
 
 import React, { useState, useEffect } from 'react';
-import { FiPlus, FiSearch, FiEdit, FiTrash2, FiImage, FiSave, FiX, FiRefreshCw, FiDollarSign, FiBookOpen, FiFile, FiDownload } from 'react-icons/fi';
+import { FiPlus, FiSearch, FiEdit, FiTrash2, FiImage, FiSave, FiX, FiRefreshCw, FiDollarSign, FiBookOpen, FiFile, FiDownload, FiEye, FiEyeOff } from 'react-icons/fi';
 import { apiGet, apiSend } from '../../utils/api';
 import Spinner from '../../components/Common/Spinner';
 import LazyTinyMCE from '../../components/Admin/LazyTinyMCE';
@@ -63,7 +63,8 @@ const Products = () => {
       const params = new URLSearchParams({
         page: currentPage,
         limit: 10,
-        ...(searchTerm && { search: searchTerm }), 
+        all: 'true',
+        ...(searchTerm && { search: searchTerm }),
         ...(categoryFilter && { category: categoryFilter })
       });
       const data = await apiGet(`/api/products?${params}`); 
@@ -349,11 +350,11 @@ const Products = () => {
   };
   // --- END OF MODIFICATION ---
 
-  // --- Delete Handler (No change) ---
+  // --- Delete Handler ---
   const handleDelete = async (productId) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    if (window.confirm('This will permanently delete. Are you sure?')) {
       try {
-        await apiSend(`/api/products/${productId}`, 'DELETE'); 
+        await apiSend(`/api/products/${productId}`, 'DELETE');
         setProducts(prev => prev.filter(p => p._id !== productId));
         setSuccessMsg('Product deleted successfully');
         setTimeout(() => setSuccessMsg(''), 3000);
@@ -361,6 +362,17 @@ const Products = () => {
         console.error('Error deleting product:', error);
         alert('Failed to delete product.');
       }
+    }
+  };
+
+  const handleToggleActive = async (id, currentIsActive) => {
+    try {
+      const newActive = currentIsActive === false ? true : false;
+      const updated = await apiSend(`/api/products/${id}/toggle-active`, 'PATCH', { isActive: newActive });
+      setProducts(prev => prev.map(item => item._id === id ? { ...item, isActive: updated.isActive } : item));
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
+      alert('Failed to toggle visibility');
     }
   };
 
@@ -430,7 +442,10 @@ const Products = () => {
                   <div className="h-48 bg-gray-200 flex items-center justify-center"><FiImage className="w-12 h-12 text-gray-400" /></div>
                  )}
                 <div className="p-6">
-                   <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 mb-2">{product.name}</h3>
+                   <div className="flex items-center gap-2 mb-2">
+                     <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{product.name}</h3>
+                     {product.isActive === false && <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>}
+                   </div>
                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">{product.description}</p>
                    {product.availableLevels && product.availableLevels.length > 0 && (
                         <div className="mb-4 flex flex-wrap gap-1">
@@ -446,6 +461,13 @@ const Products = () => {
                    <div className="flex items-center justify-between">
                      <div className="flex items-center gap-2">
                        <button onClick={() => handleEdit(product)} className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50"><FiEdit className="w-4 h-4" /></button>
+                       <button
+                         onClick={() => handleToggleActive(product._id, product.isActive)}
+                         className={`p-2 rounded ${product.isActive === false ? "text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}
+                         title={product.isActive === false ? "Show to users" : "Hide from users"}
+                       >
+                         {product.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                       </button>
                        <button onClick={() => handleDelete(product._id)} className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50"><FiTrash2 className="w-4 h-4" /></button>
                      </div>
                      <span className="text-xs text-gray-500">{new Date(product.createdAt).toLocaleDateString()}</span>

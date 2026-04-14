@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
+import { FiEye, FiEyeOff } from 'react-icons/fi'
 import { apiGet, apiSend } from '../../utils/api'
 import { exportChapterToExcel, exportAllChaptersToExcel } from '../../utils/excelExport'
 
@@ -205,13 +206,24 @@ export default function Embeds() {
   }
 
   async function onDelete(id) {
-    if (!confirm('Delete this embed?')) return
+    if (!confirm('This will permanently delete. Are you sure?')) return
     try {
       await apiSend(`/api/embeds/${id}`, 'DELETE')
       setItems(items.filter(i => i._id !== id))
       fetchChapters()
     } catch (e) {
       setError(e?.message || 'Delete failed')
+    }
+  }
+
+  async function handleToggleActive(id, currentIsActive) {
+    try {
+      const newActive = currentIsActive === false ? true : false;
+      const updated = await apiSend(`/api/embeds/${id}/toggle-active`, 'PATCH', { isActive: newActive });
+      setItems(prev => prev.map(item => item._id === id ? { ...item, isActive: updated.isActive } : item));
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
+      alert('Failed to toggle visibility');
     }
   }
 
@@ -579,7 +591,10 @@ export default function Embeds() {
               <div key={item._id} className="p-4 space-y-3">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <div className="text-sm font-medium text-gray-900">{item.title}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm font-medium text-gray-900">{item.title}</div>
+                      {item.isActive === false && <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>}
+                    </div>
                     <div className="text-xs text-gray-500">
                       {item.type}
                       {item.chapterId && ` • ${item.chapterId.name}`}
@@ -588,6 +603,13 @@ export default function Embeds() {
                   </div>
                   <div className="flex items-center gap-2">
                     <button onClick={() => onEdit(item)} className="text-sm text-gray-700 hover:underline">Edit</button>
+                    <button
+                      onClick={() => handleToggleActive(item._id, item.isActive)}
+                      className={item.isActive === false ? "text-yellow-600 hover:text-yellow-800" : "text-gray-400 hover:text-gray-600"}
+                      title={item.isActive === false ? "Show to users" : "Hide from users"}
+                    >
+                      {item.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                    </button>
                     <button onClick={() => onDelete(item._id)} className="text-sm text-red-700 hover:underline">Delete</button>
                   </div>
                 </div>

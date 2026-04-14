@@ -4,9 +4,19 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://amrit-project-lms
 export async function apiGet(path) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  
+
+  // Admin requests (all=true) and /admin paths should bypass browser cache
+  const isAdminRequest = path.includes('all=true') || path.includes('/admin');
+  if (isAdminRequest) {
+    headers['Cache-Control'] = 'no-cache';
+    headers['Pragma'] = 'no-cache';
+  }
+
   try {
-    const res = await fetch(`${API_BASE}${path}`, { headers });
+    const url = isAdminRequest
+      ? `${API_BASE}${path}${path.includes('?') ? '&' : '?'}_t=${Date.now()}`
+      : `${API_BASE}${path}`;
+    const res = await fetch(url, { headers, cache: isAdminRequest ? 'no-store' : 'default' });
     if (!res.ok) {
       // Silently handle 404s for CMS content (fallback content will be used)
       if (res.status === 404 && path.includes('/api/cms/slug/')) {

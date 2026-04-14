@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FiEye, FiEyeOff, FiTrash2 } from 'react-icons/fi';
 import { apiGet, apiSend } from '../../utils/api';
 
 export default function Materials() {
@@ -42,7 +43,7 @@ export default function Materials() {
 
   useEffect(() => {
     Promise.all([
-      apiGet('/api/materials'),
+      apiGet('/api/materials?all=true'),
       apiGet('/api/embeds'),
       apiGet('/api/chapters')
     ]).then(([materialsData, embedsData, chaptersData]) => {
@@ -233,6 +234,17 @@ export default function Materials() {
     setMaterialEmbeds(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleToggleActive = async (id, currentIsActive) => {
+    try {
+      const newActive = currentIsActive === false ? true : false;
+      const updated = await apiSend(`/api/materials/${id}/toggle-active`, 'PATCH', { isActive: newActive });
+      setItems(prev => prev.map(item => item._id === id ? { ...item, isActive: updated.isActive } : item));
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
+      alert('Failed to toggle visibility');
+    }
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Materials</h1>
@@ -280,7 +292,7 @@ export default function Materials() {
                 setError(null);
                 setLoading(true);
                 Promise.all([
-                  apiGet('/api/materials'),
+                  apiGet('/api/materials?all=true'),
                   apiGet('/api/embeds'),
                   apiGet('/api/chapters')
                 ]).then(([materialsData, embedsData, chaptersData]) => {
@@ -332,7 +344,12 @@ export default function Materials() {
               ))
             ) : (Array.isArray(items) ? items : []).map((m) => (
               <tr key={m._id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 font-medium text-gray-800">{m.title}</td>
+                <td className="px-4 py-3 font-medium text-gray-800">
+                  <div className="flex items-center gap-2">
+                    {m.title}
+                    {m.isActive === false && <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>}
+                  </div>
+                </td>
                 <td className="px-4 py-3 text-gray-700">{m.author || '-'}</td>
                 <td className="px-4 py-3 text-gray-700">{m.category || '-'}</td>
                 <td className="px-4 py-3 text-gray-700">{m.subCategory || '-'}</td>
@@ -345,9 +362,20 @@ export default function Materials() {
                     <span className="text-xs text-gray-500">embeds</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 space-x-2">
-                  <button onClick={() => openEditModal(m)} className="px-3 py-1 rounded bg-red-50 text-red-700 hover:bg-red-100 transition">Edit</button>
-                  <button onClick={async () => { await apiSend(`/api/materials/${m._id}`, 'DELETE'); setItems(items.filter(x => x._id !== m._id)) }} className="px-3 py-1 rounded bg-gray-100 text-gray-800 hover:bg-gray-200 transition">Delete</button>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => openEditModal(m)} className="px-3 py-1 rounded bg-red-50 text-red-700 hover:bg-red-100 transition">Edit</button>
+                    <button
+                      onClick={() => handleToggleActive(m._id, m.isActive)}
+                      className={m.isActive === false ? "text-yellow-600 hover:text-yellow-800" : "text-gray-400 hover:text-gray-600"}
+                      title={m.isActive === false ? "Show to users" : "Hide from users"}
+                    >
+                      {m.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                    </button>
+                    <button onClick={async () => { if (window.confirm('This will permanently delete. Are you sure?')) { await apiSend(`/api/materials/${m._id}`, 'DELETE'); setItems(items.filter(x => x._id !== m._id)) } }} className="text-red-600 hover:text-red-900">
+                      <FiTrash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

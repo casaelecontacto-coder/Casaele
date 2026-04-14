@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiPlus, FiEdit2, FiTrash2, FiImage, FiExternalLink } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiImage, FiExternalLink, FiEye, FiEyeOff } from 'react-icons/fi';
 import { apiGet, apiSend } from '../../utils/api';
 
 const PicksManager = () => {
@@ -82,7 +82,7 @@ const PicksManager = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this pick?')) return;
+    if (!window.confirm('This will permanently delete. Are you sure?')) return;
 
     try {
       await apiSend(`/api/picks/${id}`, 'DELETE');
@@ -90,6 +90,17 @@ const PicksManager = () => {
     } catch (error) {
       console.error('Error deleting pick:', error);
       alert('Error deleting pick');
+    }
+  };
+
+  const handleToggleActive = async (id, currentIsActive) => {
+    try {
+      const newActive = currentIsActive === false ? true : false;
+      const updated = await apiSend(`/api/picks/${id}/toggle-active`, 'PATCH', { isActive: newActive });
+      setPicks(prev => prev.map(item => item._id === id ? { ...item, isActive: updated.isActive } : item));
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
+      alert('Failed to toggle visibility');
     }
   };
 
@@ -191,7 +202,10 @@ const PicksManager = () => {
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{pick.title}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm font-medium text-gray-900">{pick.title}</div>
+                      {pick.isActive === false && <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm text-gray-900 max-w-xs truncate">
@@ -228,6 +242,13 @@ const PicksManager = () => {
                         className="text-indigo-600 hover:text-indigo-900"
                       >
                         <FiEdit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleToggleActive(pick._id, pick.isActive)}
+                        className={pick.isActive === false ? "text-yellow-600 hover:text-yellow-800" : "text-gray-400 hover:text-gray-600"}
+                        title={pick.isActive === false ? "Show to users" : "Hide from users"}
+                      >
+                        {pick.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
                       </button>
                       <button
                         onClick={() => handleDelete(pick._id)}

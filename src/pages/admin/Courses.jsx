@@ -4,7 +4,8 @@ import {
   FiSearch,
   FiEdit,
   FiTrash2,
-  FiEye, // Keep if used for preview or similar
+  FiEye,
+  FiEyeOff,
   FiRefreshCw,
   FiBookOpen,
   FiClock, // Keep if modules are still relevant
@@ -73,7 +74,8 @@ const Courses = () => {
     try {
       const params = new URLSearchParams({
         page: currentPage,
-        limit: 10, // Adjust limit if needed
+        limit: 10,
+        all: 'true',
         ...(searchTerm && { search: searchTerm }),
         ...(categoryFilter && { category: categoryFilter })
       });
@@ -236,20 +238,29 @@ const Courses = () => {
     setShowModal(true);
   };
 
-  // Delete handler (no changes needed)
+  // Delete handler
   const handleDelete = async (courseId) => {
-    // ... (keep existing delete logic)
-     if (window.confirm('Are you sure you want to delete this course?')) {
+    if (window.confirm('This will permanently delete. Are you sure?')) {
       try {
         await apiSend(`/api/courses/${courseId}`, 'DELETE');
         setCourses(prev => prev.filter(c => c._id !== courseId));
         setSuccessMsg('Course deleted successfully');
         setTimeout(() => setSuccessMsg(''), 3000);
-        // Consider adjusting current page if the last item on it was deleted
       } catch (error) {
         console.error('Error deleting course:', error);
         alert('Failed to delete course.');
       }
+    }
+  };
+
+  const handleToggleActive = async (id, currentIsActive) => {
+    try {
+      const newActive = currentIsActive === false ? true : false;
+      const updated = await apiSend(`/api/courses/${id}/toggle-active`, 'PATCH', { isActive: newActive });
+      setCourses(prev => prev.map(item => item._id === id ? { ...item, isActive: updated.isActive } : item));
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
+      alert('Failed to toggle visibility');
     }
   };
 
@@ -372,7 +383,10 @@ const Courses = () => {
                 <div className="p-6">
                    {/* ... Card details ... */}
                     <div className="flex items-start justify-between mb-3">
-                      <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{course.title}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{course.title}</h3>
+                        {course.isActive === false && <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>}
+                      </div>
                       {/* Display 'main' level if needed */}
                       {course.level && <span className={`px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800`}>{course.level}</span>}
                     </div>
@@ -395,6 +409,13 @@ const Courses = () => {
                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                          <button onClick={() => handleEdit(course)} className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50"><FiEdit className="w-4 h-4" /></button>
+                         <button
+                           onClick={() => handleToggleActive(course._id, course.isActive)}
+                           className={`p-2 rounded ${course.isActive === false ? "text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}
+                           title={course.isActive === false ? "Show to users" : "Hide from users"}
+                         >
+                           {course.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                         </button>
                          <button onClick={() => handleDelete(course._id)} className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50"><FiTrash2 className="w-4 h-4" /></button>
                       </div>
                      <span className="text-xs text-gray-500">{new Date(course.createdAt).toLocaleDateString()}</span>

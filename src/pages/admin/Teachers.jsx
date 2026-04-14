@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { FiEye, FiEyeOff, FiTrash2 } from 'react-icons/fi'
 import { apiGet, apiSend } from '../../utils/api'
 
 export default function Teachers() {
@@ -14,7 +15,7 @@ export default function Teachers() {
 
   const load = () => {
     setLoading(true)
-    apiGet('/api/teachers')
+    apiGet('/api/teachers?all=true')
       .then(setItems)
       .catch(e => setError(e?.message || 'Failed to load'))
       .finally(() => setLoading(false))
@@ -77,12 +78,23 @@ export default function Teachers() {
   }
 
   const remove = async (id) => {
-    if (!confirm('Delete this teacher?')) return
+    if (!confirm('This will permanently delete. Are you sure?')) return
     try {
       await apiSend(`/api/teachers/${id}`, 'DELETE')
       setItems(items.filter(x => x._id !== id))
       window.dispatchEvent(new Event('teachers:updated'))
     } catch (e) { alert(e?.message || 'Delete failed') }
+  }
+
+  const handleToggleActive = async (id, currentIsActive) => {
+    try {
+      const newActive = currentIsActive === false ? true : false;
+      const updated = await apiSend(`/api/teachers/${id}/toggle-active`, 'PATCH', { isActive: newActive });
+      setItems(prev => prev.map(item => item._id === id ? { ...item, isActive: updated.isActive } : item));
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
+      alert('Failed to toggle visibility');
+    }
   }
 
   return (
@@ -110,11 +122,27 @@ export default function Teachers() {
             ) : items.map(t => (
               <tr key={t._id} className="hover:bg-gray-50">
                 <td className="px-4 py-3"><img src={t.photoUrl} alt={t.name} className="w-12 h-12 rounded-full object-cover" /></td>
-                <td className="px-4 py-3 font-medium text-gray-800">{t.name}</td>
+                <td className="px-4 py-3 font-medium text-gray-800">
+                  <div className="flex items-center gap-2">
+                    {t.name}
+                    {t.isActive === false && <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>}
+                  </div>
+                </td>
                 <td className="px-4 py-3 text-gray-700 max-w-md truncate" title={t.description}>{t.description}</td>
-                <td className="px-4 py-3 space-x-2">
-                  <button onClick={() => openEdit(t)} className="px-3 py-1 rounded bg-red-50 text-red-700 hover:bg-red-100">Edit</button>
-                  <button onClick={() => remove(t._id)} className="px-3 py-1 rounded bg-gray-100 text-gray-800 hover:bg-gray-200">Delete</button>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => openEdit(t)} className="px-3 py-1 rounded bg-red-50 text-red-700 hover:bg-red-100">Edit</button>
+                    <button
+                      onClick={() => handleToggleActive(t._id, t.isActive)}
+                      className={t.isActive === false ? "text-yellow-600 hover:text-yellow-800" : "text-gray-400 hover:text-gray-600"}
+                      title={t.isActive === false ? "Show to users" : "Hide from users"}
+                    >
+                      {t.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                    </button>
+                    <button onClick={() => remove(t._id)} className="text-red-600 hover:text-red-900">
+                      <FiTrash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

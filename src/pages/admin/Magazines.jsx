@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiPlus, FiEdit, FiTrash2, FiImage, FiX, FiFile, FiDollarSign } from 'react-icons/fi';
+import { FiPlus, FiEdit, FiTrash2, FiImage, FiX, FiFile, FiDollarSign, FiEye, FiEyeOff } from 'react-icons/fi';
 import { apiGet, apiSend } from '../../utils/api';
 import LazyTinyMCE from '../../components/Admin/LazyTinyMCE';
 import Spinner from '../../components/Common/Spinner';
@@ -224,7 +224,7 @@ const Magazines = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this magazine?')) {
+    if (window.confirm('This will permanently delete. Are you sure?')) {
       try {
         await apiSend(`/api/magazines/${id}`, 'DELETE');
         setMagazines(prev => prev.filter(m => m._id !== id));
@@ -234,6 +234,17 @@ const Magazines = () => {
         console.error('Error deleting magazine:', error);
         alert('Failed to delete magazine.');
       }
+    }
+  };
+
+  const handleToggleActive = async (id, currentIsActive) => {
+    try {
+      const newActive = currentIsActive === false ? true : false;
+      const updated = await apiSend(`/api/magazines/${id}/toggle-active`, 'PATCH', { isActive: newActive });
+      setMagazines(prev => prev.map(item => item._id === id ? { ...item, isActive: updated.isActive } : item));
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
+      alert('Failed to toggle visibility');
     }
   };
 
@@ -287,8 +298,8 @@ const Magazines = () => {
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-2">
                     <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1">{magazine.title}</h3>
-                    {!magazine.isActive && (
-                      <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Draft</span>
+                    {magazine.isActive === false && (
+                      <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>
                     )}
                   </div>
                   {magazine.description && (
@@ -312,6 +323,13 @@ const Magazines = () => {
                     <div className="flex items-center gap-2">
                       <button onClick={() => handleEdit(magazine)} className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50">
                         <FiEdit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleToggleActive(magazine._id, magazine.isActive)}
+                        className={magazine.isActive === false ? "text-yellow-600 hover:text-yellow-800 p-2 rounded hover:bg-yellow-50" : "text-gray-400 hover:text-gray-600 p-2 rounded hover:bg-gray-50"}
+                        title={magazine.isActive === false ? "Show to users" : "Hide from users"}
+                      >
+                        {magazine.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
                       </button>
                       <button onClick={() => handleDelete(magazine._id)} className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50">
                         <FiTrash2 className="w-4 h-4" />

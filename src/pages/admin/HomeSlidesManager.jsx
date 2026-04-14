@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiPlus, FiEdit2, FiTrash2, FiImage, FiExternalLink } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiImage, FiExternalLink, FiEye, FiEyeOff } from 'react-icons/fi';
 import { apiGet, apiSend } from '../../utils/api';
 
 const HomeSlidesManager = () => {
@@ -82,7 +82,7 @@ const HomeSlidesManager = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this slide?')) return;
+    if (!window.confirm('This will permanently delete. Are you sure?')) return;
 
     try {
       await apiSend(`/api/home-slides/${id}`, 'DELETE');
@@ -90,6 +90,17 @@ const HomeSlidesManager = () => {
     } catch (error) {
       console.error('Error deleting home slide:', error);
       alert('Error deleting home slide');
+    }
+  };
+
+  const handleToggleActive = async (id, currentIsActive) => {
+    try {
+      const newActive = currentIsActive === false ? true : false;
+      const updated = await apiSend(`/api/home-slides/${id}/toggle-active`, 'PATCH', { isActive: newActive });
+      setSlides(prev => prev.map(item => item._id === id ? { ...item, isActive: updated.isActive } : item));
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
+      alert('Failed to toggle visibility');
     }
   };
 
@@ -180,7 +191,10 @@ const HomeSlidesManager = () => {
                       <img src={slide.imageUrl} alt={slide.title} className="h-16 w-24 object-cover rounded-lg" />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{slide.title}</div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-sm font-medium text-gray-900">{slide.title}</div>
+                        {slide.isActive === false && <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{slide.buttonText}</div>
@@ -201,6 +215,13 @@ const HomeSlidesManager = () => {
                       <div className="flex space-x-2">
                         <button onClick={() => handleEdit(slide)} className="text-indigo-600 hover:text-indigo-900">
                           <FiEdit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleToggleActive(slide._id, slide.isActive)}
+                          className={slide.isActive === false ? "text-yellow-600 hover:text-yellow-800" : "text-gray-400 hover:text-gray-600"}
+                          title={slide.isActive === false ? "Show to users" : "Hide from users"}
+                        >
+                          {slide.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
                         </button>
                         <button onClick={() => handleDelete(slide._id)} className="text-red-600 hover:text-red-900">
                           <FiTrash2 className="w-4 h-4" />

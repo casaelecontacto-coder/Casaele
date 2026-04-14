@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiExternalLink, FiImage, FiSave, FiTrash2, FiEdit, FiRefreshCw, FiShare2 } from 'react-icons/fi';
+import { FiExternalLink, FiImage, FiSave, FiTrash2, FiEdit, FiRefreshCw, FiShare2, FiEye, FiEyeOff } from 'react-icons/fi';
 import { apiGet, apiSend } from '../../utils/api';
 
 function useAuthHeaders() {
@@ -26,7 +26,7 @@ export default function PinterestManager() {
   const fetchPinterestData = async () => {
     try {
       setLoading(true);
-      const result = await apiGet('/api/pinterest');
+      const result = await apiGet('/api/pinterest?all=true');
       
       if (result.success) {
         setPinterestData(result.data);
@@ -92,7 +92,7 @@ export default function PinterestManager() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this Pinterest item?')) return;
+    if (!confirm('This will permanently delete. Are you sure?')) return;
 
     try {
       setLoading(true);
@@ -108,6 +108,17 @@ export default function PinterestManager() {
       setError('Failed to delete Pinterest item');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggleActive = async (id, currentIsActive) => {
+    try {
+      const newActive = currentIsActive === false ? true : false;
+      const updated = await apiSend(`/api/pinterest/${id}/toggle-active`, 'PATCH', { isActive: newActive });
+      setPinterestData(prev => prev.map(item => item._id === id ? { ...item, isActive: updated.isActive } : item));
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
+      alert('Failed to toggle visibility');
     }
   };
 
@@ -366,7 +377,10 @@ export default function PinterestManager() {
                       <>
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-gray-900 line-clamp-2 leading-tight mb-1">{item.title}</h3>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold text-gray-900 line-clamp-2 leading-tight mb-1">{item.title}</h3>
+                              {item.isActive === false && <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>}
+                            </div>
                             <div className="flex items-center gap-2">
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                 {item.type}
@@ -383,6 +397,13 @@ export default function PinterestManager() {
                               title="Edit"
                             >
                               <FiEdit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleToggleActive(item._id, item.isActive)}
+                              className={`p-2 rounded-lg transition-colors ${item.isActive === false ? "text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}
+                              title={item.isActive === false ? "Show to users" : "Hide from users"}
+                            >
+                              {item.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
                             </button>
                             <button
                               onClick={() => handleDelete(item._id)}
