@@ -8,7 +8,8 @@ import Reviews from '../components/CourseDetail/Reviews';           // Reusing c
 import LikeSection from '../components/CourseDetail/LikeSection';   // Reusing component (needs modification later for related products)
 import { apiGet } from '../utils/api';
 import Spinner from '../components/Common/Spinner';
-import { useCart } from '../context/CartContext'; // Import cart context
+import { useCart } from '../context/CartContext';
+import DropDown from '../components/Material/MaterialDetail/DropDown';
 
 function ProductDetail() {
   const { id: productId } = useParams(); // Get product ID from URL parameter
@@ -137,12 +138,17 @@ function ProductDetail() {
         <div className="space-y-16 md:space-y-20"> {/* Added space-y */}
           <DetailedInfo
             description={product.description}
-            itemType="product" // Indicate this is a product page
-            // Products likely don't have an instructor, pass undefined or null
-            // The DetailedInfo component should handle this gracefully (e.g., hide the instructor part)
-            instructor={product.instructor} 
+            itemType="product"
+            instructor={product.instructor}
           />
-          {/* KeyFeatures component remains removed */}
+
+          {/* Interactive Embeds */}
+          {product.embedIds && product.embedIds.length > 0 && (
+            <DropDown
+              title="Interactive Content"
+              exercises={product.embedIds}
+            />
+          )}
 
           {/* Note: Reviews component currently uses courseId prop. 
               This will fetch reviews based on the product's _id.

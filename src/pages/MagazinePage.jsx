@@ -268,8 +268,10 @@ function MagazinePage() {
                   currentItems.map((magazine) => {
                     const imageUrl = magazine.coverImageUrl || DEFAULT_IMAGE;
                     const isFree = (magazine.accessType || 'free') === 'free';
-                    const currentPrice = magazine.prices?.[currency]?.price || magazine.price || 0;
-                    const currentDiscountPrice = magazine.prices?.[currency]?.discountPrice || magazine.discountPrice || 0;
+                    const currencyPrice = magazine.prices?.[currency]?.price;
+                    const currencyDiscount = magazine.prices?.[currency]?.discountPrice;
+                    const currentPrice = (currencyPrice && currencyPrice > 0) ? currencyPrice : (magazine.price || 0);
+                    const currentDiscountPrice = (currencyDiscount && currencyDiscount > 0) ? currencyDiscount : (magazine.discountPrice || 0);
                     const displayPrice = currentDiscountPrice > 0 && currentDiscountPrice < currentPrice ? currentDiscountPrice : currentPrice;
 
                     return (

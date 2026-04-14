@@ -52,11 +52,17 @@ const Courses = () => {
     formUrl: '' // Google Form URL when purchaseType is 'form'
   });
   
-  // Image handling state (keep if needed)
+  // Image handling state
   const [imgMode, setImgMode] = useState('local');
   const [pinUrl, setPinUrl] = useState('');
   const [pinPreview, setPinPreview] = useState(null);
   const [uploading, setUploading] = useState(false);
+
+  // Embeds state
+  const [courseEmbeds, setCourseEmbeds] = useState([]);
+  const addCourseEmbed = () => setCourseEmbeds(prev => [...prev, { title: '', type: 'AI', embedCode: '' }]);
+  const updateCourseEmbed = (index, field, value) => setCourseEmbeds(prev => prev.map((e, i) => i === index ? { ...e, [field]: value } : e));
+  const removeCourseEmbed = (index) => setCourseEmbeds(prev => prev.filter((_, i) => i !== index));
 
   // *** Define possible levels for checkboxes ***
   const ALL_POSSIBLE_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
@@ -158,12 +164,18 @@ const Courses = () => {
         return;
       }
       
-      // *** ADD availableLevels to payload ***
+      // Filter new embeds (without _id)
+      const newEmbedsToCreate = courseEmbeds.filter(
+        e => !e._id && e.title.trim() && e.embedCode.trim()
+      );
+      const existingEmbedIds = courseEmbeds.filter(e => e._id).map(e => e._id);
+
       const payload = {
         ...formData,
-        // Ensure modules are correctly formatted if still used
         modules: formData.modules.map((m, index) => ({ ...m, order: m.order || index + 1 })),
-        availableLevels: formData.availableLevels || [] // Ensure it's an array
+        availableLevels: formData.availableLevels || [],
+        embedIds: existingEmbedIds,
+        embeds: newEmbedsToCreate
       };
 
       const url = editingCourse ? `/api/courses/${editingCourse._id}` : '/api/courses';
@@ -212,8 +224,15 @@ const Courses = () => {
       purchaseType: course.purchaseType || 'price', // Load purchaseType
       formUrl: course.formUrl || '' // Load formUrl
     });
-    // Determine image mode based on loaded data if needed
-    // setImgMode(course.imageSource === 'pinterest' ? 'pinterest' : 'local');
+    // Load existing embeds
+    const existingEmbeds = course.embedIds?.map(embed => ({
+      _id: embed._id || embed,
+      title: embed.title || '',
+      type: embed.type || 'AI',
+      embedCode: embed.embedCode || ''
+    })) || [];
+    setCourseEmbeds(existingEmbeds);
+
     setShowModal(true);
   };
 
@@ -577,11 +596,52 @@ const Courses = () => {
                      <div><label className="block text-sm font-medium text-gray-700 mb-1">Language</label><input type="text" value={formData.language} onChange={(e) => setFormData({ ...formData, language: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" /></div>
                  </div>
 
+                {/* Embeds Section */}
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-semibold text-gray-800">Embeds (AI/H5P Content)</h4>
+                    <button type="button" onClick={addCourseEmbed} className="px-3 py-1.5 text-xs bg-red-700 text-white rounded-md hover:bg-red-800 transition">+ Add Embed</button>
+                  </div>
+                  {courseEmbeds.length === 0 ? (
+                    <div className="text-center py-6 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+                      <p className="text-sm">No embeds added yet.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                      {courseEmbeds.map((embed, index) => (
+                        <div key={index} className="bg-white rounded-lg p-3 border border-gray-200">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-semibold text-gray-600">Embed #{index + 1} {embed._id && '(Existing)'}</span>
+                            <button type="button" onClick={() => removeCourseEmbed(index)} className="text-xs text-red-600 hover:text-red-800">Remove</button>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Title</label>
+                              <input value={embed.title} onChange={e => updateCourseEmbed(index, 'title', e.target.value)} placeholder="e.g., Exercise 1" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Type</label>
+                              <select value={embed.type} onChange={e => updateCourseEmbed(index, 'type', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id}>
+                                <option value="AI">AI Content</option>
+                                <option value="H5P">H5P Content</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div className="mt-2">
+                            <label className="block text-xs text-gray-600 mb-1">Embed Code</label>
+                            <textarea value={embed.embedCode} onChange={e => updateCourseEmbed(index, 'embedCode', e.target.value)} placeholder='Paste your <iframe> or <script> code here' rows="3" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {/* Modal Footer */}
                 <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
                   <button type="button" onClick={() => setShowModal(false)} className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
                   <button type="submit" disabled={isSaving || uploading} className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2 disabled:opacity-60">
-                    <FiSave className={`w-4 h-4 ${isSaving ? 'animate-spin' : ''}`} /> 
+                    <FiSave className={`w-4 h-4 ${isSaving ? 'animate-spin' : ''}`} />
                     {isSaving ? 'Saving…' : (uploading ? 'Uploading...' : (editingCourse ? 'Update Course' : 'Create Course'))}
                   </button>
                 </div>

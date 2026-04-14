@@ -4,6 +4,7 @@ import { auth } from './firebase';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { ApiCacheProvider } from './context/ApiCacheContext';
+import { AuthProvider } from './context/AuthContext';
 
 // --- Static Imports (Critical for initial load) ---
 import Header from "./components/CommonPage/Header";
@@ -168,21 +169,23 @@ function AppWrapper() {
 function App() {
   return (
     <div className="content-protected">
-      <ApiCacheProvider>
-        {stripePromise ? (
-          <Elements stripe={stripePromise}>
+      <AuthProvider>
+        <ApiCacheProvider>
+          {stripePromise ? (
+            <Elements stripe={stripePromise}>
+              <Router>
+                <DisableContextMenu />
+                <AppWrapper />
+              </Router>
+            </Elements>
+          ) : (
             <Router>
               <DisableContextMenu />
               <AppWrapper />
             </Router>
-          </Elements>
-        ) : (
-          <Router>
-            <DisableContextMenu />
-            <AppWrapper />
-          </Router>
-        )}
-      </ApiCacheProvider>
+          )}
+        </ApiCacheProvider>
+      </AuthProvider>
     </div>
   );
 }

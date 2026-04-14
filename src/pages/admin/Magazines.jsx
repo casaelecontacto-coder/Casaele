@@ -24,8 +24,14 @@ const Magazines = () => {
     accessType: 'free',
     price: 0,
     discountPrice: 0,
+    complementaryMaterialUrl: '',
+    complementaryMaterialName: '',
+    donateLink: '',
+    subscribeLink: '',
+    preorderLink: '',
     isActive: true,
   });
+  const [uploadingMaterial, setUploadingMaterial] = useState(false);
 
   // Multi-currency pricing state
   const [pricesUSD, setPricesUSD] = useState({ price: 0, discountPrice: 0 });
@@ -43,6 +49,11 @@ const Magazines = () => {
       accessType: 'free',
       price: 0,
       discountPrice: 0,
+      complementaryMaterialUrl: '',
+      complementaryMaterialName: '',
+      donateLink: '',
+      subscribeLink: '',
+      preorderLink: '',
       isActive: true,
     });
     setPricesUSD({ price: 0, discountPrice: 0 });
@@ -199,6 +210,11 @@ const Magazines = () => {
       accessType: magazine.accessType || 'free',
       price: magazine.price || 0,
       discountPrice: magazine.discountPrice || 0,
+      complementaryMaterialUrl: magazine.complementaryMaterialUrl || '',
+      complementaryMaterialName: magazine.complementaryMaterialName || '',
+      donateLink: magazine.donateLink || '',
+      subscribeLink: magazine.subscribeLink || '',
+      preorderLink: magazine.preorderLink || '',
       isActive: magazine.isActive !== false,
     });
     setPricesUSD(magazine.prices?.USD || { price: 0, discountPrice: 0 });
@@ -395,6 +411,68 @@ const Magazines = () => {
                   ) : null}
                   <input type="file" accept="application/pdf" onChange={handlePdfUpload} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
                   {uploadingPdf && <p className="text-sm text-gray-500 mt-1 animate-pulse">Uploading PDF...</p>}
+                </div>
+
+                {/* Complementary Material Upload */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Complementary Material (ZIP)</label>
+                  {formData.complementaryMaterialUrl ? (
+                    <div className="flex items-center gap-3 mb-2 p-3 bg-teal-50 border border-teal-200 rounded-lg">
+                      <FiFile className="w-5 h-5 text-teal-600" />
+                      <span className="text-sm text-teal-800 flex-1 truncate">{formData.complementaryMaterialName || 'Material uploaded'}</span>
+                      <button type="button" onClick={() => setFormData(prev => ({ ...prev, complementaryMaterialUrl: '', complementaryMaterialName: '' }))} className="text-red-500 hover:text-red-700">
+                        <FiX className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : null}
+                  <input
+                    type="file"
+                    accept=".zip,application/zip,application/x-zip-compressed"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setUploadingMaterial(true);
+                      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+                      try {
+                        const uploadFormData = new FormData();
+                        uploadFormData.append('file', file);
+                        const token = localStorage.getItem('authToken');
+                        const response = await fetch(`${apiBaseUrl}/api/uploads/magazine-material`, {
+                          method: 'POST',
+                          headers: token ? { Authorization: `Bearer ${token}` } : {},
+                          body: uploadFormData,
+                        });
+                        if (!response.ok) throw new Error('Upload failed');
+                        const data = await response.json();
+                        setFormData(prev => ({ ...prev, complementaryMaterialUrl: data.url, complementaryMaterialName: file.name }));
+                      } catch (error) {
+                        console.error('Material upload error:', error);
+                        alert('Material upload failed.');
+                      } finally {
+                        setUploadingMaterial(false);
+                        e.target.value = '';
+                      }
+                    }}
+                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                  />
+                  {uploadingMaterial && <p className="text-sm text-gray-500 mt-1 animate-pulse">Uploading material...</p>}
+                </div>
+
+                {/* Action Button Links */}
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-3">
+                  <h4 className="text-sm font-semibold text-gray-800">Action Button Links</h4>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Donate Link</label>
+                    <input type="url" value={formData.donateLink} onChange={(e) => setFormData({ ...formData, donateLink: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Subscribe Link</label>
+                    <input type="url" value={formData.subscribeLink} onChange={(e) => setFormData({ ...formData, subscribeLink: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Pre-order Physical Copies Link</label>
+                    <input type="url" value={formData.preorderLink} onChange={(e) => setFormData({ ...formData, preorderLink: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" />
+                  </div>
                 </div>
 
                 {/* Access Type Toggle */}

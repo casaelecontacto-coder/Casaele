@@ -29,6 +29,15 @@ const magazineSchema = new mongoose.Schema({
     }
   },
 
+  // Complementary material (zip file)
+  complementaryMaterialUrl: { type: String, default: '' },
+  complementaryMaterialName: { type: String, default: '' },
+
+  // Action button links (editable per magazine)
+  donateLink: { type: String, default: '' },
+  subscribeLink: { type: String, default: '' },
+  preorderLink: { type: String, default: '' },
+
   isActive: { type: Boolean, default: true },
   publishedAt: { type: Date, default: Date.now },
 }, { timestamps: true });

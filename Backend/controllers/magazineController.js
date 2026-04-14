@@ -1,4 +1,5 @@
 import Magazine from '../models/Magazine.js';
+import Order from '../models/Order.js';
 import mongoose from 'mongoose';
 import { getFileStreamFromDrive } from '../services/googleDriveService.js';
 
@@ -88,6 +89,11 @@ export const createMagazine = async (req, res) => {
       price,
       discountPrice,
       prices,
+      complementaryMaterialUrl,
+      complementaryMaterialName,
+      donateLink,
+      subscribeLink,
+      preorderLink,
       isActive,
       publishedAt,
     } = req.body;
@@ -110,6 +116,11 @@ export const createMagazine = async (req, res) => {
       price: price || 0,
       discountPrice: discountPrice || 0,
       prices: prices || { USD: { price: 0, discountPrice: 0 }, EUR: { price: 0, discountPrice: 0 }, INR: { price: 0, discountPrice: 0 } },
+      complementaryMaterialUrl: complementaryMaterialUrl || '',
+      complementaryMaterialName: complementaryMaterialName || '',
+      donateLink: donateLink || '',
+      subscribeLink: subscribeLink || '',
+      preorderLink: preorderLink || '',
       isActive: typeof isActive === 'boolean' ? isActive : true,
       publishedAt: publishedAt || Date.now(),
     });
@@ -142,6 +153,11 @@ export const updateMagazine = async (req, res) => {
       price,
       discountPrice,
       prices,
+      complementaryMaterialUrl,
+      complementaryMaterialName,
+      donateLink,
+      subscribeLink,
+      preorderLink,
       isActive,
       publishedAt,
     } = req.body;
@@ -160,6 +176,11 @@ export const updateMagazine = async (req, res) => {
     if (price != null) updateData.price = price;
     if (discountPrice != null) updateData.discountPrice = discountPrice;
     if (prices) updateData.prices = prices;
+    if (complementaryMaterialUrl !== undefined) updateData.complementaryMaterialUrl = complementaryMaterialUrl;
+    if (complementaryMaterialName !== undefined) updateData.complementaryMaterialName = complementaryMaterialName;
+    if (donateLink !== undefined) updateData.donateLink = donateLink;
+    if (subscribeLink !== undefined) updateData.subscribeLink = subscribeLink;
+    if (preorderLink !== undefined) updateData.preorderLink = preorderLink;
     if (typeof isActive === 'boolean') updateData.isActive = isActive;
     if (publishedAt) updateData.publishedAt = publishedAt;
 
@@ -204,7 +225,7 @@ export const deleteMagazine = async (req, res) => {
 
 // @desc    Serve magazine PDF (proxy from Google Drive)
 // @route   GET /api/magazines/:id/pdf
-// @access  Public (for free magazines)
+// @access  Free magazines: requires email param; Paid: requires auth + purchase
 export const serveMagazinePdf = async (req, res) => {
   try {
     let magazine;
@@ -214,13 +235,75 @@ export const serveMagazinePdf = async (req, res) => {
     if (!magazine) {
       magazine = await Magazine.findOne({ slug: req.params.id });
     }
+    // If magazine was deleted, try to serve from order snapshot
     if (!magazine) {
+      const header = req.headers.authorization || '';
+      const [scheme, token] = header.split(' ');
+      if (scheme === 'Bearer' && token && mongoose.Types.ObjectId.isValid(req.params.id)) {
+        try {
+          const { auth: firebaseAuth } = await import('../config/firebaseAdmin.js');
+          const decoded = await firebaseAuth.verifyIdToken(token);
+          const order = await Order.findOne({
+            'shippingAddress.email': { $regex: new RegExp(`^${decoded.email}$`, 'i') },
+            isPaid: true,
+            'orderItems.product': req.params.id,
+            'orderItems.itemModel': 'Magazine'
+          });
+          if (order) {
+            const item = order.orderItems.find(i => i.product.toString() === req.params.id && i.itemModel === 'Magazine');
+            if (item?.pdfUrl) {
+              // Serve from snapshot
+              const snapshotUrl = item.pdfUrl;
+              if (snapshotUrl.startsWith('gdrive://')) {
+                const fileId = snapshotUrl.replace('gdrive://', '');
+                const { stream, size, fileName } = await getFileStreamFromDrive(fileId);
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', `inline; filename="${fileName || 'magazine.pdf'}"`);
+                if (size) res.setHeader('Content-Length', size);
+                res.setHeader('Access-Control-Allow-Origin', '*');
+                return stream.pipe(res);
+              } else {
+                return res.redirect(snapshotUrl);
+              }
+            }
+          }
+        } catch (e) { /* fall through to 404 */ }
+      }
       return res.status(404).json({ message: 'Magazine not found' });
     }
 
-    // Only serve free magazines directly; paid ones need purchase verification
+    // For paid magazines, verify the user has purchased it
     if (magazine.accessType === 'paid') {
-      return res.status(403).json({ message: 'This is a paid magazine. Please purchase to access.' });
+      // Check for auth token
+      const header = req.headers.authorization || '';
+      const [scheme, token] = header.split(' ');
+      if (scheme !== 'Bearer' || !token) {
+        return res.status(401).json({ message: 'Login required to access paid magazines.' });
+      }
+
+      try {
+        const { auth: firebaseAuth } = await import('../config/firebaseAdmin.js');
+        const decoded = await firebaseAuth.verifyIdToken(token);
+        const userEmail = decoded.email;
+
+        if (!userEmail) {
+          return res.status(401).json({ message: 'Could not verify your identity.' });
+        }
+
+        // Check if user has a paid order containing this magazine
+        const hasPurchased = await Order.findOne({
+          'shippingAddress.email': { $regex: new RegExp(`^${userEmail}$`, 'i') },
+          isPaid: true,
+          'orderItems.product': magazine._id
+        });
+
+        if (!hasPurchased) {
+          return res.status(403).json({ message: 'Please purchase this magazine to access it.' });
+        }
+      } catch (authErr) {
+        console.error('Auth verification error in PDF serve:', authErr?.message);
+        return res.status(401).json({ message: 'Authentication failed.' });
+      }
     }
 
     const pdfUrl = magazine.pdfUrl;
@@ -235,16 +318,72 @@ export const serveMagazinePdf = async (req, res) => {
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `inline; filename="${fileName || 'magazine.pdf'}"`);
       if (size) res.setHeader('Content-Length', size);
-      // Allow cross-origin access for the flipbook viewer
       res.setHeader('Access-Control-Allow-Origin', '*');
 
       stream.pipe(res);
     } else {
-      // Fallback: redirect to the direct URL (Cloudinary or other)
       res.redirect(pdfUrl);
     }
   } catch (error) {
     console.error('Error serving magazine PDF:', error);
     res.status(500).json({ message: 'Server error serving PDF' });
+  }
+};
+
+// @desc    Check if user has purchased a specific magazine
+// @route   GET /api/magazines/:id/access
+// @access  Requires auth
+export const checkMagazineAccess = async (req, res) => {
+  try {
+    const userEmail = req.user?.email;
+    if (!userEmail) {
+      return res.json({ hasAccess: false });
+    }
+
+    let magazine;
+    if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+      magazine = await Magazine.findById(req.params.id);
+    }
+    if (!magazine) {
+      magazine = await Magazine.findOne({ slug: req.params.id });
+    }
+
+    // If magazine exists and is free, grant access
+    if (magazine && magazine.accessType !== 'paid') {
+      return res.json({ hasAccess: true });
+    }
+
+    // Check purchase (works even if magazine was deleted - uses the stored ObjectId)
+    const magazineId = magazine?._id || req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(magazineId)) {
+      return res.json({ hasAccess: false });
+    }
+
+    const order = await Order.findOne({
+      'shippingAddress.email': { $regex: new RegExp(`^${userEmail}$`, 'i') },
+      isPaid: true,
+      'orderItems.product': magazineId
+    });
+
+    if (!order) {
+      return res.json({ hasAccess: false });
+    }
+
+    // Return snapshot data from order in case magazine was deleted
+    const orderItem = order.orderItems.find(
+      item => item.product.toString() === magazineId.toString() && item.itemModel === 'Magazine'
+    );
+
+    return res.json({
+      hasAccess: true,
+      snapshot: orderItem ? {
+        name: orderItem.name,
+        coverImageUrl: orderItem.coverImageUrl || '',
+        pdfUrl: orderItem.pdfUrl || '',
+      } : null
+    });
+  } catch (error) {
+    console.error('Error checking magazine access:', error);
+    res.status(500).json({ message: 'Server error checking access' });
   }
 };

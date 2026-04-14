@@ -31,6 +31,9 @@ const productSchema = new mongoose.Schema({
   imageUrls: [{ type: String }],
   // --- END CHANGE ---
 
+  // Embeds (AI/H5P interactive content)
+  embedIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Embed' }],
+
   availableLevels: [{ type: String }], // Array of available levels like ['A1', 'B2']
   productType: { type: String, enum: ['Digital', 'Physical', 'Both'], default: 'Digital' },
 

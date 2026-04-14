@@ -46,7 +46,13 @@ const Products = () => {
   const [pricesINR, setPricesINR] = useState({ price: 0, discountPrice: 0 });
 
   const [uploading, setUploading] = useState(false);
-  const [uploadingDigitalFiles, setUploadingDigitalFiles] = useState(false); 
+  const [uploadingDigitalFiles, setUploadingDigitalFiles] = useState(false);
+
+  // Embeds state
+  const [productEmbeds, setProductEmbeds] = useState([]);
+  const addProductEmbed = () => setProductEmbeds(prev => [...prev, { title: '', type: 'AI', embedCode: '' }]);
+  const updateProductEmbed = (index, field, value) => setProductEmbeds(prev => prev.map((e, i) => i === index ? { ...e, [field]: value } : e));
+  const removeProductEmbed = (index) => setProductEmbeds(prev => prev.filter((_, i) => i !== index));
 
   const ALL_POSSIBLE_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
@@ -253,10 +259,18 @@ const Products = () => {
         return;
       }
 
+      // Filter new embeds (without _id)
+      const newEmbedsToCreate = productEmbeds.filter(
+        e => !e._id && e.title.trim() && e.embedCode.trim()
+      );
+      const existingEmbedIds = productEmbeds.filter(e => e._id).map(e => e._id);
+
       const payload = {
         ...formData,
-        imageUrls: formData.imageUrls || [], // Ensure array is sent
+        imageUrls: formData.imageUrls || [],
         availableLevels: formData.availableLevels || [],
+        embedIds: existingEmbedIds,
+        embeds: newEmbedsToCreate,
         prices: {
           USD: pricesUSD,
           EUR: pricesEUR,
@@ -264,7 +278,6 @@ const Products = () => {
         }
       };
 
-      // Remove legacy field if it exists, just in case
       delete payload.imageUrl;
 
       const url = editingProduct ? `/api/products/${editingProduct._id}` : '/api/products';
@@ -322,6 +335,15 @@ const Products = () => {
     setPricesUSD(product.prices?.USD || { price: 0, discountPrice: 0 });
     setPricesEUR(product.prices?.EUR || { price: 0, discountPrice: 0 });
     setPricesINR(product.prices?.INR || { price: 0, discountPrice: 0 });
+
+    // Load existing embeds
+    const existingEmbeds = product.embedIds?.map(embed => ({
+      _id: embed._id || embed,
+      title: embed.title || '',
+      type: embed.type || 'AI',
+      embedCode: embed.embedCode || ''
+    })) || [];
+    setProductEmbeds(existingEmbeds);
 
     setShowModal(true);
   };
@@ -739,6 +761,47 @@ const Products = () => {
                     </div>
                   </div>
                   <p className="text-xs text-gray-500 mt-2">Add a URL to show a subscription button on the product page. Leave blank to hide.</p>
+                </div>
+
+                {/* Embeds Section */}
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-semibold text-gray-800">Embeds (AI/H5P Content)</h4>
+                    <button type="button" onClick={addProductEmbed} className="px-3 py-1.5 text-xs bg-red-700 text-white rounded-md hover:bg-red-800 transition">+ Add Embed</button>
+                  </div>
+                  {productEmbeds.length === 0 ? (
+                    <div className="text-center py-6 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+                      <p className="text-sm">No embeds added yet.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                      {productEmbeds.map((embed, index) => (
+                        <div key={index} className="bg-white rounded-lg p-3 border border-gray-200">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-semibold text-gray-600">Embed #{index + 1} {embed._id && '(Existing)'}</span>
+                            <button type="button" onClick={() => removeProductEmbed(index)} className="text-xs text-red-600 hover:text-red-800">Remove</button>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Title</label>
+                              <input value={embed.title} onChange={e => updateProductEmbed(index, 'title', e.target.value)} placeholder="e.g., Exercise 1" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Type</label>
+                              <select value={embed.type} onChange={e => updateProductEmbed(index, 'type', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id}>
+                                <option value="AI">AI Content</option>
+                                <option value="H5P">H5P Content</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div className="mt-2">
+                            <label className="block text-xs text-gray-600 mb-1">Embed Code</label>
+                            <textarea value={embed.embedCode} onChange={e => updateProductEmbed(index, 'embedCode', e.target.value)} placeholder='Paste your <iframe> or <script> code here' rows="3" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">

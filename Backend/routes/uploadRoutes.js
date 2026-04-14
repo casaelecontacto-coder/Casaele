@@ -20,4 +20,7 @@ router.post('/digital-product-file', upload.single('file'), uploadDigitalProduct
 // Magazine PDF uploads (publicly accessible for viewing)
 router.post('/magazine-pdf', upload.single('file'), uploadMagazinePdf)
 
+// Magazine complementary material uploads (zip files)
+router.post('/magazine-material', upload.single('file'), uploadDigitalProductFile)
+
 export default router

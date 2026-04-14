@@ -167,6 +167,8 @@ export const verifyPayment = async (req, res) => {
 
         if (item.itemType === 'course') {
           itemModel = 'Course';
+        } else if (item.itemType === 'magazine') {
+          itemModel = 'Magazine';
         } else if (item.itemType === 'product') {
           itemModel = 'Product';
         } else if (item.productType) {
@@ -180,7 +182,7 @@ export const verifyPayment = async (req, res) => {
 
         console.log(`[Order] Mapping cart item: _id=${item._id}, name=${item.name}, title=${item.title}, itemType=${item.itemType}, productType=${item.productType} => itemModel=${itemModel}`);
 
-        return {
+        const orderItem = {
           name: item.title || item.name || 'Item',
           qty: item.quantity || 1,
           price: Number(item.discountPrice || item.price || 0),
@@ -189,6 +191,14 @@ export const verifyPayment = async (req, res) => {
           selectedLevel: item.selectedLevel,
           selectedFormat: item.selectedFormat,
         };
+
+        // Snapshot magazine data so user retains access even if admin deletes the magazine
+        if (itemModel === 'Magazine') {
+          orderItem.coverImageUrl = item.coverImageUrl || '';
+          orderItem.pdfUrl = item.pdfUrl || '';
+        }
+
+        return orderItem;
       });
 
       const calculatedItemsPrice = orderItems.reduce((acc, item) => acc + item.price * item.qty, 0);
@@ -651,6 +661,8 @@ export const createFreeOrder = async (req, res) => {
 
       if (item.itemType === 'course') {
         itemModel = 'Course';
+      } else if (item.itemType === 'magazine') {
+        itemModel = 'Magazine';
       } else if (item.itemType === 'product') {
         itemModel = 'Product';
       } else if (item.productType) {

@@ -11,6 +11,9 @@ const courseSchema = new mongoose.Schema({
   instructor: { type: String, default: '' },
   thumbnail: { type: String, default: '' },
   images: [{ type: String }], // Array for multiple images
+  // Embeds (AI/H5P interactive content)
+  embedIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Embed' }],
+
   level: { type: String }, // Keep this if you use it for a default/main level
   // *** NEW FIELD ***
   availableLevels: [{ type: String }], // Array of available levels like ['A1', 'B2']

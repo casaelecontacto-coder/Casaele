@@ -152,11 +152,11 @@ export const getProductById = async (req, res) => {
      try {
         let product;
         if (mongoose.Types.ObjectId.isValid(req.params.id)) {
-            product = await Product.findById(req.params.id);
+            product = await Product.findById(req.params.id).populate('embedIds');
         }
         // Fallback: try slug lookup
         if (!product) {
-            product = await Product.findOne({ slug: req.params.id });
+            product = await Product.findOne({ slug: req.params.id }).populate('embedIds');
         }
         if (product) {
             res.json(product);
@@ -188,11 +188,29 @@ export const createProduct = async (req, res) => {
             downloadSettings,
             prices,
             subscriptionUrl,
-            subscriptionLabel
+            subscriptionLabel,
+            embedIds,
+            embeds
         } = req.body;
 
         if (!name || !description || price == null || !category) {
             return res.status(400).json({ message: 'Name, description, price, and category are required' });
+        }
+
+        // Handle inline embed creation (same pattern as Materials)
+        let finalEmbedIds = Array.isArray(embedIds) ? [...embedIds] : [];
+        if (embeds && Array.isArray(embeds) && embeds.length > 0) {
+            const Embed = (await import('../models/Embed.js')).default;
+            for (const embedData of embeds) {
+                if (embedData.title && embedData.type && embedData.embedCode) {
+                    const embed = await Embed.create({
+                        title: embedData.title,
+                        type: embedData.type,
+                        embedCode: embedData.embedCode
+                    });
+                    finalEmbedIds.push(embed._id);
+                }
+            }
         }
 
         const baseSlug = customSlug ? generateSlug(customSlug) : generateSlug(name);
@@ -206,6 +224,7 @@ export const createProduct = async (req, res) => {
             discountPrice: discountPrice || 0,
             category,
             imageUrls: Array.isArray(imageUrls) ? imageUrls : [],
+            embedIds: finalEmbedIds,
             availableLevels: Array.isArray(availableLevels) ? availableLevels : [],
             productType: productType || 'Digital',
             digitalFiles: Array.isArray(digitalFiles) ? digitalFiles : [],
@@ -250,7 +269,9 @@ export const updateProduct = async (req, res) => {
             downloadSettings,
             prices,
             subscriptionUrl,
-            subscriptionLabel
+            subscriptionLabel,
+            embedIds,
+            embeds
         } = req.body;
 
         const updateData = {};
@@ -288,6 +309,25 @@ export const updateProduct = async (req, res) => {
         // Subscription fields
         if (subscriptionUrl !== undefined) updateData.subscriptionUrl = subscriptionUrl;
         if (subscriptionLabel !== undefined) updateData.subscriptionLabel = subscriptionLabel;
+
+        // Embeds
+        if (embedIds !== undefined) {
+            let finalEmbedIds = Array.isArray(embedIds) ? [...embedIds] : [];
+            if (embeds && Array.isArray(embeds) && embeds.length > 0) {
+                const Embed = (await import('../models/Embed.js')).default;
+                for (const embedData of embeds) {
+                    if (!embedData._id && embedData.title && embedData.type && embedData.embedCode) {
+                        const embed = await Embed.create({
+                            title: embedData.title,
+                            type: embedData.type,
+                            embedCode: embedData.embedCode
+                        });
+                        finalEmbedIds.push(embed._id);
+                    }
+                }
+            }
+            updateData.embedIds = finalEmbedIds;
+        }
 
         updateData.updatedAt = Date.now();
 

@@ -150,10 +150,10 @@ export const getCourseById = async (req, res) => {
     try {
         let course;
         if (mongoose.Types.ObjectId.isValid(req.params.id)) {
-            course = await Course.findById(req.params.id);
+            course = await Course.findById(req.params.id).populate('embedIds');
         }
         if (!course) {
-            course = await Course.findOne({ slug: req.params.id });
+            course = await Course.findOne({ slug: req.params.id }).populate('embedIds');
         }
         if (course) {
             res.json(course);
@@ -184,7 +184,9 @@ export const createCourse = async (req, res) => {
             availableLevels,
             productType,
             purchaseType,
-            formUrl
+            formUrl,
+            embedIds,
+            embeds
         } = req.body;
 
         // --- 2. START IMAGE UPLOAD LOGIC ---
@@ -233,6 +235,22 @@ export const createCourse = async (req, res) => {
             return res.status(400).json({ message: 'Form URL is required when purchaseType is "form"' });
         }
 
+        // Handle inline embed creation
+        let finalEmbedIds = Array.isArray(embedIds) ? [...embedIds] : [];
+        if (embeds && Array.isArray(embeds) && embeds.length > 0) {
+            const Embed = (await import('../models/Embed.js')).default;
+            for (const embedData of embeds) {
+                if (embedData.title && embedData.type && embedData.embedCode) {
+                    const embed = await Embed.create({
+                        title: embedData.title,
+                        type: embedData.type,
+                        embedCode: embedData.embedCode
+                    });
+                    finalEmbedIds.push(embed._id);
+                }
+            }
+        }
+
         const baseSlug = customSlug ? generateSlug(customSlug) : generateSlug(title);
         const slug = await ensureUniqueSlug(Course, baseSlug);
 
@@ -241,14 +259,15 @@ export const createCourse = async (req, res) => {
             slug,
             subtitle: subtitle || '',
             description,
-            price: validPurchaseType === 'price' ? price : 0, // Only set price if purchaseType is 'price'
+            price: validPurchaseType === 'price' ? price : 0,
             discountPrice: validPurchaseType === 'price' ? (discountPrice || 0) : 0,
             category,
             instructor: instructor || 'CasaDeELE Team',
-            thumbnail: imageUrl, // <-- 3. SAVE THE CLOUDINARY URL
-            images: [imageUrl], // <-- 4. SAVE THE CLOUDINARY URL (or as needed)
-            imagePublicId: imagePublicId, // <-- 5. SAVE THE PUBLIC ID
-            level, 
+            thumbnail: imageUrl,
+            images: [imageUrl],
+            imagePublicId: imagePublicId,
+            embedIds: finalEmbedIds,
+            level,
             availableLevels: Array.isArray(availableLevels) ? availableLevels : [],
             productType: productType || 'Digital',
             purchaseType: validPurchaseType,
@@ -347,6 +366,25 @@ export const updateCourse = async (req, res) => {
         }
         // --- END IMAGE UPDATE LOGIC ---
         
+        // Handle embeds
+        if (req.body.embedIds !== undefined) {
+            let finalEmbedIds = Array.isArray(req.body.embedIds) ? [...req.body.embedIds] : [];
+            if (req.body.embeds && Array.isArray(req.body.embeds) && req.body.embeds.length > 0) {
+                const Embed = (await import('../models/Embed.js')).default;
+                for (const embedData of req.body.embeds) {
+                    if (!embedData._id && embedData.title && embedData.type && embedData.embedCode) {
+                        const embed = await Embed.create({
+                            title: embedData.title,
+                            type: embedData.type,
+                            embedCode: embedData.embedCode
+                        });
+                        finalEmbedIds.push(embed._id);
+                    }
+                }
+            }
+            updateData.embedIds = finalEmbedIds;
+        }
+
         // Manually handle array/boolean fields from body to avoid them being erased
         if (req.body.availableLevels) {
             updateData.availableLevels = Array.isArray(req.body.availableLevels) ? req.body.availableLevels : [];

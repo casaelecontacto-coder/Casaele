@@ -12,27 +12,31 @@ const orderItemSchema = new mongoose.Schema({
         // Ref can point dynamically if needed, but easier to keep separate or add type
         refPath: 'orderItems.itemModel' // Points to the model type below
     },
-    itemModel: { // Specifies whether 'product' ref is 'Product' or 'Course'
+    itemModel: { // Specifies whether 'product' ref is 'Product', 'Course', or 'Magazine'
         type: String,
         required: true,
-        enum: ['Product', 'Course']
+        enum: ['Product', 'Course', 'Magazine']
     },
     // Optional: Store selected level/format if applicable
     selectedLevel: { type: String },
     selectedFormat: { type: String },
-    // Optional: Store image url for easier display in order history
-    // image: { type: String } 
+    // Snapshot fields for persistent access (survives deletion of original item)
+    coverImageUrl: { type: String },
+    pdfUrl: { type: String },
 });
 
 // --- Main Order Schema ---
 const orderSchema = new mongoose.Schema(
     {
-        // Link to the user who placed the order (optional but recommended)
-        // user: {
-        //     type: mongoose.Schema.Types.ObjectId,
-        //     required: true, // Make true if users must be logged in to order
-        //     ref: 'User', 
-        // },
+        // Link to the user who placed the order
+        userEmail: {
+            type: String,
+            index: true
+        },
+        firebaseUid: {
+            type: String,
+            index: true
+        },
 
         // *** CHANGED: Use orderItems array ***
         orderItems: [orderItemSchema], // Array of subdocuments based on item schema

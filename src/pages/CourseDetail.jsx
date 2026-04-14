@@ -8,7 +8,8 @@ import Reviews from '../components/CourseDetail/Reviews';
 import LikeSection from '../components/CourseDetail/LikeSection';
 import { apiGet } from '../utils/api';
 import Spinner from '../components/Common/Spinner';
-import { useCart } from '../context/CartContext'; // Import cart context
+import { useCart } from '../context/CartContext';
+import DropDown from '../components/Material/MaterialDetail/DropDown';
 
 function CourseDetail() {
   const { id: courseId } = useParams(); // Get ID from URL parameter
@@ -137,12 +138,17 @@ function CourseDetail() {
         <div className="space-y-16 md:space-y-20"> {/* Added space-y */}
           <DetailedInfo
             description={course.description}
-            instructor={course.instructor} // Pass relevant details
-            itemType="course" // Indicate this is a course page
-            // Pass modules if DetailedInfo displays them
-            // modules={course.modules} 
+            instructor={course.instructor}
+            itemType="course"
           />
-          {/* KeyFeatures component remains removed */}
+
+          {/* Interactive Embeds */}
+          {course.embedIds && course.embedIds.length > 0 && (
+            <DropDown
+              title="Interactive Content"
+              exercises={course.embedIds}
+            />
+          )}
           
           <Reviews 
              courseId={course._id} // Pass courseId for fetching/submitting reviews
