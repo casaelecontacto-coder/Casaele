@@ -58,6 +58,19 @@ router.get('/:id/material', verifyFirebaseToken, async (req, res) => {
   }
 });
 
+router.patch('/:id/toggle-active', verifyFirebaseToken, async (req, res) => {
+  try {
+    const { default: Mag } = await import('../models/Magazine.js');
+    const newActive = req.body.isActive;
+    if (typeof newActive !== 'boolean') return res.status(400).json({ message: 'isActive boolean is required' });
+    const updated = await Mag.findByIdAndUpdate(req.params.id, { $set: { isActive: newActive } }, { new: true });
+    if (!updated) return res.status(404).json({ message: 'Magazine not found' });
+    res.json({ _id: updated._id, isActive: updated.isActive });
+  } catch (error) {
+    res.status(500).json({ message: 'Error toggling magazine visibility' });
+  }
+});
+
 router.route('/:id')
   .get(getMagazineById)
   .put(verifyFirebaseToken, updateMagazine)

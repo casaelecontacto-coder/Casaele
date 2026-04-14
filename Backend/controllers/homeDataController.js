@@ -51,8 +51,8 @@ export async function getHomeData(req, res) {
       Testimonial.find({ status: 'approved' })
         .sort({ createdAt: -1 })
         .lean(),
-      // Fetch all teachers
-      Teacher.find()
+      // Fetch active teachers
+      Teacher.find({ isActive: { $ne: false } })
         .sort({ createdAt: -1 })
         .lean(),
       // Fetch active home slides

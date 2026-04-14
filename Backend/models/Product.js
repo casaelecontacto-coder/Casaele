@@ -55,8 +55,10 @@ const productSchema = new mongoose.Schema({
   downloadSettings: {
     maxDownloads: { type: Number, default: 3, min: 1 },
     linkExpiryDays: { type: Number, default: 30, min: 1 },
-    requireAuth: { type: Boolean, default: false } // future: require login to download
-  }
+    requireAuth: { type: Boolean, default: false }
+  },
+
+  isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
 export default mongoose.models.Product || mongoose.model('Product', productSchema);

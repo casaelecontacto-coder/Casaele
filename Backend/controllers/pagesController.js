@@ -121,7 +121,7 @@ export async function getHomePage(req, res) {
         .sort({ createdAt: -1 })
         .lean(),
 
-      Teacher.find()
+      Teacher.find({ isActive: { $ne: false } })
         .sort({ createdAt: -1 })
         .lean(),
 

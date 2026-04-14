@@ -25,6 +25,8 @@ const materialSchema = new mongoose.Schema({
   displayType: { type: String, enum: ['simple', 'banner'], default: 'simple' },
   imageSource: { type: String, enum: ['local', 'pinterest', ''], default: '' },
   embedIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Embed' }],
+
+  isActive: { type: Boolean, default: true },
 }, { timestamps: { createdAt: true, updatedAt: true } });
 
 export default mongoose.models.Material || mongoose.model('Material', materialSchema);

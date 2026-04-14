@@ -104,6 +104,20 @@ router.put('/:id', verifyAdminAccess, async (req, res) => {
   }
 });
 
+// Toggle visibility
+router.patch('/:id/toggle-active', verifyAdminAccess, async (req, res) => {
+  try {
+    const newActive = req.body.isActive;
+    if (typeof newActive !== 'boolean') return res.status(400).json({ message: 'isActive boolean is required' });
+    const updated = await Pick.findByIdAndUpdate(req.params.id, { $set: { isActive: newActive } }, { new: true });
+    if (!updated) return res.status(404).json({ message: 'Pick not found' });
+    clearPicksCache();
+    res.json({ _id: updated._id, isActive: updated.isActive });
+  } catch (error) {
+    res.status(500).json({ message: 'Error toggling pick visibility' });
+  }
+});
+
 // Delete a pick
 router.delete('/:id', verifyAdminAccess, async (req, res) => {
   try {

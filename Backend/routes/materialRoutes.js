@@ -97,7 +97,7 @@ router.post('/', verifyFirebaseToken, async (req, res) => {
 // Get filter options (public) - returns all available categories, levels, etc.
 router.get('/filter-options', async (req, res) => {
   try {
-    const materials = await Material.find({}, 'category subCategory theme level country');
+    const materials = await Material.find({ isActive: { $ne: false } }, 'category subCategory theme level country');
     
     // Extract unique values for each filter
     const categories = [...new Set(materials.map(m => m.category).filter(Boolean))];
@@ -135,7 +135,8 @@ router.get('/', async (req, res) => {
     } = req.query;
 
     // Build filter object for MongoDB query
-    const filter = {};
+    const showAll = req.query.all === 'true';
+    const filter = showAll ? {} : { isActive: { $ne: false } };
     let hasFilters = false;
     
     // Category filter (Room/Category) - exact match with admin-defined category
@@ -365,8 +366,20 @@ router.put('/:id', verifyFirebaseToken, async (req, res) => {
   }
 })
 
+// Toggle visibility (admin)
+router.patch('/:id/toggle-active', verifyFirebaseToken, async (req, res) => {
+  try {
+    const newActive = req.body.isActive
+    if (typeof newActive !== 'boolean') return res.status(400).json({ message: 'isActive boolean is required' })
+    const updated = await Material.findByIdAndUpdate(req.params.id, { $set: { isActive: newActive } }, { new: true })
+    if (!updated) return res.status(404).json({ message: 'Not found' })
+    res.json({ _id: updated._id, isActive: updated.isActive })
+  } catch (e) {
+    res.status(500).json({ message: 'Failed to toggle visibility' })
+  }
+})
+
 // Delete (admin)
-// No changes needed
 router.delete('/:id', verifyFirebaseToken, async (req, res) => {
   const deleted = await Material.findByIdAndDelete(req.params.id)
   if (!deleted) return res.status(404).json({ message: 'Not found' })

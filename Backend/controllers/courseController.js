@@ -36,7 +36,8 @@ export const getCourses = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
-        let query = Course.find({ isActive: true }); // Default to active courses for public view
+        const showAll = req.query.all === 'true';
+        let query = Course.find(showAll ? {} : { isActive: true });
 
         // Enhanced filtering support for Explore/Keyword modes
         const { 

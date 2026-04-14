@@ -26,7 +26,8 @@ export async function createPost(req, res) {
 // @access  Public
 export async function getPosts(req, res) {
   try {
-    const posts = await Post.find().sort({ createdAt: -1 });
+    const showAll = req.query.all === 'true';
+    const posts = await Post.find(showAll ? {} : { isActive: { $ne: false } }).sort({ createdAt: -1 });
     res.json(posts);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch posts', error: error.message });

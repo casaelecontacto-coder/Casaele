@@ -35,7 +35,8 @@ export const getProducts = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
-        let query = Product.find({}); // Add isActive check if needed: { isActive: true }
+        const showAll = req.query.all === 'true';
+        let query = Product.find(showAll ? {} : { isActive: { $ne: false } });
 
         // Enhanced filtering support for Explore/Keyword modes
         const { 

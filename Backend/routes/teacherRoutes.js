@@ -15,10 +15,14 @@ router.get('/', async (req, res) => {
       return res.status(503).json({ message: 'Service Unavailable: MongoDB not connected' });
     }
 
-    // Check cache first
-    const cached = getCachedTeachers();
-    if (cached) {
-      return res.json(cached);
+    const showAll = req.query.all === 'true';
+
+    // Check cache first (only for public/filtered requests)
+    if (!showAll) {
+      const cached = getCachedTeachers();
+      if (cached) {
+        return res.json(cached);
+      }
     }
 
     // Parse pagination parameters
@@ -27,7 +31,7 @@ router.get('/', async (req, res) => {
     const skip = (page - 1) * limit;
 
     // Fetch from database with optimizations
-    const items = await Teacher.find({})
+    const items = await Teacher.find(showAll ? {} : { isActive: { $ne: false } })
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip)
@@ -72,6 +76,20 @@ router.put('/:id', verifyAdminAccess, async (req, res) => {
     res.json(updated)
   } catch (e) {
     res.status(500).json({ message: 'Failed to update teacher' })
+  }
+})
+
+// Admin: toggle visibility
+router.patch('/:id/toggle-active', verifyAdminAccess, async (req, res) => {
+  try {
+    const newActive = req.body.isActive
+    if (typeof newActive !== 'boolean') return res.status(400).json({ message: 'isActive boolean is required' })
+    const updated = await Teacher.findByIdAndUpdate(req.params.id, { $set: { isActive: newActive } }, { new: true })
+    if (!updated) return res.status(404).json({ message: 'Not found' })
+    clearTeachersCache()
+    res.json({ _id: updated._id, isActive: updated.isActive })
+  } catch (e) {
+    res.status(500).json({ message: 'Failed to toggle visibility' })
   }
 })
 

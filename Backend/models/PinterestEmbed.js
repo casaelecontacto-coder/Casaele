@@ -29,8 +29,12 @@ const PinterestEmbedSchema = new mongoose.Schema(
       default: null 
     },
     createdBy: {
-      type: String, // Firebase UID
+      type: String,
       default: null
+    },
+    isActive: {
+      type: Boolean,
+      default: true
     }
   },
   { 

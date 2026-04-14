@@ -97,7 +97,8 @@ export async function savePinterestData(req, res) {
 export async function getPinterestData(req, res) {
   try {
     const PinterestEmbed = (await import('../models/PinterestEmbed.js')).default;
-    const data = await PinterestEmbed.find().sort({ createdAt: -1 });
+    const showAll = req.query.all === 'true';
+    const data = await PinterestEmbed.find(showAll ? {} : { isActive: { $ne: false } }).sort({ createdAt: -1 });
     
     res.json({
       success: true,
