@@ -301,12 +301,12 @@ app.get('/api/html-proxy', async (req, res) => {
 // API Cache-Control headers
 app.use('/api', (req, res, next) => {
   if (req.method === 'GET') {
-    // If request has ?all=true (admin requests), skip caching entirely
+    // Admin requests: never cache
     if (req.query.all === 'true') {
       res.set('Cache-Control', 'no-store');
     } else {
-      // Public GET requests: allow short caching with revalidation
-      res.set('Cache-Control', 'public, max-age=60, s-maxage=30, stale-while-revalidate=120');
+      // Public GET: short cache, always revalidate with server
+      res.set('Cache-Control', 'no-cache');
     }
   } else {
     // Mutations (POST, PUT, PATCH, DELETE): never cache

@@ -32,8 +32,11 @@ export async function createEmbed(req, res) {
 
 export async function getEmbeds(req, res) {
   try {
-    const { pageContext, chapterId } = req.query;
+    const { pageContext, chapterId, all } = req.query;
     const filter = {};
+    if (all !== 'true') {
+      filter.isActive = { $ne: false };
+    }
 
     if (pageContext) {
       filter.pageContext = pageContext;

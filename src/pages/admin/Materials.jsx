@@ -44,7 +44,7 @@ export default function Materials() {
   useEffect(() => {
     Promise.all([
       apiGet('/api/materials?all=true'),
-      apiGet('/api/embeds'),
+      apiGet('/api/embeds?all=true'),
       apiGet('/api/chapters')
     ]).then(([materialsData, embedsData, chaptersData]) => {
       const materials = Array.isArray(materialsData) ? materialsData : materialsData.materials || [];
@@ -293,7 +293,7 @@ export default function Materials() {
                 setLoading(true);
                 Promise.all([
                   apiGet('/api/materials?all=true'),
-                  apiGet('/api/embeds'),
+                  apiGet('/api/embeds?all=true'),
                   apiGet('/api/chapters')
                 ]).then(([materialsData, embedsData, chaptersData]) => {
                   const materials = Array.isArray(materialsData) ? materialsData : materialsData.materials || [];

@@ -5,14 +5,11 @@ export async function apiGet(path) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-  // Admin requests (all=true) and /admin paths should bypass browser cache
-  const isAdminRequest = path.includes('all=true') || path.includes('/admin');
-  if (isAdminRequest) {
-    headers['Cache-Control'] = 'no-cache';
-    headers['Pragma'] = 'no-cache';
-  }
+  // Admin data-fetching requests should bypass browser cache
+  const isAdminRequest = path.includes('all=true') || path.endsWith('/admin');
 
   try {
+    // For admin requests, append a timestamp to bust browser/CDN cache
     const url = isAdminRequest
       ? `${API_BASE}${path}${path.includes('?') ? '&' : '?'}_t=${Date.now()}`
       : `${API_BASE}${path}`;

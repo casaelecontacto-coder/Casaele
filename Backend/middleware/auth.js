@@ -52,8 +52,9 @@ export async function verifyVerifiedAdmin(req, res, next) {
     // and does not need to initialize Firebase itself.
     try {
         await verifyFirebaseToken(req, res, async () => {
-            const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
-            if (req.user.email === superAdminEmail) {
+            const superAdminEmail = (process.env.SUPER_ADMIN_EMAIL || '').trim().toLowerCase();
+            const userEmail = (req.user.email || '').trim().toLowerCase();
+            if (userEmail && userEmail === superAdminEmail) {
                 req.user.isSuperAdmin = true;
                 return next();
             }

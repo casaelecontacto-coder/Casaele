@@ -48,19 +48,20 @@ export const verifyAdminAccess = async (req, res, next) => {
     // First verify Firebase token
     await verifyFirebaseToken(req, res, () => {});
 
-    const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
-    
+    const superAdminEmail = (process.env.SUPER_ADMIN_EMAIL || '').trim().toLowerCase();
+    const userEmail = (req.user.email || '').trim().toLowerCase();
+
     // If user is super admin, allow access
-    if (req.user.email === superAdminEmail) {
+    if (userEmail && userEmail === superAdminEmail) {
       req.user.isSuperAdmin = true;
       return next();
     }
 
     // For regular admins, check if they exist and are verified
     const Admin = (await import('../models/Admin.js')).default;
-    const admin = await Admin.findOne({ 
-      email: req.user.email, 
-      verified: true 
+    const admin = await Admin.findOne({
+      email: { $regex: new RegExp(`^${userEmail}$`, 'i') },
+      verified: true
     });
 
     if (!admin) {

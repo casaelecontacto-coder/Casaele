@@ -45,8 +45,8 @@ export default function Embeds() {
     try {
       setLoading(true)
       const url = selectedChapter
-        ? `/api/embeds?chapterId=${selectedChapter}`
-        : '/api/embeds'
+        ? `/api/embeds?chapterId=${selectedChapter}&all=true`
+        : '/api/embeds?all=true'
       const data = await apiGet(url)
       setItems(data)
     } catch (e) {

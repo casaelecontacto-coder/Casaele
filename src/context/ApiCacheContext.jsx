@@ -4,12 +4,14 @@ import { apiGet } from '../utils/api';
 /**
  * Global API Cache Context
  * Prevents duplicate API calls by caching responses globally
- * Once data is fetched, it's never fetched again (until page reload)
+ * Cache entries expire after CACHE_TTL_MS to ensure fresh data
  */
 const ApiCacheContext = createContext(null);
 
+const CACHE_TTL_MS = 30 * 1000; // 30 seconds
+
 export function ApiCacheProvider({ children }) {
-  // Cache storage: { endpoint: { data, loading, error, promise } }
+  // Cache storage: { endpoint: { data, loading, error, promise, timestamp } }
   const cacheRef = useRef(new Map());
   const [, forceUpdate] = useState(0);
 
@@ -22,8 +24,9 @@ export function ApiCacheProvider({ children }) {
     // Check cache first
     if (!forceRefresh && cacheRef.current.has(endpoint)) {
       const cached = cacheRef.current.get(endpoint);
-      // If already loaded, return cached data
-      if (cached.data !== null || cached.error) {
+      const isExpired = cached.timestamp && (Date.now() - cached.timestamp > CACHE_TTL_MS);
+      // If already loaded and not expired, return cached data
+      if (!isExpired && (cached.data !== null || cached.error)) {
         return cached;
       }
       // If currently loading, wait for the existing promise
@@ -37,7 +40,8 @@ export function ApiCacheProvider({ children }) {
       data: null,
       loading: true,
       error: null,
-      promise: null
+      promise: null,
+      timestamp: null
     };
 
     // Create the fetch promise
@@ -48,6 +52,7 @@ export function ApiCacheProvider({ children }) {
         cacheEntry.loading = false;
         cacheEntry.error = null;
         cacheEntry.promise = null;
+        cacheEntry.timestamp = Date.now();
         forceUpdate(prev => prev + 1); // Trigger re-render for subscribers
         return cacheEntry;
       } catch (err) {

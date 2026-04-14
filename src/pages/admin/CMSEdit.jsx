@@ -17,7 +17,7 @@ export default function CMSEdit() {
 
   useEffect(() => {
     // ++ Fetch embeds when the component mounts ++
-    apiGet('/api/embeds')
+    apiGet('/api/embeds?all=true')
       .then(setAvailableEmbeds)
       .catch(() => console.error("Failed to load embeds list"));
 
