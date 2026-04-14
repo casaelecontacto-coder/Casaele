@@ -391,12 +391,9 @@ function MagazineDetail() {
               </div>
             }>
               <FlipbookViewer
-                pdfUrl={isFree ? pdfProxyUrl : undefined}
+                pdfUrl={pdfProxyUrl}
                 title={magazine.title}
-                {...(!isFree && {
-                  pdfUrl: pdfProxyUrl,
-                  fetchOptions: { headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` } }
-                })}
+                authToken={!isFree ? localStorage.getItem('authToken') : undefined}
               />
             </Suspense>
           </div>

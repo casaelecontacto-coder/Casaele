@@ -33,7 +33,7 @@ const Page = React.forwardRef(({ pageImage, pageNumber, totalPages }, ref) => {
 
 Page.displayName = 'Page';
 
-function FlipbookViewer({ pdfUrl, title }) {
+function FlipbookViewer({ pdfUrl, title, authToken }) {
   const [pages, setPages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -80,8 +80,24 @@ function FlipbookViewer({ pdfUrl, title }) {
 
     const loadPdf = async () => {
       try {
+        // Build pdfjs document source - use authenticated fetch for paid magazines
+        let docSource;
+        if (authToken) {
+          // Fetch PDF with auth header, then pass raw data to pdfjs
+          const response = await fetch(pdfUrl, {
+            headers: { Authorization: `Bearer ${authToken}` }
+          });
+          if (!response.ok) {
+            throw new Error(`PDF fetch failed: ${response.status}`);
+          }
+          const data = await response.arrayBuffer();
+          docSource = { data };
+        } else {
+          docSource = { url: pdfUrl };
+        }
+
         const loadingTask = pdfjsLib.getDocument({
-          url: pdfUrl,
+          ...docSource,
           cMapUrl: `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/cmaps/`,
           cMapPacked: true,
         });
@@ -128,7 +144,7 @@ function FlipbookViewer({ pdfUrl, title }) {
 
     loadPdf();
     return () => { cancelled = true; };
-  }, [pdfUrl]);
+  }, [pdfUrl, authToken]);
 
   const onFlip = useCallback((e) => {
     setCurrentPage(e.data);

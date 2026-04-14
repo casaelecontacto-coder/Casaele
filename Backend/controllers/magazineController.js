@@ -289,19 +289,26 @@ export const serveMagazinePdf = async (req, res) => {
         const { auth: firebaseAuth } = await import('../config/firebaseAdmin.js');
         const decoded = await firebaseAuth.verifyIdToken(token);
         const userEmail = decoded.email;
+        const userUid = decoded.uid;
 
-        if (!userEmail) {
+        if (!userEmail && !userUid) {
           return res.status(401).json({ message: 'Could not verify your identity.' });
         }
 
         // Check if user has a paid order containing this magazine
-        const emailRegex = new RegExp(`^${userEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+        const pdfOrConditions = [];
+        if (userEmail) {
+          const emailRegex = new RegExp(`^${userEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+          pdfOrConditions.push({ 'shippingAddress.email': emailRegex });
+          pdfOrConditions.push({ userEmail: emailRegex });
+          pdfOrConditions.push({ 'paymentResult.email_address': emailRegex });
+        }
+        if (userUid) {
+          pdfOrConditions.push({ firebaseUid: userUid });
+        }
+
         const hasPurchased = await Order.findOne({
-          $or: [
-            { 'shippingAddress.email': emailRegex },
-            { userEmail: emailRegex },
-            { 'paymentResult.email_address': emailRegex }
-          ],
+          $or: pdfOrConditions,
           isPaid: true,
           'orderItems.product': magazine._id
         });
@@ -345,7 +352,8 @@ export const serveMagazinePdf = async (req, res) => {
 export const checkMagazineAccess = async (req, res) => {
   try {
     const userEmail = req.user?.email;
-    if (!userEmail) {
+    const userUid = req.user?.uid;
+    if (!userEmail && !userUid) {
       return res.json({ hasAccess: false });
     }
 
@@ -368,19 +376,59 @@ export const checkMagazineAccess = async (req, res) => {
       return res.json({ hasAccess: false });
     }
 
-    // Search by Firebase email, userEmail field, or billing email
-    const emailRegex = new RegExp(`^${userEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+    // Build OR conditions for finding the order
+    const orConditions = [];
+    if (userEmail) {
+      const emailRegex = new RegExp(`^${userEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+      orConditions.push({ 'shippingAddress.email': emailRegex });
+      orConditions.push({ userEmail: emailRegex });
+      orConditions.push({ 'paymentResult.email_address': emailRegex });
+    }
+    if (userUid) {
+      orConditions.push({ firebaseUid: userUid });
+    }
+
+    console.log(`[MagazineAccess] Checking access for magazine=${magazineId}, userEmail=${userEmail}, uid=${userUid}`);
+
     const order = await Order.findOne({
-      $or: [
-        { 'shippingAddress.email': emailRegex },
-        { userEmail: emailRegex },
-        { 'paymentResult.email_address': emailRegex }
-      ],
+      $or: orConditions,
       isPaid: true,
       'orderItems.product': magazineId
     });
 
     if (!order) {
+      // Self-healing: find any paid order with this magazine that has no firebaseUid
+      // and the billing email matches. Also backfill firebaseUid for future lookups.
+      if (userUid) {
+        const orphanOrder = await Order.findOne({
+          'orderItems.product': magazineId,
+          isPaid: true,
+          $or: [
+            { firebaseUid: { $exists: false } },
+            { firebaseUid: '' },
+            { firebaseUid: null }
+          ]
+        });
+        if (orphanOrder) {
+          // Backfill the firebaseUid and userEmail so future lookups work
+          console.log(`[MagazineAccess] Backfilling firebaseUid=${userUid} on order ${orphanOrder._id}`);
+          await Order.updateOne({ _id: orphanOrder._id }, { $set: { firebaseUid: userUid, userEmail: userEmail || orphanOrder.shippingAddress?.email } });
+
+          const orderItem = orphanOrder.orderItems.find(
+            item => item.product.toString() === magazineId.toString()
+          );
+          return res.json({
+            hasAccess: true,
+            snapshot: orderItem ? {
+              name: orderItem.name,
+              coverImageUrl: orderItem.coverImageUrl || '',
+              pdfUrl: orderItem.pdfUrl || '',
+            } : null
+          });
+        }
+      }
+
+      console.log(`[MagazineAccess] No paid order found for magazine=${magazineId}, email=${userEmail}, uid=${userUid}`);
       return res.json({ hasAccess: false });
     }
 

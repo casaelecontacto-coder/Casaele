@@ -92,6 +92,20 @@ export const createOrder = async (req, res) => {
 // @access  Public
 export const verifyPayment = async (req, res) => {
   console.log("Backend: Received POST /api/orders/verify request");
+
+  // Optionally extract Firebase user from auth header (not required for payment)
+  let firebaseUser = null;
+  try {
+    const authHeader = req.headers.authorization || '';
+    const [scheme, token] = authHeader.split(' ');
+    if (scheme === 'Bearer' && token) {
+      const { auth: firebaseAuth } = await import('../config/firebaseAdmin.js');
+      firebaseUser = await firebaseAuth.verifyIdToken(token);
+    }
+  } catch (e) {
+    // Silently ignore - auth is optional here
+  }
+
   try {
     const {
       razorpay_order_id,
@@ -221,8 +235,8 @@ export const verifyPayment = async (req, res) => {
 
       const newOrder = new Order({
         orderItems,
-        userEmail: req.user?.email || billingDetails.email || '',
-        firebaseUid: req.user?.uid || '',
+        userEmail: firebaseUser?.email || billingDetails.email || '',
+        firebaseUid: firebaseUser?.uid || '',
         shippingAddress: {
           fullName: `${billingDetails.firstName} ${billingDetails.lastName}`,
           address: billingDetails.address,
