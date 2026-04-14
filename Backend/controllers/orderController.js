@@ -221,6 +221,8 @@ export const verifyPayment = async (req, res) => {
 
       const newOrder = new Order({
         orderItems,
+        userEmail: req.user?.email || billingDetails.email || '',
+        firebaseUid: req.user?.uid || '',
         shippingAddress: {
           fullName: `${billingDetails.firstName} ${billingDetails.lastName}`,
           address: billingDetails.address,
@@ -689,6 +691,8 @@ export const createFreeOrder = async (req, res) => {
 
     const newOrder = new Order({
       orderItems,
+      userEmail: req.user?.email || billingDetails.email || '',
+      firebaseUid: req.user?.uid || '',
       shippingAddress: {
         fullName: `${billingDetails.firstName} ${billingDetails.lastName}`,
         address: billingDetails.address,

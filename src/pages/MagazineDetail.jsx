@@ -283,8 +283,8 @@ function MagazineDetail() {
 
             {/* Main Action Buttons */}
             <div className="flex flex-col gap-3 pt-4">
-              {/* Buy Button for paid magazines */}
-              {!isFree && !hasAccess && (
+              {/* Buy Button for paid magazines - hidden while checking access */}
+              {!isFree && !hasAccess && !checkingAccess && (
                 <button
                   onClick={handleAddToCart}
                   disabled={added}

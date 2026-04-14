@@ -243,14 +243,18 @@ export const serveMagazinePdf = async (req, res) => {
         try {
           const { auth: firebaseAuth } = await import('../config/firebaseAdmin.js');
           const decoded = await firebaseAuth.verifyIdToken(token);
+          const snapEmailRegex = new RegExp(`^${decoded.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
           const order = await Order.findOne({
-            'shippingAddress.email': { $regex: new RegExp(`^${decoded.email}$`, 'i') },
+            $or: [
+              { 'shippingAddress.email': snapEmailRegex },
+              { userEmail: snapEmailRegex },
+              { 'paymentResult.email_address': snapEmailRegex }
+            ],
             isPaid: true,
-            'orderItems.product': req.params.id,
-            'orderItems.itemModel': 'Magazine'
+            'orderItems.product': req.params.id
           });
           if (order) {
-            const item = order.orderItems.find(i => i.product.toString() === req.params.id && i.itemModel === 'Magazine');
+            const item = order.orderItems.find(i => i.product.toString() === req.params.id);
             if (item?.pdfUrl) {
               // Serve from snapshot
               const snapshotUrl = item.pdfUrl;
@@ -291,8 +295,13 @@ export const serveMagazinePdf = async (req, res) => {
         }
 
         // Check if user has a paid order containing this magazine
+        const emailRegex = new RegExp(`^${userEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
         const hasPurchased = await Order.findOne({
-          'shippingAddress.email': { $regex: new RegExp(`^${userEmail}$`, 'i') },
+          $or: [
+            { 'shippingAddress.email': emailRegex },
+            { userEmail: emailRegex },
+            { 'paymentResult.email_address': emailRegex }
+          ],
           isPaid: true,
           'orderItems.product': magazine._id
         });
@@ -359,8 +368,14 @@ export const checkMagazineAccess = async (req, res) => {
       return res.json({ hasAccess: false });
     }
 
+    // Search by Firebase email, userEmail field, or billing email
+    const emailRegex = new RegExp(`^${userEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
     const order = await Order.findOne({
-      'shippingAddress.email': { $regex: new RegExp(`^${userEmail}$`, 'i') },
+      $or: [
+        { 'shippingAddress.email': emailRegex },
+        { userEmail: emailRegex },
+        { 'paymentResult.email_address': emailRegex }
+      ],
       isPaid: true,
       'orderItems.product': magazineId
     });
@@ -369,9 +384,9 @@ export const checkMagazineAccess = async (req, res) => {
       return res.json({ hasAccess: false });
     }
 
-    // Return snapshot data from order in case magazine was deleted
+    // Return snapshot data from order (don't filter by itemModel since old orders may have 'Product')
     const orderItem = order.orderItems.find(
-      item => item.product.toString() === magazineId.toString() && item.itemModel === 'Magazine'
+      item => item.product.toString() === magazineId.toString()
     );
 
     return res.json({
