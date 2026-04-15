@@ -40,6 +40,35 @@ export default function Materials() {
   const [pinPreview, setPinPreview] = useState(null);
   const [saving, setSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [uploadingEmbedHtml, setUploadingEmbedHtml] = useState(null);
+
+  // HTML file upload for embed items
+  const handleEmbedHtmlUpload = async (index, file) => {
+    if (!file || !file.name.endsWith('.html')) {
+      alert('Please select a valid HTML file');
+      return;
+    }
+    setUploadingEmbedHtml(index);
+    try {
+      const formData = new FormData();
+      formData.append('htmlFile', file);
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${apiBaseUrl}/api/uploads/html-file`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData
+      });
+      const result = await response.json();
+      if (!result.success) throw new Error(result.message || 'Upload failed');
+      updateMaterialEmbed(index, 'embedCode', result.url);
+      updateMaterialEmbed(index, 'type', 'HTML');
+    } catch (e) {
+      alert(e?.message || 'HTML upload failed');
+    } finally {
+      setUploadingEmbedHtml(null);
+    }
+  };
 
   useEffect(() => {
     Promise.all([
@@ -448,7 +477,7 @@ export default function Materials() {
                                 onChange={e => updateMaterialEmbed(index, 'title', e.target.value)}
                                 placeholder="e.g., Exercise 1"
                                 className="mt-1 w-full rounded-lg border border-gray-300 bg-white focus:border-red-500 focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400"
-                                disabled={!!embed._id} // Optional: Disable editing if it's an existing embed
+                                disabled={!!embed._id}
                             />
                             </label>
                             <label className="block">
@@ -461,15 +490,37 @@ export default function Materials() {
                             >
                                 <option value="AI">AI Content</option>
                                 <option value="H5P">H5P Content</option>
+                                <option value="HTML">HTML File</option>
                             </select>
                             </label>
                         </div>
+                        {/* HTML File Upload */}
+                        {!embed._id && (
+                          <div className="mt-3">
+                            <span className="text-sm text-gray-700">Upload HTML File</span>
+                            <div className="flex items-center gap-2 mt-1">
+                              <input
+                                type="file"
+                                accept=".html"
+                                onChange={(e) => {
+                                  const file = e.target.files[0];
+                                  if (file) handleEmbedHtmlUpload(index, file);
+                                  e.target.value = '';
+                                }}
+                                className="flex-1 text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                                disabled={uploadingEmbedHtml === index}
+                              />
+                              {uploadingEmbedHtml === index && <span className="text-xs text-gray-500 animate-pulse">Uploading...</span>}
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Upload an HTML file to auto-fill the embed code field</p>
+                          </div>
+                        )}
                         <label className="block mt-3">
-                            <span className="text-sm text-gray-700">Embed Code</span>
+                            <span className="text-sm text-gray-700">Embed Code / URL</span>
                             <textarea
                             value={embed.embedCode}
                             onChange={e => updateMaterialEmbed(index, 'embedCode', e.target.value)}
-                            placeholder="Paste your <iframe> or <script> code here"
+                            placeholder="Paste your <iframe> or <script> code here, or upload an HTML file above"
                             rows="4"
                             className="mt-1 w-full rounded-lg border border-gray-300 bg-white focus:border-red-500 focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400"
                             disabled={!!embed._id}

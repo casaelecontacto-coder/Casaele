@@ -33,6 +33,41 @@ const Magazines = () => {
   });
   const [uploadingMaterial, setUploadingMaterial] = useState(false);
 
+  // Embeds state
+  const [magazineEmbeds, setMagazineEmbeds] = useState([]);
+  const [uploadingEmbedHtml, setUploadingEmbedHtml] = useState(null);
+  const addMagazineEmbed = () => setMagazineEmbeds(prev => [...prev, { title: '', type: 'AI', embedCode: '' }]);
+  const updateMagazineEmbed = (index, field, value) => setMagazineEmbeds(prev => prev.map((e, i) => i === index ? { ...e, [field]: value } : e));
+  const removeMagazineEmbed = (index) => setMagazineEmbeds(prev => prev.filter((_, i) => i !== index));
+
+  // HTML file upload for embed items
+  const handleEmbedHtmlUpload = async (index, file) => {
+    if (!file || !file.name.endsWith('.html')) {
+      alert('Please select a valid HTML file');
+      return;
+    }
+    setUploadingEmbedHtml(index);
+    try {
+      const fd = new FormData();
+      fd.append('htmlFile', file);
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${apiBaseUrl}/api/uploads/html-file`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: fd
+      });
+      const result = await response.json();
+      if (!result.success) throw new Error(result.message || 'Upload failed');
+      updateMagazineEmbed(index, 'embedCode', result.url);
+      updateMagazineEmbed(index, 'type', 'HTML');
+    } catch (e) {
+      alert(e?.message || 'HTML upload failed');
+    } finally {
+      setUploadingEmbedHtml(null);
+    }
+  };
+
   // Multi-currency pricing state
   const [pricesUSD, setPricesUSD] = useState({ price: 0, discountPrice: 0 });
   const [pricesEUR, setPricesEUR] = useState({ price: 0, discountPrice: 0 });
@@ -59,6 +94,7 @@ const Magazines = () => {
     setPricesUSD({ price: 0, discountPrice: 0 });
     setPricesEUR({ price: 0, discountPrice: 0 });
     setPricesINR({ price: 0, discountPrice: 0 });
+    setMagazineEmbeds([]);
     setEditingMagazine(null);
   };
 
@@ -167,6 +203,12 @@ const Magazines = () => {
         return;
       }
 
+      // Filter new embeds (without _id)
+      const newEmbedsToCreate = magazineEmbeds.filter(
+        e => !e._id && e.title.trim() && e.embedCode.trim()
+      );
+      const existingEmbedIds = magazineEmbeds.filter(e => e._id).map(e => e._id);
+
       const payload = {
         ...formData,
         prices: {
@@ -174,6 +216,8 @@ const Magazines = () => {
           EUR: pricesEUR,
           INR: pricesINR,
         },
+        embedIds: existingEmbedIds,
+        embeds: newEmbedsToCreate,
       };
 
       const url = editingMagazine ? `/api/magazines/${editingMagazine._id}` : '/api/magazines';
@@ -220,6 +264,16 @@ const Magazines = () => {
     setPricesUSD(magazine.prices?.USD || { price: 0, discountPrice: 0 });
     setPricesEUR(magazine.prices?.EUR || { price: 0, discountPrice: 0 });
     setPricesINR(magazine.prices?.INR || { price: 0, discountPrice: 0 });
+
+    // Load existing embeds
+    const existingEmbeds = magazine.embedIds?.map(embed => ({
+      _id: embed._id || embed,
+      title: embed.title || '',
+      type: embed.type || 'AI',
+      embedCode: embed.embedCode || ''
+    })) || [];
+    setMagazineEmbeds(existingEmbeds);
+
     setShowModal(true);
   };
 
@@ -491,6 +545,69 @@ const Magazines = () => {
                     <label className="block text-xs font-medium text-gray-600 mb-1">Pre-order Physical Copies Link</label>
                     <input type="url" value={formData.preorderLink} onChange={(e) => setFormData({ ...formData, preorderLink: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" />
                   </div>
+                </div>
+
+                {/* Embeds Section */}
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-semibold text-gray-800">Embeds (AI/H5P/HTML Content)</h4>
+                    <button type="button" onClick={addMagazineEmbed} className="px-3 py-1.5 text-xs bg-red-700 text-white rounded-md hover:bg-red-800 transition">+ Add Embed</button>
+                  </div>
+                  {magazineEmbeds.length === 0 ? (
+                    <div className="text-center py-6 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+                      <p className="text-sm">No embeds added yet.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                      {magazineEmbeds.map((embed, index) => (
+                        <div key={index} className="bg-white rounded-lg p-3 border border-gray-200">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-semibold text-gray-600">Embed #{index + 1} {embed._id && '(Existing)'}</span>
+                            <button type="button" onClick={() => removeMagazineEmbed(index)} className="text-xs text-red-600 hover:text-red-800">Remove</button>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Title</label>
+                              <input value={embed.title} onChange={e => updateMagazineEmbed(index, 'title', e.target.value)} placeholder="e.g., Exercise 1" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Type</label>
+                              <select value={embed.type} onChange={e => updateMagazineEmbed(index, 'type', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id}>
+                                <option value="AI">AI Content</option>
+                                <option value="H5P">H5P Content</option>
+                                <option value="HTML">HTML File</option>
+                              </select>
+                            </div>
+                          </div>
+                          {/* HTML File Upload */}
+                          {!embed._id && (
+                            <div className="mt-2">
+                              <label className="block text-xs text-gray-600 mb-1">Upload HTML File</label>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="file"
+                                  accept=".html"
+                                  onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file) handleEmbedHtmlUpload(index, file);
+                                    e.target.value = '';
+                                  }}
+                                  className="flex-1 text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                                  disabled={uploadingEmbedHtml === index}
+                                />
+                                {uploadingEmbedHtml === index && <span className="text-xs text-gray-500 animate-pulse">Uploading...</span>}
+                              </div>
+                              <p className="text-xs text-gray-400 mt-1">Upload an HTML file to auto-fill the embed code field</p>
+                            </div>
+                          )}
+                          <div className="mt-2">
+                            <label className="block text-xs text-gray-600 mb-1">Embed Code / URL</label>
+                            <textarea value={embed.embedCode} onChange={e => updateMagazineEmbed(index, 'embedCode', e.target.value)} placeholder='Paste your <iframe> or <script> code here, or upload an HTML file above' rows="3" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Access Type Toggle */}

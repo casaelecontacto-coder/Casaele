@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import AuthForm from './LogIn';
 
 const FlipbookViewer = lazy(() => import('../components/Magazine/FlipbookViewer'));
+import DropDown from '../components/Material/MaterialDetail/DropDown';
 
 function MagazineDetail() {
   const { id } = useParams();
@@ -413,6 +414,16 @@ function MagazineDetail() {
             >
               Login / Signup
             </button>
+          </div>
+        )}
+
+        {/* Interactive Content (Embeds) */}
+        {magazine.embedIds && magazine.embedIds.length > 0 && (
+          <div className="mb-16">
+            <DropDown
+              title="Interactive Content"
+              exercises={magazine.embedIds}
+            />
           </div>
         )}
 

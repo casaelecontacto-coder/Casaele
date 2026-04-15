@@ -4,7 +4,7 @@ import mongoose from 'mongoose'
 const EmbedSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
-    type: { type: String, required: true, enum: ['AI', 'H5P'] },
+    type: { type: String, required: true, enum: ['AI', 'H5P', 'HTML'] },
     embedCode: { type: String, required: true },
     pageContext: { type: String, default: 'general', index: true },
     chapterId: {

@@ -50,9 +50,38 @@ const Products = () => {
 
   // Embeds state
   const [productEmbeds, setProductEmbeds] = useState([]);
+  const [uploadingEmbedHtml, setUploadingEmbedHtml] = useState(null);
   const addProductEmbed = () => setProductEmbeds(prev => [...prev, { title: '', type: 'AI', embedCode: '' }]);
   const updateProductEmbed = (index, field, value) => setProductEmbeds(prev => prev.map((e, i) => i === index ? { ...e, [field]: value } : e));
   const removeProductEmbed = (index) => setProductEmbeds(prev => prev.filter((_, i) => i !== index));
+
+  // HTML file upload for embed items
+  const handleEmbedHtmlUpload = async (index, file) => {
+    if (!file || !file.name.endsWith('.html')) {
+      alert('Please select a valid HTML file');
+      return;
+    }
+    setUploadingEmbedHtml(index);
+    try {
+      const formData = new FormData();
+      formData.append('htmlFile', file);
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${apiBaseUrl}/api/uploads/html-file`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData
+      });
+      const result = await response.json();
+      if (!result.success) throw new Error(result.message || 'Upload failed');
+      updateProductEmbed(index, 'embedCode', result.url);
+      updateProductEmbed(index, 'type', 'HTML');
+    } catch (e) {
+      alert(e?.message || 'HTML upload failed');
+    } finally {
+      setUploadingEmbedHtml(null);
+    }
+  };
 
   const ALL_POSSIBLE_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
@@ -813,12 +842,34 @@ const Products = () => {
                               <select value={embed.type} onChange={e => updateProductEmbed(index, 'type', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id}>
                                 <option value="AI">AI Content</option>
                                 <option value="H5P">H5P Content</option>
+                                <option value="HTML">HTML File</option>
                               </select>
                             </div>
                           </div>
+                          {/* HTML File Upload */}
+                          {!embed._id && (
+                            <div className="mt-2">
+                              <label className="block text-xs text-gray-600 mb-1">Upload HTML File</label>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="file"
+                                  accept=".html"
+                                  onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file) handleEmbedHtmlUpload(index, file);
+                                    e.target.value = '';
+                                  }}
+                                  className="flex-1 text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                                  disabled={uploadingEmbedHtml === index}
+                                />
+                                {uploadingEmbedHtml === index && <span className="text-xs text-gray-500 animate-pulse">Uploading...</span>}
+                              </div>
+                              <p className="text-xs text-gray-400 mt-1">Upload an HTML file to auto-fill the embed code field</p>
+                            </div>
+                          )}
                           <div className="mt-2">
-                            <label className="block text-xs text-gray-600 mb-1">Embed Code</label>
-                            <textarea value={embed.embedCode} onChange={e => updateProductEmbed(index, 'embedCode', e.target.value)} placeholder='Paste your <iframe> or <script> code here' rows="3" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
+                            <label className="block text-xs text-gray-600 mb-1">Embed Code / URL</label>
+                            <textarea value={embed.embedCode} onChange={e => updateProductEmbed(index, 'embedCode', e.target.value)} placeholder='Paste your <iframe> or <script> code here, or upload an HTML file above' rows="3" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
                           </div>
                         </div>
                       ))}

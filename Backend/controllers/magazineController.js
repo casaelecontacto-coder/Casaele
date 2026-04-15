@@ -57,10 +57,10 @@ export const getMagazineById = async (req, res) => {
   try {
     let magazine;
     if (mongoose.Types.ObjectId.isValid(req.params.id)) {
-      magazine = await Magazine.findById(req.params.id);
+      magazine = await Magazine.findById(req.params.id).populate('embedIds');
     }
     if (!magazine) {
-      magazine = await Magazine.findOne({ slug: req.params.id });
+      magazine = await Magazine.findOne({ slug: req.params.id }).populate('embedIds');
     }
     if (magazine) {
       res.json(magazine);
@@ -96,10 +96,28 @@ export const createMagazine = async (req, res) => {
       preorderLink,
       isActive,
       publishedAt,
+      embedIds,
+      embeds,
     } = req.body;
 
     if (!title || !coverImageUrl || !pdfUrl) {
       return res.status(400).json({ message: 'Title, cover image, and PDF are required' });
+    }
+
+    // Handle inline embed creation
+    let finalEmbedIds = Array.isArray(embedIds) ? [...embedIds] : [];
+    if (embeds && Array.isArray(embeds) && embeds.length > 0) {
+      const Embed = (await import('../models/Embed.js')).default;
+      for (const embedData of embeds) {
+        if (embedData.title && embedData.type && embedData.embedCode) {
+          const embed = await Embed.create({
+            title: embedData.title,
+            type: embedData.type,
+            embedCode: embedData.embedCode
+          });
+          finalEmbedIds.push(embed._id);
+        }
+      }
     }
 
     const baseSlug = customSlug ? generateSlug(customSlug) : generateSlug(title);
@@ -121,6 +139,7 @@ export const createMagazine = async (req, res) => {
       donateLink: donateLink || '',
       subscribeLink: subscribeLink || '',
       preorderLink: preorderLink || '',
+      embedIds: finalEmbedIds,
       isActive: typeof isActive === 'boolean' ? isActive : true,
       publishedAt: publishedAt || Date.now(),
     });
@@ -160,6 +179,8 @@ export const updateMagazine = async (req, res) => {
       preorderLink,
       isActive,
       publishedAt,
+      embedIds,
+      embeds,
     } = req.body;
 
     const updateData = {};
@@ -183,6 +204,25 @@ export const updateMagazine = async (req, res) => {
     if (preorderLink !== undefined) updateData.preorderLink = preorderLink;
     if (typeof isActive === 'boolean') updateData.isActive = isActive;
     if (publishedAt) updateData.publishedAt = publishedAt;
+
+    // Handle embeds
+    if (embedIds !== undefined) {
+      let finalEmbedIds = Array.isArray(embedIds) ? [...embedIds] : [];
+      if (embeds && Array.isArray(embeds) && embeds.length > 0) {
+        const Embed = (await import('../models/Embed.js')).default;
+        for (const embedData of embeds) {
+          if (!embedData._id && embedData.title && embedData.type && embedData.embedCode) {
+            const embed = await Embed.create({
+              title: embedData.title,
+              type: embedData.type,
+              embedCode: embedData.embedCode
+            });
+            finalEmbedIds.push(embed._id);
+          }
+        }
+      }
+      updateData.embedIds = finalEmbedIds;
+    }
 
     updateData.updatedAt = Date.now();
 

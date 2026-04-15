@@ -435,6 +435,7 @@ export default function Embeds() {
               >
                 <option value="H5P">H5P</option>
                 <option value="AI">AI</option>
+                <option value="HTML">HTML</option>
               </select>
             </div>
             <div>

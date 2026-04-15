@@ -79,7 +79,7 @@ function DropDown({ title = "Ejercicios", exercises = [] }) { // Default title i
               onClick={() => setActive(active === i ? null : i)}
             >
               <div className="flex items-center gap-4">
-                <img src={item.type === 'AI' ? "/Material/cartoon1.svg" : "/Material/cartoon2.svg"} alt="icon" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+                <img src={item.type === 'AI' ? "/Material/cartoon1.svg" : item.type === 'HTML' ? "/Material/cartoon1.svg" : "/Material/cartoon2.svg"} alt="icon" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
                 <p className="text-base font-medium text-gray-800">{item.title}</p>
               </div>
               <FaAngleDown

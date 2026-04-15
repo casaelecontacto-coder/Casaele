@@ -38,6 +38,9 @@ const magazineSchema = new mongoose.Schema({
   subscribeLink: { type: String, default: '' },
   preorderLink: { type: String, default: '' },
 
+  // Embeds (interactive content)
+  embedIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Embed' }],
+
   isActive: { type: Boolean, default: true },
   publishedAt: { type: Date, default: Date.now },
 }, { timestamps: true });
