@@ -35,17 +35,10 @@ export default function AdminLogin() {
     setError('');
     setLoading(true);
 
-    const SUPER_ADMIN_EMAIL = import.meta.env.VITE_SUPER_ADMIN_EMAIL;
-    if (email.toLowerCase() !== SUPER_ADMIN_EMAIL.toLowerCase()) {
-        setError('Access denied. This login is for the super administrator only.');
-        setLoading(false);
-        return;
-    }
-    
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
       const token = await result.user.getIdToken();
-      localStorage.setItem('authToken', token); // Set token *before* verifying
+      localStorage.setItem('authToken', token);
 
       const isAdmin = await verifyAdminStatus();
 

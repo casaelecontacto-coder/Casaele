@@ -48,53 +48,60 @@ export function verifyAdmin(req, res, next) {
 
 // Middleware to check if user is verified admin (for admin panel access)
 export async function verifyVerifiedAdmin(req, res, next) {
-    // This function now correctly relies on verifyFirebaseToken to run first
-    // and does not need to initialize Firebase itself.
     try {
-        await verifyFirebaseToken(req, res, async () => {
-            const superAdminEmail = (process.env.SUPER_ADMIN_EMAIL || '').trim().toLowerCase();
-            const userEmail = (req.user.email || '').trim().toLowerCase();
-            if (userEmail && userEmail === superAdminEmail) {
-                req.user.isSuperAdmin = true;
-                return next();
-            }
+        // Step 1: Verify Firebase token inline (same logic as verifyFirebaseToken)
+        if (!auth) {
+            return res.status(503).json({ message: 'Authentication service is unavailable.' });
+        }
+        if (process.env.DEV_AUTH_DISABLED === 'true') {
+            req.user = { email: 'dev@local', role: 'admin', devBypass: true, isSuperAdmin: true };
+            return next();
+        }
+        const header = req.headers.authorization || '';
+        const [scheme, token] = header.split(' ');
+        if (scheme !== 'Bearer' || !token) {
+            return res.status(401).json({ message: 'Unauthorized: missing Bearer token' });
+        }
+        const decoded = await auth.verifyIdToken(token);
+        req.user = { ...decoded };
 
-            // Check cache first (performance optimization)
-            const { getCachedAdmin, setCachedAdmin } = await import('./adminCache.js');
-            let admin = getCachedAdmin(req.user.email);
+        // Step 2: Check super admin
+        const superAdminEmail = (process.env.SUPER_ADMIN_EMAIL || '').trim().toLowerCase();
+        const userEmail = (req.user.email || '').trim().toLowerCase();
+        if (userEmail && userEmail === superAdminEmail) {
+            req.user.isSuperAdmin = true;
+            return next();
+        }
 
-            if (!admin) {
-                // Cache miss - fetch from database
-                const Admin = (await import('../models/Admin.js')).default;
-                admin = await Admin.findOne({
-                    email: req.user.email,
-                    verified: true
-                });
+        // Step 3: Check verified admin in DB
+        const { getCachedAdmin, setCachedAdmin } = await import('./adminCache.js');
+        let admin = getCachedAdmin(userEmail);
 
-                // Cache the result (even if null, to prevent repeated DB queries)
-                if (admin) {
-                    setCachedAdmin(req.user.email, admin);
-                } else {
-                    // Cache null result for shorter time (3 seconds) to allow quick retry
-                    setCachedAdmin(req.user.email, null);
-                }
-            }
+        if (admin === null || admin === undefined) {
+            const Admin = (await import('../models/Admin.js')).default;
+            admin = await Admin.findOne({
+                email: { $regex: new RegExp(`^${userEmail}$`, 'i') },
+                verified: true
+            });
+            setCachedAdmin(userEmail, admin || false);
+        }
 
-            if (!admin) {
-                return res.status(403).json({
-                    success: false,
-                    message: 'Access denied. Admin verification required.'
-                });
-            }
+        if (!admin) {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied. Admin verification required.'
+            });
+        }
 
-            req.user.adminRole = admin.role;
-            next();
-        });
+        req.user.adminRole = admin.role;
+        next();
     } catch (error) {
-        console.error('Verified admin verification error:', error);
-        res.status(401).json({
-            success: false,
-            message: 'Authentication failed'
-        });
+        console.error('Verified admin verification error:', error?.message || error);
+        if (!res.headersSent) {
+            res.status(401).json({
+                success: false,
+                message: 'Authentication failed'
+            });
+        }
     }
 }
