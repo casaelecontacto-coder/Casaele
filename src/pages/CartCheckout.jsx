@@ -105,8 +105,14 @@ function CartCheckout() {
 
         if (freeOrderResult?.success) {
           console.log("Free order created successfully!");
+          // Check if cart had a magazine — redirect to magazine page instead of order success
+          const magazineItem = cartItems.find(item => item.itemType === 'magazine');
           clearCart();
-          navigate('/order-success', { state: { orderId: freeOrderResult.orderId } });
+          if (magazineItem) {
+            navigate(`/magazine/${magazineItem.slug || magazineItem._id}`);
+          } else {
+            navigate('/order-success', { state: { orderId: freeOrderResult.orderId } });
+          }
         } else {
           throw new Error(freeOrderResult?.message || 'Failed to create free order.');
         }
@@ -180,11 +186,15 @@ function CartCheckout() {
                 console.log("Backend verification result:", verifyResult);
 
                 if (verifyResult?.success) {
-                    // 6. Payment Verified - Clear Cart & Redirect
                     console.log("Payment Verified Successfully!");
-                    clearCart(); // Clear cart from context/localStorage
-                    // Redirect to a success page (create this page if it doesn't exist)
-                    navigate('/order-success', { state: { orderId: verifyResult.orderId } }); // Pass order ID if needed
+                    // Check if cart had a magazine — redirect to magazine page
+                    const magazineItem = cartItems.find(item => item.itemType === 'magazine');
+                    clearCart();
+                    if (magazineItem) {
+                        navigate(`/magazine/${magazineItem.slug || magazineItem._id}`);
+                    } else {
+                        navigate('/order-success', { state: { orderId: verifyResult.orderId } });
+                    }
                 } else {
                      throw new Error(verifyResult?.message || 'Payment verification failed on backend.');
                 }
