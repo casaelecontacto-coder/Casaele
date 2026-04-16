@@ -421,7 +421,7 @@ function MagazineDetail() {
         {magazine.embedIds && magazine.embedIds.length > 0 && (
           <div className="mb-16">
             <DropDown
-              title="Interactive Content"
+              title=""
               exercises={magazine.embedIds}
             />
           </div>

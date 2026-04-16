@@ -145,7 +145,7 @@ function ProductDetail() {
           {/* Interactive Embeds */}
           {product.embedIds && product.embedIds.length > 0 && (
             <DropDown
-              title="Interactive Content"
+              title=""
               exercises={product.embedIds}
             />
           )}

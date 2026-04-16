@@ -145,7 +145,7 @@ function CourseDetail() {
           {/* Interactive Embeds */}
           {course.embedIds && course.embedIds.length > 0 && (
             <DropDown
-              title="Interactive Content"
+              title=""
               exercises={course.embedIds}
             />
           )}

@@ -283,7 +283,19 @@ app.get('/api/html-proxy', async (req, res) => {
       return res.status(response.status).json({ message: 'Failed to fetch HTML content' });
     }
 
-    const htmlContent = await response.text();
+    let htmlContent = await response.text();
+
+    // Inject auto-resize script so parent iframe can match content height (no scroll)
+    const resizeScript = `<script>(function(){function s(){var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight,document.body.offsetHeight,document.documentElement.offsetHeight);window.parent.postMessage({type:'iframeResize',height:h},'*');}window.addEventListener('load',s);window.addEventListener('resize',s);new MutationObserver(s).observe(document.body,{childList:true,subtree:true,attributes:true});setTimeout(s,300);setTimeout(s,1000);setTimeout(s,3000);})();</script>`;
+    // Insert before </body> if present, otherwise append
+    if (htmlContent.includes('</body>')) {
+      htmlContent = htmlContent.replace('</body>', resizeScript + '</body>');
+    } else {
+      htmlContent += resizeScript;
+    }
+
+    // Remove restrictive CSP from middleware — proxied HTML must load its own resources
+    res.removeHeader('Content-Security-Policy');
 
     // Set headers to allow iframe embedding and proper content type
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
