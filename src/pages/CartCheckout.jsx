@@ -25,7 +25,7 @@ const loadRazorpayScript = (src) => {
 
 function CartCheckout() {
   const { cartItems, totalItems, totalPrice, clearCart } = useCart();
-  const { getCurrencySymbol } = useCurrency();
+  const { getCurrencySymbol, currency } = useCurrency();
   const navigate = useNavigate();
   const [loadingPayment, setLoadingPayment] = useState(false); // Loading state for payment process
   const [paymentError, setPaymentError] = useState(''); // State for payment errors
@@ -50,7 +50,7 @@ function CartCheckout() {
     city: '',
     state: '',
     postalCode: '',
-    country: 'India', // Default or make selectable
+    country: '',
   });
   
   // State for form validation errors
@@ -67,6 +67,7 @@ function CartCheckout() {
     if (!billingInfo.city.trim()) errors.city = 'City is required';
     if (!billingInfo.state.trim()) errors.state = 'State is required';
     if (!billingInfo.postalCode.trim()) errors.postalCode = 'Postal code is required';
+    if (!billingInfo.country.trim()) errors.country = 'Country is required';
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0; // Return true if no errors
@@ -95,6 +96,7 @@ function CartCheckout() {
           billingDetails: billingInfo,
           cartItems: cartItems,
           totalAmount: 0,
+          currency: currency,
           couponCode: appliedCoupon?.code || null,
           discountAmount: discountAmount,
           newsletterOptIn: newsletterOptIn
@@ -129,8 +131,8 @@ function CartCheckout() {
       // 3. Create Razorpay Order via Backend
       // Amount should be in the smallest currency unit (e.g., paise for INR)
       // Use finalTotal (after discount) instead of totalPrice
-      const amountInPaise = Math.round(finalTotal * 100);
-      const orderPayload = { amount: amountInPaise, currency: 'INR' }; // Adjust currency if needed
+      const amountInSmallestUnit = Math.round(finalTotal * 100);
+      const orderPayload = { amount: amountInSmallestUnit, currency: currency };
 
       // *** DEBUG: Log order payload ***
       console.log("Creating Razorpay order with payload:", orderPayload);
@@ -155,8 +157,8 @@ function CartCheckout() {
       // 4. Configure Razorpay Options
       const options = {
         key: razorpayKeyId,
-        amount: amountInPaise.toString(), // Amount in paise as string
-        currency: 'INR',
+        amount: amountInSmallestUnit.toString(),
+        currency: currency,
         name: 'CasaDeELE', // Your Store Name
         description: 'Course or Product Purchase',
         image: '/Horizontal_1.svg', // Link to your logo (optional)
@@ -171,13 +173,13 @@ function CartCheckout() {
                     razorpay_order_id: response.razorpay_order_id,
                     razorpay_payment_id: response.razorpay_payment_id,
                     razorpay_signature: response.razorpay_signature,
-                    // --- Include Billing Info and Cart Items ---
                     billingDetails: billingInfo,
-                    cartItems: cartItems, // Send cart items for order creation on backend
-                    totalAmount: finalTotal, // Send final amount paid (after discount)
-                    couponCode: appliedCoupon?.code || null, // Include coupon code if applied
-                    discountAmount: discountAmount, // Include discount amount
-                    newsletterOptIn: newsletterOptIn // Include newsletter opt-in preference
+                    cartItems: cartItems,
+                    totalAmount: finalTotal,
+                    currency: currency,
+                    couponCode: appliedCoupon?.code || null,
+                    discountAmount: discountAmount,
+                    newsletterOptIn: newsletterOptIn
                 };
 
                 // Use the correct backend endpoint: /api/orders/verify (POST)

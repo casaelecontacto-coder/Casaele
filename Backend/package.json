@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "seed:how-to-use": "node scripts/seedHowToUsePage.js"
   },
   "keywords": [],
@@ -32,6 +33,7 @@
     "stripe": "^19.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "vitest": "^4.1.8"
   }
 }
