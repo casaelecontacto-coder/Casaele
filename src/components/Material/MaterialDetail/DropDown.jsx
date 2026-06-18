@@ -32,30 +32,38 @@ function AutoResizeIframe({ src }) {
   );
 }
 
-// Helper function to process embed code for HTML files
-const processEmbedCode = (embedCode, embedType) => {
-  if (!embedCode) return embedCode;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://amrit-project-lms.onrender.com';
 
-  const trimmed = embedCode.trim();
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://amrit-project-lms.onrender.com';
-
-  // Check if embedCode is a direct URL to an HTML file (trim whitespace, allow query params)
-  const isDirectHtmlUrl = trimmed.match(/^https?:\/\/.*\.html(\?.*)?$/i) || embedType === 'HTML';
-
-  if (isDirectHtmlUrl && !trimmed.startsWith('<')) {
-    const proxyUrl = `${apiBaseUrl}/api/html-proxy?url=${encodeURIComponent(trimmed)}`;
-    // Return the proxy URL directly — AutoResizeIframe will handle rendering
-    return { __htmlProxyUrl: proxyUrl };
+// Normalize any embed into a single, unambiguous shape:
+//   - iframeSrc: a URL to load in an <iframe> (used for uploaded HTML files, via the proxy), or null
+//   - html:      raw markup to inject with dangerouslySetInnerHTML (always a string)
+// Returning explicit fields (never a string|object union) makes it impossible to
+// accidentally render "[object Object]".
+const normalizeEmbed = (embedCode, embedType) => {
+  if (!embedCode || typeof embedCode !== 'string') {
+    return { iframeSrc: null, html: '' };
   }
 
-  // Check if embedCode contains an iframe with HTML file
-  const iframeMatch = trimmed.match(/<iframe[^>]*src=["']([^"']+\.html[^"']*)["'][^>]*>/i);
+  const trimmed = embedCode.trim();
 
+  const isBareUrl = /^https?:\/\//i.test(trimmed) && !trimmed.startsWith('<');
+  // Uploaded HTML files live under the Cloudinary "html-activities" folder and end in .html.
+  const looksLikeHtmlFile = /\.html(\?.*)?$/i.test(trimmed) || /\/html-activities\//i.test(trimmed);
+
+  // Case 1: a direct link to an HTML file (uploaded via the admin panel) — load through the proxy.
+  if (isBareUrl && (embedType === 'HTML' || looksLikeHtmlFile)) {
+    return {
+      iframeSrc: `${API_BASE_URL}/api/html-proxy?url=${encodeURIComponent(trimmed)}`,
+      html: '',
+    };
+  }
+
+  // Case 2: embed code that contains an <iframe src="....html"> — rewrite its src through the proxy.
+  const iframeMatch = trimmed.match(/<iframe[^>]*src=["']([^"']+\.html[^"']*)["'][^>]*>/i);
   if (iframeMatch) {
     const originalSrc = iframeMatch[1];
-    const proxyUrl = `${apiBaseUrl}/api/html-proxy?url=${encodeURIComponent(originalSrc)}`;
-
-    let processedCode = trimmed.replace(
+    const proxyUrl = `${API_BASE_URL}/api/html-proxy?url=${encodeURIComponent(originalSrc)}`;
+    const html = trimmed.replace(
       /<iframe([^>]*)src=["'][^"']*["']([^>]*)>/i,
       (match, before, after) => {
         before = before.replace(/sandbox=["'][^"']*["']/gi, '');
@@ -63,22 +71,30 @@ const processEmbedCode = (embedCode, embedType) => {
         return `<iframe${before} src="${proxyUrl}"${after} sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-popups-to-escape-sandbox" allowfullscreen>`;
       }
     );
-
-    return processedCode;
+    return { iframeSrc: null, html };
   }
 
-  return trimmed;
+  // Case 3: plain embed code (AI / H5P script or iframe) — inject as-is.
+  return { iframeSrc: null, html: trimmed };
 };
+
+// Renders a normalized embed: an auto-resizing iframe for HTML files, otherwise raw markup.
+function EmbedBody({ embed }) {
+  if (embed.iframeSrc) {
+    return <AutoResizeIframe src={embed.iframeSrc} />;
+  }
+  return <div dangerouslySetInnerHTML={{ __html: embed.html }} />;
+}
 
 // Accept 'title' as a prop
 function DropDown({ title = "Ejercicios", exercises = [] }) { // Default title if prop not passed
   const [active, setActive] = useState(null);
 
-  // Memoize processed embed codes
+  // Normalize every embed once into { iframeSrc, html }
   const processedExercises = useMemo(() => {
     return exercises.map(exercise => ({
       ...exercise,
-      processedEmbedCode: processEmbedCode(exercise.embedCode, exercise.type)
+      embed: normalizeEmbed(exercise.embedCode, exercise.type),
     }));
   }, [exercises]);
 
@@ -101,11 +117,7 @@ function DropDown({ title = "Ejercicios", exercises = [] }) { // Default title i
         <div className="space-y-6 mb-6">
           {htmlEmbeds.map((item, i) => (
             <div key={item._id || `html-${i}`} className="w-full">
-              {item.processedEmbedCode && item.processedEmbedCode.__htmlProxyUrl ? (
-                <AutoResizeIframe src={item.processedEmbedCode.__htmlProxyUrl} />
-              ) : (
-                <div dangerouslySetInnerHTML={{ __html: item.processedEmbedCode }} />
-              )}
+              <EmbedBody embed={item.embed} />
             </div>
           ))}
         </div>
@@ -131,11 +143,7 @@ function DropDown({ title = "Ejercicios", exercises = [] }) { // Default title i
 
               {active === i && (
                 <div className="pt-4 mt-4 border-t border-gray-200">
-                  {item.processedEmbedCode && item.processedEmbedCode.__htmlProxyUrl ? (
-                    <AutoResizeIframe src={item.processedEmbedCode.__htmlProxyUrl} />
-                  ) : (
-                    <div dangerouslySetInnerHTML={{ __html: item.processedEmbedCode }} />
-                  )}
+                  <EmbedBody embed={item.embed} />
                 </div>
               )}
             </div>

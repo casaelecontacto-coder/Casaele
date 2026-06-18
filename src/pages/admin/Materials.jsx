@@ -62,7 +62,8 @@ export default function Materials() {
       const result = await response.json();
       if (!result.success) throw new Error(result.message || 'Upload failed');
       updateMaterialEmbed(index, 'embedCode', result.url);
-      updateMaterialEmbed(index, 'type', 'HTML');
+      // Keep the user-selected type (AI/H5P/HTML). H5P/AI render inside the dropdown
+      // accordion; only the explicit "HTML File" type renders full-width on the page.
     } catch (e) {
       alert(e?.message || 'HTML upload failed');
     } finally {
