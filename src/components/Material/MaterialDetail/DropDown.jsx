@@ -37,7 +37,7 @@ const processEmbedCode = (embedCode, embedType) => {
   if (!embedCode) return embedCode;
 
   const trimmed = embedCode.trim();
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://amrit-project-lms.onrender.com';
 
   // Check if embedCode is a direct URL to an HTML file (trim whitespace, allow query params)
   const isDirectHtmlUrl = trimmed.match(/^https?:\/\/.*\.html(\?.*)?$/i) || embedType === 'HTML';
