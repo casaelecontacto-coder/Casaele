@@ -131,7 +131,11 @@ function DropDown({ title = "Ejercicios", exercises = [] }) { // Default title i
 
               {active === i && (
                 <div className="pt-4 mt-4 border-t border-gray-200">
-                  <div dangerouslySetInnerHTML={{ __html: item.processedEmbedCode }} />
+                  {item.processedEmbedCode && item.processedEmbedCode.__htmlProxyUrl ? (
+                    <AutoResizeIframe src={item.processedEmbedCode.__htmlProxyUrl} />
+                  ) : (
+                    <div dangerouslySetInnerHTML={{ __html: item.processedEmbedCode }} />
+                  )}
                 </div>
               )}
             </div>
