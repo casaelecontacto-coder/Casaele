@@ -782,7 +782,7 @@ export const createFreeOrder = async (req, res) => {
           email: billingDetails.email,
           phone: billingDetails.phone
         },
-        currency: 'INR'
+        currency: req.body.currency || 'INR'
       });
 
       if (purchaseEmailResult.success) {

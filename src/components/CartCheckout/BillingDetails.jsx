@@ -104,10 +104,10 @@ function BillingDetails({ billingInfo, setBillingInfo, errors }) {
              {errors?.postalCode && <p className="mt-1 text-xs text-red-600">{errors.postalCode}</p>}
           </div>
         </div>
-        {/* Country (Assuming India for now, make dynamic if needed) */}
         <div>
-           <label htmlFor="country" className="block text-sm font-medium text-gray-700">Country</label>
-           <input type="text" name="country" id="country" value={billingInfo.country} onChange={handleChange} readOnly className="mt-1 block w-full border rounded-md shadow-sm bg-gray-100 sm:text-sm p-2 border-gray-300" />
+           <label htmlFor="country" className="block text-sm font-medium text-gray-700">Country *</label>
+           <input type="text" name="country" id="country" value={billingInfo.country} onChange={handleChange} placeholder="e.g. United States" className="mt-1 block w-full border rounded-md shadow-sm sm:text-sm p-2 border-gray-300" />
+           {errors?.country && <p className="mt-1 text-xs text-red-600">{errors.country}</p>}
         </div>
       </form>
     </div>
