@@ -61,4 +61,8 @@ const productSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
+// Indexes for the products listing (active + newest first) and category filter.
+productSchema.index({ isActive: 1, createdAt: -1 });
+productSchema.index({ category: 1 });
+
 export default mongoose.models.Product || mongoose.model('Product', productSchema);

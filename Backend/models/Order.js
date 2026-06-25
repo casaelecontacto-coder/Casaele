@@ -139,4 +139,9 @@ const orderSchema = new mongoose.Schema(
     }
 );
 
+// Indexes — newest-first listings (admin orders + dashboard) and fast payment-verification lookups.
+orderSchema.index({ createdAt: -1 });
+orderSchema.index({ razorpayOrderId: 1 });
+orderSchema.index({ 'paymentResult.id': 1 });
+
 export default mongoose.models.Order || mongoose.model('Order', orderSchema);

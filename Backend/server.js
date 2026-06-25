@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dns from 'node:dns';
+import net from 'node:net';
 import connectDB from './config/db.js';
 import healthRoutes from './routes/healthRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -267,17 +269,119 @@ app.get('/api/cloudinary-signature', (req, res) => {
   res.json({ timestamp, signature });
 });
 
-// HTML Proxy Route - Serves HTML files with proper headers for iframe embedding
+// ------------------------------------------------------------------------
+// HTML Proxy Route - Serves HTML files with proper headers for iframe embedding.
+// Hardened against SSRF (private/internal targets) and backed by a small
+// in-memory cache so the same activity isn't re-fetched on every page view.
+// ------------------------------------------------------------------------
+
+// True if an IP address is private / loopback / link-local / unique-local —
+// i.e. an internal target that must never be reachable through the proxy.
+function isPrivateIp(ip) {
+  if (!ip) return true;
+  if (net.isIPv4(ip)) {
+    const [a, b] = ip.split('.').map(Number);
+    if (a === 10) return true;                        // 10.0.0.0/8
+    if (a === 127) return true;                       // 127.0.0.0/8 loopback
+    if (a === 0) return true;                         // 0.0.0.0/8
+    if (a === 169 && b === 254) return true;          // 169.254.0.0/16 link-local (cloud metadata)
+    if (a === 172 && b >= 16 && b <= 31) return true; // 172.16.0.0/12
+    if (a === 192 && b === 168) return true;          // 192.168.0.0/16
+    if (a === 100 && b >= 64 && b <= 127) return true;// 100.64.0.0/10 CGNAT
+    return false;
+  }
+  const lower = ip.toLowerCase();
+  if (lower === '::1' || lower === '::') return true;            // loopback / unspecified
+  if (lower.startsWith('fe80')) return true;                    // link-local
+  if (lower.startsWith('fc') || lower.startsWith('fd')) return true; // unique-local
+  // IPv4-mapped IPv6 (e.g. ::ffff:169.254.169.254)
+  const v4 = lower.match(/::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+  if (v4) return isPrivateIp(v4[1]);
+  return false;
+}
+
+// Validates the requested URL: must be http/https and must not resolve to a
+// private/internal address. Returns { ok } or { ok:false, status, message }.
+async function validateProxyTarget(rawUrl) {
+  let parsed;
+  try {
+    parsed = new URL(rawUrl);
+  } catch {
+    return { ok: false, status: 400, message: 'Invalid URL' };
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    return { ok: false, status: 400, message: 'Only http/https URLs are allowed' };
+  }
+  const host = parsed.hostname;
+  // If the host is a literal IP, check it directly.
+  if (net.isIP(host)) {
+    if (isPrivateIp(host)) return { ok: false, status: 403, message: 'Target not allowed' };
+    return { ok: true };
+  }
+  if (host.toLowerCase() === 'localhost') {
+    return { ok: false, status: 403, message: 'Target not allowed' };
+  }
+  // Resolve the hostname and reject if ANY resolved address is private
+  // (defends against hostnames that point at internal IPs).
+  try {
+    const addrs = await dns.promises.lookup(host, { all: true });
+    if (!addrs.length || addrs.some(a => isPrivateIp(a.address))) {
+      return { ok: false, status: 403, message: 'Target not allowed' };
+    }
+  } catch {
+    return { ok: false, status: 400, message: 'Could not resolve host' };
+  }
+  return { ok: true };
+}
+
+// Simple bounded in-memory cache of processed HTML, keyed by source URL.
+const HTML_PROXY_CACHE = new Map();
+const HTML_PROXY_TTL_MS = 60 * 60 * 1000; // 1 hour
+const HTML_PROXY_MAX_ENTRIES = 50; // bounded to keep memory modest on small instances
+const HTML_PROXY_FETCH_TIMEOUT_MS = 10000;
+
+const HTML_PROXY_RESIZE_SCRIPT = `<script>(function(){function s(){var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight,document.body.offsetHeight,document.documentElement.offsetHeight);window.parent.postMessage({type:'iframeResize',height:h},'*');}window.addEventListener('load',s);window.addEventListener('resize',s);new MutationObserver(s).observe(document.body,{childList:true,subtree:true,attributes:true});setTimeout(s,300);setTimeout(s,1000);setTimeout(s,3000);})();</script>`;
+
+function setHtmlProxyHeaders(res) {
+  // Remove restrictive CSP from middleware — proxied HTML must load its own resources
+  res.removeHeader('Content-Security-Policy');
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('X-Frame-Options', 'ALLOWALL');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+}
+
 app.get('/api/html-proxy', async (req, res) => {
   try {
     const { url } = req.query;
 
-    if (!url) {
+    if (!url || typeof url !== 'string') {
       return res.status(400).json({ message: 'URL parameter is required' });
     }
 
-    // Fetch the HTML content from the provided URL
-    const response = await fetch(url);
+    // Serve from cache when fresh — avoids re-fetching the same activity per view.
+    const cached = HTML_PROXY_CACHE.get(url);
+    if (cached && Date.now() < cached.expiresAt) {
+      setHtmlProxyHeaders(res);
+      return res.send(cached.content);
+    }
+
+    // SSRF protection: validate scheme + reject private/internal targets.
+    const check = await validateProxyTarget(url);
+    if (!check.ok) {
+      return res.status(check.status).json({ message: check.message });
+    }
+
+    // Fetch the HTML content from the provided URL (with a timeout so a slow
+    // upstream can't tie up the event loop indefinitely).
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), HTML_PROXY_FETCH_TIMEOUT_MS);
+    let response;
+    try {
+      response = await fetch(url, { signal: controller.signal, redirect: 'follow' });
+    } finally {
+      clearTimeout(timer);
+    }
 
     if (!response.ok) {
       return res.status(response.status).json({ message: 'Failed to fetch HTML content' });
@@ -286,26 +390,23 @@ app.get('/api/html-proxy', async (req, res) => {
     let htmlContent = await response.text();
 
     // Inject auto-resize script so parent iframe can match content height (no scroll)
-    const resizeScript = `<script>(function(){function s(){var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight,document.body.offsetHeight,document.documentElement.offsetHeight);window.parent.postMessage({type:'iframeResize',height:h},'*');}window.addEventListener('load',s);window.addEventListener('resize',s);new MutationObserver(s).observe(document.body,{childList:true,subtree:true,attributes:true});setTimeout(s,300);setTimeout(s,1000);setTimeout(s,3000);})();</script>`;
-    // Insert before </body> if present, otherwise append
     if (htmlContent.includes('</body>')) {
-      htmlContent = htmlContent.replace('</body>', resizeScript + '</body>');
+      htmlContent = htmlContent.replace('</body>', HTML_PROXY_RESIZE_SCRIPT + '</body>');
     } else {
-      htmlContent += resizeScript;
+      htmlContent += HTML_PROXY_RESIZE_SCRIPT;
     }
 
-    // Remove restrictive CSP from middleware — proxied HTML must load its own resources
-    res.removeHeader('Content-Security-Policy');
+    // Store in the bounded cache (evict oldest entry when full).
+    if (HTML_PROXY_CACHE.size >= HTML_PROXY_MAX_ENTRIES) {
+      const oldestKey = HTML_PROXY_CACHE.keys().next().value;
+      if (oldestKey !== undefined) HTML_PROXY_CACHE.delete(oldestKey);
+    }
+    HTML_PROXY_CACHE.set(url, { content: htmlContent, expiresAt: Date.now() + HTML_PROXY_TTL_MS });
 
-    // Set headers to allow iframe embedding and proper content type
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('X-Frame-Options', 'ALLOWALL');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-
+    setHtmlProxyHeaders(res);
     res.send(htmlContent);
   } catch (error) {
-    console.error('HTML Proxy Error:', error);
+    console.error('HTML Proxy Error:', error?.message || error);
     res.status(500).json({ message: 'Failed to proxy HTML content' });
   }
 });

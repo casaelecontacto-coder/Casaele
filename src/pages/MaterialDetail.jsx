@@ -21,12 +21,15 @@ function MaterialDetail() {
         const fetchMaterial = async () => {
             try {
                 setLoading(true);
-                const data = await apiGet(`/api/materials/${id}`);
+                // Fetch the material and its related items in parallel instead of
+                // sequentially — same result, one round-trip of latency instead of two.
+                const [data, relatedData] = await Promise.all([
+                    apiGet(`/api/materials/${id}`),
+                    apiGet(`/api/materials?limit=4&exclude=${id}`)
+                ]);
                 setMaterial(data);
                 // Assuming comments are fetched separately or included
                 setComments(data.comments || []); // Use fetched comments if available
-                // Fetch related materials
-                const relatedData = await apiGet(`/api/materials?limit=4&exclude=${id}`);
                 setRelatedMaterials(relatedData.materials || relatedData);
             } catch (err) {
                 setError(err.message);

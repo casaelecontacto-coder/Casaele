@@ -45,4 +45,8 @@ const magazineSchema = new mongoose.Schema({
   publishedAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
+// Indexes for the magazines listing (active + most recently published) and category filter.
+magazineSchema.index({ isActive: 1, publishedAt: -1 });
+magazineSchema.index({ category: 1 });
+
 export default mongoose.models.Magazine || mongoose.model('Magazine', magazineSchema);

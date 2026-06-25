@@ -1,13 +1,13 @@
 import express from 'express'
-import { verifyFirebaseToken } from '../middleware/auth.js'
+import { verifyFirebaseToken, verifyAdmin } from '../middleware/auth.js'
 import { createEmbed, getEmbeds, updateEmbed, deleteEmbed } from '../controllers/embedController.js'
 
 const router = express.Router()
 
 // Public read; admin-protected writes
 router.get('/', getEmbeds)
-router.post('/', verifyFirebaseToken, createEmbed)
-router.patch('/:id/toggle-active', verifyFirebaseToken, async (req, res) => {
+router.post('/', verifyFirebaseToken, verifyAdmin, createEmbed)
+router.patch('/:id/toggle-active', verifyFirebaseToken, verifyAdmin, async (req, res) => {
   try {
     const Embed = (await import('../models/Embed.js')).default
     const newActive = req.body.isActive
@@ -19,8 +19,8 @@ router.patch('/:id/toggle-active', verifyFirebaseToken, async (req, res) => {
     res.status(500).json({ message: 'Error toggling embed visibility' })
   }
 })
-router.put('/:id', verifyFirebaseToken, updateEmbed)
-router.delete('/:id', verifyFirebaseToken, deleteEmbed)
+router.put('/:id', verifyFirebaseToken, verifyAdmin, updateEmbed)
+router.delete('/:id', verifyFirebaseToken, verifyAdmin, deleteEmbed)
 
 export default router
 

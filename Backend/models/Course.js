@@ -26,4 +26,8 @@ const courseSchema = new mongoose.Schema({
   formUrl: { type: String, default: '' },
 }, { timestamps: true });
 
+// Indexes for the courses listing (active + newest first) and category filter.
+courseSchema.index({ isActive: 1, createdAt: -1 });
+courseSchema.index({ category: 1 });
+
 export default mongoose.models.Course || mongoose.model('Course', courseSchema);

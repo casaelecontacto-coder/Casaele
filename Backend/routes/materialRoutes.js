@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import mongoose from 'mongoose'
 import Material from '../models/Material.js'
-import { verifyFirebaseToken } from '../middleware/auth.js'
+import Embed from '../models/Embed.js'
+import { verifyFirebaseToken, verifyAdmin } from '../middleware/auth.js'
 
 function generateSlug(text) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -22,11 +23,10 @@ async function ensureUniqueSlug(slug, excludeId = null) {
 const router = Router()
 
 // Create (admin)
-router.post('/', verifyFirebaseToken, async (req, res) => {
+router.post('/', verifyFirebaseToken, verifyAdmin, async (req, res) => {
   try {
-    console.log('📝 Creating new material with data size:', JSON.stringify(req.body).length, 'characters');
     // Extract all fields including new categorization fields
-    const { 
+    const {
       title, 
       author,
       category, 
@@ -49,7 +49,6 @@ router.post('/', verifyFirebaseToken, async (req, res) => {
     
     // Handle direct embed creation (new feature)
     if (embeds && Array.isArray(embeds) && embeds.length > 0) {
-      const Embed = (await import('../models/Embed.js')).default
       const createdEmbeds = []
       
       for (const embedData of embeds) {
@@ -97,21 +96,31 @@ router.post('/', verifyFirebaseToken, async (req, res) => {
 // Get filter options (public) - returns all available categories, levels, etc.
 router.get('/filter-options', async (req, res) => {
   try {
-    const materials = await Material.find({ isActive: { $ne: false } }, 'category subCategory theme level country');
-    
-    // Extract unique values for each filter
-    const categories = [...new Set(materials.map(m => m.category).filter(Boolean))];
-    const subCategories = [...new Set(materials.map(m => m.subCategory).filter(Boolean))];
-    const themes = [...new Set(materials.map(m => m.theme).filter(Boolean))];
-    const levels = [...new Set(materials.map(m => m.level).filter(Boolean))];
-    const countries = [...new Set(materials.map(m => m.country).filter(Boolean))];
-    
+    // Compute the distinct filter values server-side with a single aggregation
+    // instead of pulling every material document into app memory.
+    const [grouped] = await Material.aggregate([
+      { $match: { isActive: { $ne: false } } },
+      {
+        $group: {
+          _id: null,
+          categories: { $addToSet: '$category' },
+          subCategories: { $addToSet: '$subCategory' },
+          themes: { $addToSet: '$theme' },
+          levels: { $addToSet: '$level' },
+          countries: { $addToSet: '$country' }
+        }
+      }
+    ]);
+
+    // Drop empty values and sort — identical output shape to before.
+    const clean = (arr) => (arr || []).filter(Boolean).sort();
+
     res.json({
-      categories: categories.sort(),
-      subCategories: subCategories.sort(),
-      themes: themes.sort(),
-      levels: levels.sort(),
-      countries: countries.sort()
+      categories: clean(grouped?.categories),
+      subCategories: clean(grouped?.subCategories),
+      themes: clean(grouped?.themes),
+      levels: clean(grouped?.levels),
+      countries: clean(grouped?.countries)
     });
   } catch (error) {
     console.error('Error fetching filter options:', error);
@@ -213,33 +222,33 @@ router.get('/', async (req, res) => {
       hasFilters = true;
     }
     
+    // List responses for the public site (cards) don't render embeds, so only
+    // pull the lightweight title/type — keeping the heavy embedCode/HTML out of
+    // list payloads. The admin panel (all=true) still gets full embeds for editing.
+    const embedPopulate = showAll ? 'embedIds' : { path: 'embedIds', select: 'title type' };
+
     // If no filters are applied, return all materials (for admin panel)
     if (!hasFilters) {
-      console.log(`🔍 No filters applied, returning all materials`);
-      const allItems = await Material.find({}).populate('embedIds').sort({ createdAt: -1 });
+      const allItems = await Material.find({})
+        .populate(embedPopulate)
+        .sort({ createdAt: -1 })
+        .lean();
       return res.json(allItems);
     }
 
     // Calculate pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
-    
+
     // Execute query with filtering, pagination, and sorting
     const items = await Material.find(filter)
-      .populate('embedIds')
+      .populate(embedPopulate)
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(parseInt(limit))
+      .lean();
     
     // Get total count for pagination info
     const totalCount = await Material.countDocuments(filter);
-    
-    // Debug logging for search results
-    if (keyword && keyword.trim()) {
-      console.log(`🔍 Found ${items.length} results for keyword: "${keyword}"`);
-      items.forEach((item, index) => {
-        console.log(`🔍 Result ${index + 1}: "${item.title}" - Category: "${item.category}" - Tags: [${item.tags?.join(', ') || 'none'}]`);
-      });
-    }
     
     // Return results with pagination info
     res.json({
@@ -283,33 +292,31 @@ router.get('/:id', async (req, res) => {
 })
 
 // Update (admin)
-router.put('/:id', verifyFirebaseToken, async (req, res) => {
+router.put('/:id', verifyFirebaseToken, verifyAdmin, async (req, res) => {
   try {
-    console.log('📝 Updating material with ID:', req.params.id, 'Data size:', JSON.stringify(req.body).length, 'characters');
     // Extract all fields including new categorization fields
-    const { 
-      title, 
+    const {
+      title,
       author,
-      category, 
-      subCategory, 
-      theme, 
-      level, 
-      country, 
-      fileUrl, 
-      embedIds, 
-      embeds, 
-      description, 
-      tags, 
-      imageSource, 
+      category,
+      subCategory,
+      theme,
+      level,
+      country,
+      fileUrl,
+      embedIds,
+      embeds,
+      description,
+      tags,
+      imageSource,
       bannerImageUrl,
       dropdownTitle
     } = req.body
-    
+
     let finalEmbedIds = embedIds || []
-    
+
     // Handle direct embed creation
     if (embeds && Array.isArray(embeds) && embeds.length > 0) {
-      const Embed = (await import('../models/Embed.js')).default
       const createdEmbeds = []
       
       for (const embedData of embeds) {
@@ -367,7 +374,7 @@ router.put('/:id', verifyFirebaseToken, async (req, res) => {
 })
 
 // Toggle visibility (admin)
-router.patch('/:id/toggle-active', verifyFirebaseToken, async (req, res) => {
+router.patch('/:id/toggle-active', verifyFirebaseToken, verifyAdmin, async (req, res) => {
   try {
     const newActive = req.body.isActive
     if (typeof newActive !== 'boolean') return res.status(400).json({ message: 'isActive boolean is required' })
@@ -380,7 +387,7 @@ router.patch('/:id/toggle-active', verifyFirebaseToken, async (req, res) => {
 })
 
 // Delete (admin)
-router.delete('/:id', verifyFirebaseToken, async (req, res) => {
+router.delete('/:id', verifyFirebaseToken, verifyAdmin, async (req, res) => {
   const deleted = await Material.findByIdAndDelete(req.params.id)
   if (!deleted) return res.status(404).json({ message: 'Not found' })
   res.json({ success: true })

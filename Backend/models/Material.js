@@ -29,4 +29,14 @@ const materialSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true },
 }, { timestamps: { createdAt: true, updatedAt: true } });
 
+// Indexes — support the default listing (isActive + createdAt sort) and the
+// category/level filters used by the materials list and filter-options endpoint.
+// (slug already has a unique sparse index from the field definition above.)
+materialSchema.index({ isActive: 1, createdAt: -1 });
+materialSchema.index({ category: 1 });
+materialSchema.index({ subCategory: 1 });
+materialSchema.index({ theme: 1 });
+materialSchema.index({ level: 1 });
+materialSchema.index({ country: 1 });
+
 export default mongoose.models.Material || mongoose.model('Material', materialSchema);

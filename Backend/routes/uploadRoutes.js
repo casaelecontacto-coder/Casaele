@@ -1,8 +1,13 @@
 import express from 'express'
 import { uploadCmsImage, uploadHtmlFile, uploadDigitalProductFile, uploadMagazinePdf } from '../controllers/uploadController.js'
 import { upload } from '../config/cloudinaryConfig.js'
+import { verifyFirebaseToken, verifyAdmin } from '../middleware/auth.js'
 
 const router = express.Router()
+
+// All upload endpoints are admin-only — they write to Cloudinary/Drive and are
+// invoked solely from the authenticated admin panel. Require a valid admin token.
+router.use(verifyFirebaseToken, verifyAdmin)
 
 // The route: POST /api/upload/cms-image
 // 1. `upload.single('image')` processes the file. 'image' must match the key used in the frontend's FormData.
@@ -17,7 +22,7 @@ router.post('/html-file', upload.single('htmlFile'), uploadHtmlFile)
 // Upload digital product files (PDF, DOC, MP3, MP4, etc.) to Cloudinary
 router.post('/digital-product-file', upload.single('file'), uploadDigitalProductFile)
 
-// Magazine PDF uploads (publicly accessible for viewing)
+// Magazine PDF uploads
 router.post('/magazine-pdf', upload.single('file'), uploadMagazinePdf)
 
 // Magazine complementary material uploads (zip files)
