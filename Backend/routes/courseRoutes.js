@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyFirebaseToken, verifyAdmin } from '../middleware/auth.js';
+import { verifyVerifiedAdmin } from '../middleware/auth.js';
 import { getCourses, getCourseById, createCourse, updateCourse, deleteCourse } from '../controllers/courseController.js';
 
 // 1. Import the upload middleware
@@ -10,9 +10,9 @@ const router = express.Router();
 router.route('/')
   .get(getCourses) // Public
   // 2. Add 'upload.single("image")' here
-  .post(verifyFirebaseToken, verifyAdmin, upload.single('image'), createCourse); // Admin protected
+  .post(verifyVerifiedAdmin, upload.single('image'), createCourse); // Admin protected
 
-router.patch('/:id/toggle-active', verifyFirebaseToken, verifyAdmin, async (req, res) => {
+router.patch('/:id/toggle-active', verifyVerifiedAdmin, async (req, res) => {
   try {
     const Course = (await import('../models/Course.js')).default;
     const newActive = req.body.isActive;
@@ -28,7 +28,7 @@ router.patch('/:id/toggle-active', verifyFirebaseToken, verifyAdmin, async (req,
 router.route('/:id')
   .get(getCourseById)
   // 3. Add 'upload.single("image")' here
-  .put(verifyFirebaseToken, verifyAdmin, upload.single('image'), updateCourse) // Admin protected
-  .delete(verifyFirebaseToken, verifyAdmin, deleteCourse); // Admin protected
+  .put(verifyVerifiedAdmin, upload.single('image'), updateCourse) // Admin protected
+  .delete(verifyVerifiedAdmin, deleteCourse); // Admin protected
 
 export default router;

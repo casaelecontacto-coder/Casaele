@@ -2,7 +2,7 @@ import { Router } from 'express'
 import mongoose from 'mongoose'
 import Material from '../models/Material.js'
 import Embed from '../models/Embed.js'
-import { verifyFirebaseToken, verifyAdmin } from '../middleware/auth.js'
+import { verifyVerifiedAdmin } from '../middleware/auth.js'
 
 function generateSlug(text) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -23,7 +23,7 @@ async function ensureUniqueSlug(slug, excludeId = null) {
 const router = Router()
 
 // Create (admin)
-router.post('/', verifyFirebaseToken, verifyAdmin, async (req, res) => {
+router.post('/', verifyVerifiedAdmin, async (req, res) => {
   try {
     // Extract all fields including new categorization fields
     const {
@@ -292,7 +292,7 @@ router.get('/:id', async (req, res) => {
 })
 
 // Update (admin)
-router.put('/:id', verifyFirebaseToken, verifyAdmin, async (req, res) => {
+router.put('/:id', verifyVerifiedAdmin, async (req, res) => {
   try {
     // Extract all fields including new categorization fields
     const {
@@ -374,7 +374,7 @@ router.put('/:id', verifyFirebaseToken, verifyAdmin, async (req, res) => {
 })
 
 // Toggle visibility (admin)
-router.patch('/:id/toggle-active', verifyFirebaseToken, verifyAdmin, async (req, res) => {
+router.patch('/:id/toggle-active', verifyVerifiedAdmin, async (req, res) => {
   try {
     const newActive = req.body.isActive
     if (typeof newActive !== 'boolean') return res.status(400).json({ message: 'isActive boolean is required' })
@@ -387,7 +387,7 @@ router.patch('/:id/toggle-active', verifyFirebaseToken, verifyAdmin, async (req,
 })
 
 // Delete (admin)
-router.delete('/:id', verifyFirebaseToken, verifyAdmin, async (req, res) => {
+router.delete('/:id', verifyVerifiedAdmin, async (req, res) => {
   const deleted = await Material.findByIdAndDelete(req.params.id)
   if (!deleted) return res.status(404).json({ message: 'Not found' })
   res.json({ success: true })

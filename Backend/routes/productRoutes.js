@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyFirebaseToken, verifyAdmin } from '../middleware/auth.js';
+import { verifyVerifiedAdmin } from '../middleware/auth.js';
 // Import controller functions (assuming they exist)
 import { getProducts, getProductById, createProduct, updateProduct, deleteProduct } from '../controllers/productController.js';
 
@@ -7,9 +7,9 @@ const router = express.Router();
 
 router.route('/')
   .get(getProducts) // Public
-  .post(verifyFirebaseToken, verifyAdmin, createProduct); // Admin protected
+  .post(verifyVerifiedAdmin, createProduct); // Admin protected
 
-router.patch('/:id/toggle-active', verifyFirebaseToken, verifyAdmin, async (req, res) => {
+router.patch('/:id/toggle-active', verifyVerifiedAdmin, async (req, res) => {
   try {
     const Product = (await import('../models/Product.js')).default;
     const newActive = req.body.isActive;
@@ -32,7 +32,7 @@ router.patch('/:id/toggle-active', verifyFirebaseToken, verifyAdmin, async (req,
 
 router.route('/:id')
   .get(getProductById)
-  .put(verifyFirebaseToken, verifyAdmin, updateProduct)
-  .delete(verifyFirebaseToken, verifyAdmin, deleteProduct);
+  .put(verifyVerifiedAdmin, updateProduct)
+  .delete(verifyVerifiedAdmin, deleteProduct);
 
 export default router;

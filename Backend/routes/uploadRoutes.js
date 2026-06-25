@@ -1,13 +1,13 @@
 import express from 'express'
 import { uploadCmsImage, uploadHtmlFile, uploadDigitalProductFile, uploadMagazinePdf } from '../controllers/uploadController.js'
 import { upload } from '../config/cloudinaryConfig.js'
-import { verifyFirebaseToken, verifyAdmin } from '../middleware/auth.js'
+import { verifyVerifiedAdmin } from '../middleware/auth.js'
 
 const router = express.Router()
 
 // All upload endpoints are admin-only — they write to Cloudinary/Drive and are
 // invoked solely from the authenticated admin panel. Require a valid admin token.
-router.use(verifyFirebaseToken, verifyAdmin)
+router.use(verifyVerifiedAdmin)
 
 // The route: POST /api/upload/cms-image
 // 1. `upload.single('image')` processes the file. 'image' must match the key used in the frontend's FormData.

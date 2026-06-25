@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyFirebaseToken, verifyAdmin } from '../middleware/auth.js';
+import { verifyFirebaseToken, verifyVerifiedAdmin } from '../middleware/auth.js';
 import {
   getMagazines,
   getMagazineById,
@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.route('/')
   .get(getMagazines)
-  .post(verifyFirebaseToken, verifyAdmin, createMagazine);
+  .post(verifyVerifiedAdmin, createMagazine);
 
 // PDF proxy endpoint must come before /:id to avoid route conflict
 router.get('/:id/pdf', serveMagazinePdf);
@@ -58,7 +58,7 @@ router.get('/:id/material', verifyFirebaseToken, async (req, res) => {
   }
 });
 
-router.patch('/:id/toggle-active', verifyFirebaseToken, verifyAdmin, async (req, res) => {
+router.patch('/:id/toggle-active', verifyVerifiedAdmin, async (req, res) => {
   try {
     const { default: Mag } = await import('../models/Magazine.js');
     const newActive = req.body.isActive;
@@ -73,7 +73,7 @@ router.patch('/:id/toggle-active', verifyFirebaseToken, verifyAdmin, async (req,
 
 router.route('/:id')
   .get(getMagazineById)
-  .put(verifyFirebaseToken, verifyAdmin, updateMagazine)
-  .delete(verifyFirebaseToken, verifyAdmin, deleteMagazine);
+  .put(verifyVerifiedAdmin, updateMagazine)
+  .delete(verifyVerifiedAdmin, deleteMagazine);
 
 export default router;
