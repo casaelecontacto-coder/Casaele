@@ -3,16 +3,34 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { FaAngleDown } from "react-icons/fa";
 
 // Auto-resizing iframe for HTML embeds — expands to full content height, no scroll
+// Hard ceiling so a misbehaving embed can never grow the iframe unbounded.
+const MAX_IFRAME_HEIGHT = 30000;
+// If the reported height keeps increasing this many times in a row, treat it as a
+// feedback loop (e.g. viewport-sized content) and stop following it.
+const RUNAWAY_GROWTH_LIMIT = 25;
+
 function AutoResizeIframe({ src }) {
   const iframeRef = useRef(null);
   const [height, setHeight] = useState(200);
+  const lastHeightRef = useRef(0);
+  const growthCountRef = useRef(0);
 
   useEffect(() => {
     function onMessage(e) {
       if (e.data && e.data.type === 'iframeResize' && typeof e.data.height === 'number') {
         // Only update if this message came from our iframe
         if (iframeRef.current && e.source === iframeRef.current.contentWindow) {
-          setHeight(e.data.height);
+          const h = e.data.height;
+          // Detect a runaway growth loop: monotonically increasing height across
+          // many messages means the content is sizing itself to the iframe.
+          if (h > lastHeightRef.current + 1) {
+            growthCountRef.current += 1;
+          } else {
+            growthCountRef.current = 0;
+          }
+          lastHeightRef.current = h;
+          if (growthCountRef.current > RUNAWAY_GROWTH_LIMIT) return; // freeze — likely a loop
+          setHeight(Math.min(h, MAX_IFRAME_HEIGHT));
         }
       }
     }

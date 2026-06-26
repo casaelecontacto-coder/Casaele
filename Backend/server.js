@@ -340,7 +340,12 @@ const HTML_PROXY_TTL_MS = 60 * 60 * 1000; // 1 hour
 const HTML_PROXY_MAX_ENTRIES = 50; // bounded to keep memory modest on small instances
 const HTML_PROXY_FETCH_TIMEOUT_MS = 10000;
 
-const HTML_PROXY_RESIZE_SCRIPT = `<script>(function(){function s(){var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight,document.body.offsetHeight,document.documentElement.offsetHeight);window.parent.postMessage({type:'iframeResize',height:h},'*');}window.addEventListener('load',s);window.addEventListener('resize',s);new MutationObserver(s).observe(document.body,{childList:true,subtree:true,attributes:true});setTimeout(s,300);setTimeout(s,1000);setTimeout(s,3000);})();</script>`;
+// Injected into proxied HTML: (1) a CSS reset that neutralizes viewport-height
+// stretching on html/body so the auto-resize measures the TRUE content height
+// (embeds that use `min-height:100vh`/`height:100vh` otherwise create an infinite
+// growth loop with the iframe), and (2) a resize script that only reports a height
+// when it actually changes.
+const HTML_PROXY_RESIZE_SCRIPT = `<style id="__embed_resize_reset">html,body{min-height:0!important;height:auto!important}</style><script>(function(){var last=0;function m(){var b=document.body,d=document.documentElement;return Math.max(b?b.scrollHeight:0,d.scrollHeight,b?b.offsetHeight:0,d.offsetHeight);}function s(){var h=m();if(h&&h!==last){last=h;window.parent.postMessage({type:'iframeResize',height:h},'*');}}window.addEventListener('load',s);window.addEventListener('resize',s);if(document.body){new MutationObserver(s).observe(document.body,{childList:true,subtree:true,attributes:true});}setTimeout(s,300);setTimeout(s,1000);setTimeout(s,3000);})();</script>`;
 
 function setHtmlProxyHeaders(res) {
   // Remove restrictive CSP from middleware — proxied HTML must load its own resources
