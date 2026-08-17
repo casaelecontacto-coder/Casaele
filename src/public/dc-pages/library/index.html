@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/dc-pages/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="/dc-pages/image-slot.js"></script>
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#fbf4e9;color:#17110e;font-family:'Host Grotesk','Helvetica Neue',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-wrap:pretty}
+  a{color:#a91f24;text-decoration:none}
+  a:hover{color:#8c1a1e}
+  @keyframes cde-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes cde-drift{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(16px,-20px) rotate(8deg)}}
+  @keyframes cde-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  ::selection{background:#f2d17f;color:#17110e}
+
+  @keyframes cde2-rise{from{opacity:0;transform:translateY(28px)}}
+  @keyframes cde2-pop{from{opacity:0;transform:translateY(20px) scale(.97)}}
+  @keyframes cde2-fade{from{opacity:0}}
+  @keyframes cde2-sway{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-18px,14px) scale(1.06)}}
+  @keyframes cde2-bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-14px) rotate(4deg)}}
+  @keyframes cde2-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes cde2-progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;animation-iteration-count:1 !important}}
+  @media (max-width:860px){
+    [data-m=hdr]{flex-wrap:wrap;gap:10px 16px}
+    [data-m=hdr] [data-m=hcta]{margin-left:auto;font-size:13px;padding:10px 16px}
+    [data-m=nav]{order:3;flex-basis:100%;margin-left:0;gap:20px;font-size:14px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;padding-bottom:2px}
+    [data-m=nav]::-webkit-scrollbar{display:none}
+    [data-m~=filterbar]{top:124px !important}
+  }
+  @media (max-width:760px){
+    [data-m~=stack]{grid-template-columns:minmax(0,1fr) !important}
+    [data-m~=days]{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+    [data-m~=unstick]{position:static !important;top:auto !important}
+    [data-m~=row]{grid-template-columns:auto minmax(0,1fr) !important;gap:14px !important}
+    [data-m~=rowmeta]{grid-column:1/-1;justify-content:space-between;width:100%}
+    [data-m~=stat]{padding:0 !important;justify-content:flex-start !important}
+    [data-m~=statcol]{border-left:none !important;border-top:1px solid rgba(23,17,14,.12);padding:18px 0 0 !important}
+    [data-m~=hidesm]{display:none !important}
+  }
+  @media (max-width:560px){
+    [data-m~=floatbar]{left:12px;right:12px;bottom:12px;flex-direction:column;align-items:stretch !important;border-radius:22px !important;padding:14px !important;gap:12px !important}
+    [data-m~=floatbar] > div:first-child{padding-right:0 !important;border-right:none !important;border-bottom:1px solid rgba(43,93,99,.18);padding-bottom:11px}
+    [data-m~=floatbar] > a{text-align:center;padding:12px 18px !important}
+    [data-m~=floatbar] > button{position:absolute;top:10px;right:10px}
+  }
+  @media (max-width:760px){
+    [data-m~=days] > div{min-height:190px !important;padding:16px 10px 14px !important}
+  }
+  @media (max-width:860px){
+    [data-m=nav] a{padding:9px 0}
+  }
+  @media (max-width:860px){
+    footer a:not([aria-label]){padding-top:7px;padding-bottom:7px}
+  }
+  @media (max-width:430px){
+    [data-m=hdr] [data-m=hcta]{font-size:12.5px;padding:9px 14px}
+    [data-m=nav]{gap:16px;font-size:13.5px}
+  }
+</style>
+<script src="/dc-pages/reveal.js"></script>
+</helmet>
+
+<div style="max-width:100%;overflow-x:clip">
+<div data-progress-bar="" data-no-reveal="" style="position:fixed;top:0;left:0;right:0;height:3px;z-index:80;background:#a91f24;transform-origin:0 50%;transform:scaleX(0);transition:transform .1s linear;pointer-events:none"></div>
+
+
+<header style="position:sticky;top:0;z-index:50;background:rgba(251,244,233,.92);backdrop-filter:blur(14px);border-bottom:1.5px solid rgba(23,17,14,.1)">
+  <div data-m="hdr" style="max-width:1320px;margin:0 auto;padding:14px clamp(20px,4vw,56px);display:flex;align-items:center;gap:32px">
+    <a href="/#top" style="display:flex;align-items:center;gap:11px;flex:none">
+      <img src="/dc-pages/assets/mark.png" alt="Casa de ELE" style="width:38px;height:38px;display:block;transition:transform .5s cubic-bezier(.2,.8,.3,1)" style-hover="transform:rotate(90deg) scale(1.1)">
+      <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:17px;letter-spacing:-.01em;color:#a91f24;line-height:1">Casa<br>de ELE</span>
+    </a>
+    <nav data-m="nav" style="display:flex;align-items:center;gap:26px;margin-left:auto;font-size:14.5px;font-weight:500;color:#17110e">
+      <a href="/#top" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Home</a>
+      <a href="/dele-course" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Course</a>
+      <a href="/library" style="color:#a91f24;font-weight:700">Resources/ library</a>
+    </nav>
+    <a href="https://wa.me/919910167527?text=Hi" data-m="hcta" style="flex:none;background:#a91f24;color:#fff;font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:999px;box-shadow:0 3px 0 #6f1216" style-hover="background:#8c1a1e;color:#fff;transform:translateY(1px);box-shadow:0 2px 0 #6f1216" target="_blank" rel="noopener">Join Saturday's class</a>
+  </div>
+</header>
+
+<section id="top" data-screen-label="01 Hero" style="position:relative;background:#fbf4e9;padding:clamp(48px,7vw,88px) clamp(20px,4vw,56px) clamp(48px,6vw,72px);overflow:hidden">
+  <div style="position:absolute;top:-120px;right:-100px;width:400px;height:400px;border-radius:50%;background:#93bbc0;opacity:.25;filter:blur(4px);animation:cde2-sway 9s ease-in-out infinite"></div>
+  <svg viewBox="0 0 40 40" width="30" height="30" style="position:absolute;top:6%;left:3%;animation:cde2-bob 6s ease-in-out infinite;pointer-events:none" aria-hidden="true"><path d="M20 2 C21 14 26 19 38 20 C26 21 21 26 20 38 C19 26 14 21 2 20 C14 19 19 14 20 2 Z" fill="#f2d17f" stroke="#17110e" stroke-width="1.5"/></svg>
+  <svg viewBox="0 0 40 40" width="22" height="22" style="position:absolute;top:34%;right:9%;animation:cde2-bob 7.5s ease-in-out infinite;pointer-events:none" aria-hidden="true"><path d="M20 2 C21 14 26 19 38 20 C26 21 21 26 20 38 C19 26 14 21 2 20 C14 19 19 14 20 2 Z" fill="#93bbc0" stroke="#17110e" stroke-width="1.5"/></svg>
+  <div style="position:absolute;top:-70px;left:-100px;width:300px;height:300px;border-radius:50%;background:#f2d17f;opacity:.4;filter:blur(4px);animation:cde2-sway 9s ease-in-out infinite"></div>
+  <div style="position:relative;max-width:760px;margin:0 auto;text-align:center">
+    <div data-reveal="" style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:16px">Resources &amp; library</div>
+    <h1 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(36px,5vw,64px);line-height:1.06;letter-spacing:-.03em;margin:0 0 20px">Everything to practice between Saturdays.</h1>
+    <p style="font-size:clamp(16px,1.4vw,19px);line-height:1.55;max-width:48ch;color:rgba(23,17,14,.75);margin:0 auto 34px">Course chapters, our own editorial, and pieces written by students just like you. Free to browse, sorted by level.</p>
+  </div>
+    <div style="position:relative;max-width:1125px;margin:0 auto;aspect-ratio:1558/1009;perspective:1700px">
+      <img src="/dc-pages/assets/choose-your-way-doors-base-v4.png" alt="Choose your way in" style="position:absolute;inset:0;width:100%;height:100%;display:block">
+
+      <a href="/material" aria-label="Course chapters" onMouseEnter="{{ openRed }}" onMouseLeave="{{ closeRed }}" onFocus="{{ openRed }}" onBlur="{{ closeRed }}" style="position:absolute;left:24.26%;top:20.12%;width:16.30%;height:67.00%;display:block;perspective:1700px;background:linear-gradient(160deg,#4a372a,#231a14);box-shadow:inset 0 0 30px rgba(0,0,0,.6)">
+        <image-slot id="door-red-interior" shape="rect" placeholder="Drop a photo of the course space" src="/dc-pages/assets/door-red-interior.png" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+        <img src="/dc-pages/assets/door-red-panel-v3.png" alt="Course chapters" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;box-shadow:8px 0 22px rgba(0,0,0,.4);transform-origin:right center;transform:{{ redPanel }};transition:transform .6s cubic-bezier(.45,.05,.15,1)">
+      </a>
+
+      <a href="/products" aria-label="Editorial, texts and comics" onMouseEnter="{{ openBlue }}" onMouseLeave="{{ closeBlue }}" onFocus="{{ openBlue }}" onBlur="{{ closeBlue }}" style="position:absolute;left:53.02%;top:20.12%;width:16.17%;height:67.00%;display:block;perspective:1700px;background:linear-gradient(200deg,#4a372a,#231a14);box-shadow:inset 0 0 30px rgba(0,0,0,.6)">
+        <image-slot id="door-blue-interior" shape="rect" placeholder="Drop a photo of the reading space" src="/dc-pages/assets/door-blue-interior.png" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+        <img src="/dc-pages/assets/door-blue-panel-v3.png" alt="Editorial, texts and comics" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;box-shadow:8px 0 22px rgba(0,0,0,.4);transform-origin:right center;transform:{{ bluePanel }};transition:transform .6s cubic-bezier(.45,.05,.15,1)">
+      </a>
+    </div>
+</section>
+
+
+
+<footer style="background:#17110e;color:#fbf4e9;padding:clamp(56px,7vw,92px) clamp(20px,4vw,56px) 34px">
+  <div style="max-width:1320px;margin:0 auto">
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(28px,4vw,56px);padding-bottom:clamp(40px,5vw,64px);border-bottom:1.5px solid rgba(251,244,233,.18)">
+      <div>
+        <img src="/dc-pages/assets/mark.png" alt="" style="width:64px;height:64px;display:block;margin-bottom:18px">
+        <p style="font-size:15.5px;line-height:1.6;color:rgba(251,244,233,.7);margin:0;max-width:30ch">Live Spanish classes for Indian learners — small groups, real culture, teachers who show up every week.</p>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Explore</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:15.5px">
+          <a href="/dele-course" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">DELE course</a>
+          <a href="/#live" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Live classes</a>
+          <a href="/#testimonials" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Student stories</a>
+          <a href="/#story" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Our story</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Support</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:15.5px">
+          <a href="https://wa.me/919910167527?text=Hi" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)" target="_blank" rel="noopener">Contact us</a>
+          <a href="/material" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Course chapters</a>
+          <a href="/#top" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Privacy policy</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Follow</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <a href="https://www.instagram.com/casa_de_ele/" aria-label="Casa de ELE on Instagram" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"></circle></svg>
+          </a>
+          <a href="https://www.youtube.com/@CasadeELE" aria-label="Casa de ELE on YouTube" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.6 2.6 0 0 0-1.83-1.84C18.15 4.9 12 4.9 12 4.9s-6.15 0-7.77.46A2.6 2.6 0 0 0 2.4 7.2C2 8.85 2 12 2 12s0 3.15.4 4.8a2.6 2.6 0 0 0 1.83 1.84c1.62.46 7.77.46 7.77.46s6.15 0 7.77-.46a2.6 2.6 0 0 0 1.83-1.84C22 15.15 22 12 22 12s0-3.15-.4-4.8ZM10.1 15.3V8.7L15.7 12l-5.6 3.3Z"></path></svg>
+          </a>
+          <a href="https://open.spotify.com/show/1mFJ1S3vUJ8ekIMwkNhdy4?si=737aea0abfb1450d" aria-label="Casa de ELE on Spotify" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.1"></circle><path d="M7.3 9.1c3.1-.85 6.4-.5 9.1 1"></path><path d="M8 12.3c2.5-.68 5.1-.4 7.3.8"></path><path d="M8.7 15.4c1.9-.5 3.9-.3 5.6.6"></path></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/amrit-goyal-9980b1128/" aria-label="Amrit Goyal on LinkedIn" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM3 9.5h4v11H3v-11Zm6.5 0h3.83v1.5h.05a4.2 4.2 0 0 1 3.77-2.07c2.9 0 3.85 1.83 3.85 4.9v6.67h-4v-5.92c0-1.42-.5-2.38-1.75-2.38-1.06 0-1.7.72-1.98 1.42-.1.25-.13.6-.13.95v5.93h-4s.05-10.1 0-11Z"></path></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div style="padding-top:28px;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;font-size:13.5px;color:rgba(251,244,233,.55)">
+      <span>© 2026 Casa de ELE. Made with care for Spanish learners worldwide.</span>
+      <span>Every dialect welcome. Every learner too.</span>
+    </div>
+  </div>
+</footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { red: false, blue: false };
+  renderVals() {
+    return {
+      redPanel: this.state.red ? "rotateY(-62deg)" : "rotateY(0deg)",
+      bluePanel: this.state.blue ? "rotateY(-62deg)" : "rotateY(0deg)",
+      openRed: () => this.setState({ red: true }),
+      closeRed: () => this.setState({ red: false }),
+      openBlue: () => this.setState({ blue: true }),
+      closeBlue: () => this.setState({ blue: false })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

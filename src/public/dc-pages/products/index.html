@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/dc-pages/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#fbf4e9;color:#17110e;font-family:'Host Grotesk','Helvetica Neue',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-wrap:pretty}
+  a{color:#a91f24;text-decoration:none}
+  a:hover{color:#8c1a1e}
+  @keyframes cde-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  ::selection{background:#f2d17f;color:#17110e}
+
+  @keyframes cde2-rise{from{opacity:0;transform:translateY(28px)}}
+  @keyframes cde2-pop{from{opacity:0;transform:translateY(20px) scale(.97)}}
+  @keyframes cde2-fade{from{opacity:0}}
+  @keyframes cde2-sway{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-18px,14px) scale(1.06)}}
+  @keyframes cde2-bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-14px) rotate(4deg)}}
+  @keyframes cde2-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes cde2-progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;animation-iteration-count:1 !important}}
+  @media (max-width:860px){
+    [data-m=hdr]{flex-wrap:wrap;gap:10px 16px}
+    [data-m=hdr] [data-m=hcta]{margin-left:auto;font-size:13px;padding:10px 16px}
+    [data-m=nav]{order:3;flex-basis:100%;margin-left:0;gap:20px;font-size:14px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;padding-bottom:2px}
+    [data-m=nav]::-webkit-scrollbar{display:none}
+    [data-m~=filterbar]{top:124px !important}
+  }
+  @media (max-width:760px){
+    [data-m~=stack]{grid-template-columns:minmax(0,1fr) !important}
+    [data-m~=days]{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+    [data-m~=unstick]{position:static !important;top:auto !important}
+    [data-m~=row]{grid-template-columns:auto minmax(0,1fr) !important;gap:14px !important}
+    [data-m~=rowmeta]{grid-column:1/-1;justify-content:space-between;width:100%}
+    [data-m~=stat]{padding:0 !important;justify-content:flex-start !important}
+    [data-m~=statcol]{border-left:none !important;border-top:1px solid rgba(23,17,14,.12);padding:18px 0 0 !important}
+    [data-m~=hidesm]{display:none !important}
+  }
+  @media (max-width:560px){
+    [data-m~=floatbar]{left:12px;right:12px;bottom:12px;flex-direction:column;align-items:stretch !important;border-radius:22px !important;padding:14px !important;gap:12px !important}
+    [data-m~=floatbar] > div:first-child{padding-right:0 !important;border-right:none !important;border-bottom:1px solid rgba(43,93,99,.18);padding-bottom:11px}
+    [data-m~=floatbar] > a{text-align:center;padding:12px 18px !important}
+    [data-m~=floatbar] > button{position:absolute;top:10px;right:10px}
+  }
+  @media (max-width:760px){
+    [data-m~=days] > div{min-height:190px !important;padding:16px 10px 14px !important}
+  }
+  @media (max-width:860px){
+    [data-m=nav] a{padding:9px 0}
+  }
+  @media (max-width:860px){
+    footer a:not([aria-label]){padding-top:7px;padding-bottom:7px}
+  }
+  @media (max-width:430px){
+    [data-m=hdr] [data-m=hcta]{font-size:12.5px;padding:9px 14px}
+    [data-m=nav]{gap:16px;font-size:13.5px}
+  }
+</style>
+<script src="/dc-pages/image-slot.js"></script>
+<script src="/dc-pages/reveal.js"></script>
+</helmet>
+
+<div style="max-width:100%;overflow-x:clip">
+<div data-progress-bar="" data-no-reveal="" style="position:fixed;top:0;left:0;right:0;height:3px;z-index:80;background:#a91f24;transform-origin:0 50%;transform:scaleX(0);transition:transform .1s linear;pointer-events:none"></div>
+
+
+<header style="position:sticky;top:0;z-index:50;background:rgba(251,244,233,.92);backdrop-filter:blur(14px);border-bottom:1.5px solid rgba(23,17,14,.1)">
+  <div data-m="hdr" style="max-width:1320px;margin:0 auto;padding:14px clamp(20px,4vw,56px);display:flex;align-items:center;gap:32px">
+    <a href="/#top" style="display:flex;align-items:center;gap:11px;flex:none">
+      <img src="/dc-pages/assets/mark.png" alt="Casa de ELE" style="width:38px;height:38px;display:block;transition:transform .5s cubic-bezier(.2,.8,.3,1)" style-hover="transform:rotate(90deg) scale(1.1)">
+      <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:17px;letter-spacing:-.01em;color:#a91f24;line-height:1">Casa<br>de ELE</span>
+    </a>
+    <nav data-m="nav" style="display:flex;align-items:center;gap:26px;margin-left:auto;font-size:14.5px;font-weight:500;color:#17110e">
+      <a href="/#top" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Home</a>
+      <a href="/dele-course" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Course</a>
+      <a href="/library" style="color:#a91f24;font-weight:700">Resources/ library</a>
+    </nav>
+    <a href="https://wa.me/919910167527?text=Hi" data-m="hcta" style="flex:none;background:#a91f24;color:#fff;font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:999px;box-shadow:0 3px 0 #6f1216" style-hover="background:#8c1a1e;color:#fff;transform:translateY(1px);box-shadow:0 2px 0 #6f1216" target="_blank" rel="noopener">Join Saturday's class</a>
+  </div>
+</header>
+
+<section id="masthead" data-screen-label="01 Masthead" style="position:relative;background:#fbf4e9;padding:clamp(26px,3vw,40px) clamp(20px,4vw,56px) clamp(36px,4vw,52px);overflow:hidden">
+  <div style="position:absolute;top:-120px;right:-90px;width:300px;height:300px;border-radius:50%;border:2.5px dashed rgba(169,31,36,.22);animation:cde-spin 52s linear infinite;pointer-events:none"></div>
+  <div style="position:relative;max-width:1320px;margin:0 auto">
+    <a href="/library#top" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#a91f24" style-hover="color:#17110e">← Back to the doors</a>
+
+    <div style="margin-top:clamp(20px,3vw,30px);border-top:3px solid #17110e;border-bottom:1px solid rgba(23,17,14,.5);padding:7px 0;display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(23,17,14,.62)">
+      <span>Casa de ELE · Bengaluru</span>
+      <span>Published quarterly</span>
+      <span>Free for every student</span>
+    </div>
+
+    <h1 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(44px,8.6vw,126px);line-height:.92;letter-spacing:-.045em;margin:clamp(14px,2vw,22px) 0 clamp(10px,1.6vw,18px);color:#17110e">editorial, <span style="color:#a91f24">texts &amp; comics</span></h1>
+
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:clamp(14px,2vw,20px)">
+      <a href="#featured" style="border:2px solid #17110e;background:#17110e;color:#fbf4e9;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:10px 20px;border-radius:999px;transition:transform .22s cubic-bezier(.2,.8,.3,1)" style-hover="background:#a91f24;color:#fff;border-color:#a91f24;transform:translateY(-3px)">Editorial</a>
+      <a href="#texts" style="border:2px solid #17110e;color:#17110e;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:10px 20px;border-radius:999px;transition:transform .22s cubic-bezier(.2,.8,.3,1),background .2s ease,color .2s ease" style-hover="background:#17110e;color:#fbf4e9;transform:translateY(-3px)">Texts</a>
+      <a href="#comics" style="border:2px solid #17110e;color:#17110e;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:10px 20px;border-radius:999px;transition:transform .22s cubic-bezier(.2,.8,.3,1),background .2s ease,color .2s ease" style-hover="background:#17110e;color:#fbf4e9;transform:translateY(-3px)">Comics</a>
+    </div>
+
+    <div style="border-top:1px solid rgba(23,17,14,.5);border-bottom:3px solid #17110e;padding:14px 0;display:flex;flex-wrap:wrap;align-items:center;gap:20px;justify-content:space-between">
+      <p style="font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.55;color:rgba(23,17,14,.72);margin:0;max-width:48ch">Three ways to read: our editorial issue, single texts handed out in class, and comics drawn by students.</p>
+      <span style="flex:none;background:#a91f24;color:#fff;border:2px solid #17110e;border-radius:999px;padding:9px 18px;font-weight:900;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;transform:rotate(-3deg);display:inline-block;transition:transform .3s cubic-bezier(.2,.8,.3,1),background .25s ease" style-hover="transform:rotate(3deg) scale(1.07);background:#f2d17f;color:#17110e">Out now</span>
+    </div>
+  </div>
+</section>
+
+<section id="featured" data-screen-label="02 Featured issue" style="background:#fbf4e9;padding:clamp(44px,5vw,72px) clamp(20px,4vw,56px)">
+  <div data-m="stack"  style="max-width:1320px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(30px,4vw,64px);align-items:start">
+    <div style="display:flex;justify-content:center">
+      <div data-reveal-card="" style="position:relative;width:100%;max-width:400px;aspect-ratio:3/4;background:{{ featured.accent }};border:2px solid #17110e;border-radius:4px;box-shadow:16px 16px 0 rgba(23,17,14,.14);transform:rotate(-1.6deg);transition:transform .4s cubic-bezier(.2,.8,.3,1),box-shadow .4s ease" style-hover="transform:rotate(0deg) translateY(-8px);box-shadow:22px 22px 0 rgba(23,17,14,.18)">
+        <image-slot id="{{ featured.coverId }}" shape="rect" placeholder="Drop this issue's cover" style="width:100%;height:100%"></image-slot>
+        <span style="position:absolute;top:14px;left:14px;background:#fbf4e9;border:2px solid #17110e;padding:5px 11px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13px;letter-spacing:.06em;pointer-events:none">№{{ featured.num }}</span>
+      </div>
+    </div>
+
+    <div>
+      <div data-reveal="" style="font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#a91f24;margin-bottom:12px">Editorial · in this issue</div>
+      <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(30px,3.6vw,46px);line-height:1.04;letter-spacing:-.03em;margin:0 0 14px">{{ featured.title }}</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:9px;margin-bottom:20px">
+        <span style="background:#f5e6d3;border:1.5px solid rgba(23,17,14,.2);border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:700">{{ featured.level }}</span>
+        <span style="background:#f5e6d3;border:1.5px solid rgba(23,17,14,.2);border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:700">{{ featured.date }}</span>
+        <span style="background:#f5e6d3;border:1.5px solid rgba(23,17,14,.2);border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:700">{{ featured.pageCount }} pages</span>
+      </div>
+      <p style="font-size:16px;line-height:1.62;color:rgba(23,17,14,.76);margin:0 0 28px;max-width:46ch">{{ featured.dek }}</p>
+
+      <div style="border-top:2px solid #17110e;padding-top:6px">
+        <sc-for list="{{ featured.contents }}" as="item" hint-placeholder-count="3">
+          <div style="display:flex;align-items:baseline;gap:12px;padding:13px 8px;margin:0 -8px;border-radius:10px;transition:background .2s ease,transform .2s cubic-bezier(.2,.8,.3,1)" style-hover="background:rgba(217,166,100,.18);transform:translateX(6px)">
+            <span style="flex:none;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#a91f24;width:74px">{{ item.kind }}</span>
+            <span style="flex:1 1 auto;min-width:0;font-weight:600;font-size:15.5px;color:#17110e;text-wrap:pretty">{{ item.title }}</span>
+            <span style="flex:0 1 24px;min-width:0;border-bottom:1.5px dotted rgba(23,17,14,.32);transform:translateY(-4px)"></span>
+            <span style="flex:none;font-size:13.5px;font-weight:700;color:rgba(23,17,14,.5);font-variant-numeric:tabular-nums">p. {{ item.page }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:26px">
+        <a href="#texts" style="border:2px solid #17110e;color:#17110e;font-weight:700;font-size:15px;padding:14px 26px;border-radius:999px;transition:transform .22s cubic-bezier(.2,.8,.3,1),background .2s ease,color .2s ease" style-hover="background:#17110e;color:#fbf4e9;transform:translateY(-3px)">Browse texts</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="texts" data-screen-label="03 Texts" style="position:relative;background:#fbf4e9;padding:clamp(52px,6vw,92px) clamp(20px,4vw,56px);overflow:hidden">
+  <div style="position:relative;max-width:1320px;margin:0 auto">
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:clamp(34px,4vw,52px)">
+      <div>
+        <div data-reveal="" style="font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#a91f24;margin-bottom:12px">Texts</div>
+        <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(28px,3.2vw,42px);line-height:1.05;letter-spacing:-.03em;margin:0;max-width:22ch">Single pieces, not bound to any issue.</h2>
+      </div>
+      <p style="font-size:14.5px;line-height:1.6;color:rgba(23,17,14,.7);margin:0;max-width:30ch">Handed out in class, kept here afterwards.</p>
+    </div>
+
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:clamp(22px,2.6vw,34px)">
+      <sc-for list="{{ loose }}" as="piece" hint-placeholder-count="4">
+        <article data-reveal-card="" style="position:relative;background:#fffdf8;border:1.5px solid rgba(23,17,14,.18);border-radius:3px;padding:34px 24px 24px;display:flex;flex-direction:column;gap:12px;box-shadow:6px 8px 0 rgba(23,17,14,.1);transform:{{ piece.tilt }};transition:transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s ease" style-hover="transform:rotate(0deg) translateY(-8px);box-shadow:12px 16px 0 rgba(23,17,14,.14)">
+          <span style="position:absolute;top:-11px;left:50%;margin-left:-46px;width:92px;height:23px;background:rgba(242,209,127,.9);border-left:1px dashed rgba(23,17,14,.25);border-right:1px dashed rgba(23,17,14,.25);transform:rotate(-2.5deg);pointer-events:none"></span>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <span style="font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#a91f24">{{ piece.kind }}</span>
+            <span style="font-size:11.5px;font-weight:700;color:rgba(23,17,14,.45)">{{ piece.level }}</span>
+          </div>
+          <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:700;font-size:20px;line-height:1.2;margin:0">{{ piece.title }}</h3>
+          <p style="font-size:14.5px;line-height:1.6;color:rgba(23,17,14,.72);margin:0;flex:1">{{ piece.excerpt }}</p>
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:#a91f24;transition:transform .25s cubic-bezier(.2,.8,.3,1)" style-hover="transform:translateX(6px)">Read the sheet →</span>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="comics" data-screen-label="04 Comics" style="position:relative;background:#f5e6d3;padding:clamp(52px,6vw,92px) clamp(20px,4vw,56px);border-top:3px solid #17110e;overflow:hidden">
+  <div style="position:relative;max-width:1320px;margin:0 auto">
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:clamp(34px,4vw,52px)">
+      <div>
+        <div data-reveal="" style="font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#a91f24;margin-bottom:12px">Comics</div>
+        <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(28px,3.2vw,42px);line-height:1.05;letter-spacing:-.03em;margin:0;max-width:24ch">Spanish you can read in pictures.</h2>
+      </div>
+      <p style="font-size:14.5px;line-height:1.6;color:rgba(23,17,14,.7);margin:0;max-width:30ch">Short strips drawn by students and teachers. Dialogue only, no grammar notes.</p>
+    </div>
+
+    <div data-m="stack" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(22px,2.6vw,34px)">
+      <sc-for list="{{ comics }}" as="strip" hint-placeholder-count="3">
+        <article data-reveal-card="" style="background:#fffdf8;border:2px solid #17110e;border-radius:4px;padding:16px;display:flex;flex-direction:column;gap:14px;box-shadow:8px 10px 0 rgba(23,17,14,.14);transform:{{ strip.tilt }};transition:transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s ease" style-hover="transform:rotate(0deg) translateY(-8px);box-shadow:14px 18px 0 rgba(23,17,14,.18)">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+            <image-slot id="{{ strip.panelA }}" shape="rect" placeholder="Panel 1" style="width:100%;aspect-ratio:3/4"></image-slot>
+            <image-slot id="{{ strip.panelB }}" shape="rect" placeholder="Panel 2" style="width:100%;aspect-ratio:3/4"></image-slot>
+            <image-slot id="{{ strip.panelC }}" shape="rect" placeholder="Panel 3" style="width:100%;aspect-ratio:3/4"></image-slot>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <span style="font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#a91f24">{{ strip.panels }} panels</span>
+            <span style="font-size:11.5px;font-weight:700;color:rgba(23,17,14,.45)">{{ strip.level }}</span>
+          </div>
+          <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:700;font-size:20px;line-height:1.2;margin:0">{{ strip.title }}</h3>
+          <p style="font-size:14.5px;line-height:1.6;color:rgba(23,17,14,.72);margin:0;flex:1">{{ strip.excerpt }}</p>
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:#a91f24;transition:transform .25s cubic-bezier(.2,.8,.3,1)" style-hover="transform:translateX(6px)">Read the strip →</span>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="contribute" data-screen-label="05 Contribute" style="position:relative;background:#17110e;color:#fbf4e9;padding:clamp(48px,6vw,84px) clamp(20px,4vw,56px);overflow:hidden">
+  <div style="position:absolute;top:-90px;right:-70px;width:250px;height:250px;border-radius:50%;border:2.5px dashed rgba(242,209,127,.24);animation:cde-spin 48s linear infinite;pointer-events:none"></div>
+  <div style="position:relative;max-width:1320px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:26px">
+    <div>
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#f2d17f;margin-bottom:12px">Open call</div>
+      <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(26px,3vw,40px);line-height:1.08;letter-spacing:-.03em;margin:0;max-width:24ch">Write something for the next issue.</h2>
+      <p style="font-size:15.5px;line-height:1.6;color:rgba(251,244,233,.72);margin:16px 0 0;max-width:44ch">Essays, comics, recipes, a paragraph you are proud of. Any level. We edit gently and print it with your name on it.</p>
+    </div>
+    <a href="https://wa.me/919910167527?text=Hi" style="flex:none;background:#f2d17f;color:#17110e;font-weight:800;font-size:15.5px;padding:16px 30px;border-radius:999px;border:2px solid #f2d17f;display:inline-flex;align-items:center;gap:10px;transition:transform .22s cubic-bezier(.2,.8,.3,1),background .2s ease,color .2s ease" style-hover="background:#17110e;color:#f2d17f;transform:translateY(-4px) rotate(-1.5deg)" target="_blank" rel="noopener">Send us your text <span style="display:inline-block;transition:transform .25s cubic-bezier(.2,.8,.3,1)" style-hover="transform:translateX(5px)">→</span></a>
+  </div>
+</section>
+
+<footer style="background:#17110e;color:#fbf4e9;padding:clamp(56px,7vw,92px) clamp(20px,4vw,56px) 34px">
+  <div style="max-width:1320px;margin:0 auto">
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(28px,4vw,56px);padding-bottom:clamp(40px,5vw,64px);border-bottom:1.5px solid rgba(251,244,233,.18)">
+      <div>
+        <img src="/dc-pages/assets/mark.png" alt="" style="width:64px;height:64px;display:block;margin-bottom:18px">
+        <p style="font-size:15.5px;line-height:1.6;color:rgba(251,244,233,.7);margin:0;max-width:30ch">Live Spanish classes for Indian learners — small groups, real culture, teachers who show up every week.</p>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Explore</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:15.5px">
+          <a href="/dele-course" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">DELE course</a>
+          <a href="/#live" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Live classes</a>
+          <a href="/#testimonials" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Student stories</a>
+          <a href="/#story" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Our story</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Support</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:15.5px">
+          <a href="https://wa.me/919910167527?text=Hi" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)" target="_blank" rel="noopener">Contact us</a>
+          <a href="/material" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Course chapters</a>
+          <a href="/#top" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Privacy policy</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Follow</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <a href="https://www.instagram.com/casa_de_ele/" aria-label="Casa de ELE on Instagram" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"></circle></svg>
+          </a>
+          <a href="https://www.youtube.com/@CasadeELE" aria-label="Casa de ELE on YouTube" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.6 2.6 0 0 0-1.83-1.84C18.15 4.9 12 4.9 12 4.9s-6.15 0-7.77.46A2.6 2.6 0 0 0 2.4 7.2C2 8.85 2 12 2 12s0 3.15.4 4.8a2.6 2.6 0 0 0 1.83 1.84c1.62.46 7.77.46 7.77.46s6.15 0 7.77-.46a2.6 2.6 0 0 0 1.83-1.84C22 15.15 22 12 22 12s0-3.15-.4-4.8ZM10.1 15.3V8.7L15.7 12l-5.6 3.3Z"></path></svg>
+          </a>
+          <a href="https://open.spotify.com/show/1mFJ1S3vUJ8ekIMwkNhdy4?si=737aea0abfb1450d" aria-label="Casa de ELE on Spotify" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.1"></circle><path d="M7.3 9.1c3.1-.85 6.4-.5 9.1 1"></path><path d="M8 12.3c2.5-.68 5.1-.4 7.3.8"></path><path d="M8.7 15.4c1.9-.5 3.9-.3 5.6.6"></path></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/amrit-goyal-9980b1128/" aria-label="Amrit Goyal on LinkedIn" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM3 9.5h4v11H3v-11Zm6.5 0h3.83v1.5h.05a4.2 4.2 0 0 1 3.77-2.07c2.9 0 3.85 1.83 3.85 4.9v6.67h-4v-5.92c0-1.42-.5-2.38-1.75-2.38-1.06 0-1.7.72-1.98 1.42-.1.25-.13.6-.13.95v5.93h-4s.05-10.1 0-11Z"></path></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div style="padding-top:28px;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;font-size:13.5px;color:rgba(251,244,233,.55)">
+      <span>© 2026 Casa de ELE. Made with care for Spanish learners worldwide.</span>
+      <span>Every dialect welcome. Every learner too.</span>
+    </div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ISSUE = {
+  num: 1,
+  title: "Fronteras",
+  level: "B2",
+  date: "Octubre 2026",
+  accent: "#a91f24",
+  pages: 36,
+  dek: "Language and migration, what bilingual people carry between two tongues, and an essay written by one of our own students.",
+  contents: [
+    { kind: "Essay", title: "Migración y lengua", page: 4 },
+    { kind: "Interview", title: "Ser bilingüe", page: 15 },
+    { kind: "Student work", title: "Ensayo de un estudiante", page: 31 }
+  ]
+};
+
+const LOOSE = [
+  { kind: "Reading sheet", level: "A2", title: "Un mensaje de voz", excerpt: "A three-minute voice note from a friend, transcribed, with the fillers left in on purpose.", tilt: "rotate(-1.6deg)" },
+  { kind: "Grammar", level: "B1", title: "Ser, estar, y la duda", excerpt: "One page. Twelve sentences where both verbs feel right, and why only one is.", tilt: "rotate(1.4deg)" },
+  { kind: "Culture", level: "B2", title: "Sobremesa", excerpt: "Why the table conversation after lunch has its own name, and what happens if you leave early.", tilt: "rotate(-1deg)" },
+  { kind: "Vocabulary", level: "A2", title: "El mercado, en orden", excerpt: "One stall at a time: what to say, what to point at, and the word for the plastic bag.", tilt: "rotate(2deg)" }
+];
+
+const COMICS = [
+  { level: "A2–B1", panels: 6, title: "En la tienda de la esquina", excerpt: "Six panels drawn by a Saturday student. Buying bread, and one small misunderstanding.", tilt: "rotate(-1.4deg)" },
+  { level: "A1–A2", panels: 4, title: "¿Dónde está mi paraguas?", excerpt: "Rain, a lost umbrella, and every preposition of place you keep forgetting.", tilt: "rotate(1.2deg)" },
+  { level: "B1", panels: 8, title: "La llamada del banco", excerpt: "A phone call nobody wants to make, in the polite forms and then the honest ones.", tilt: "rotate(-1deg)" }
+];
+
+class Component extends DCLogic {
+  renderVals() {
+    const featured = {
+      num: ISSUE.num,
+      title: ISSUE.title,
+      level: ISSUE.level,
+      date: ISSUE.date,
+      dek: ISSUE.dek,
+      accent: ISSUE.accent,
+      pageCount: ISSUE.pages,
+      contents: ISSUE.contents,
+      coverId: "desvelo-cover-1"
+    };
+    const comics = COMICS.map((c, i) => ({
+      ...c,
+      panelA: "desvelo-comic-" + (i + 1) + "-a",
+      panelB: "desvelo-comic-" + (i + 1) + "-b",
+      panelC: "desvelo-comic-" + (i + 1) + "-c"
+    }));
+    return { featured, loose: LOOSE, comics };
+  }
+}
+</script>
+</body>
+</html>

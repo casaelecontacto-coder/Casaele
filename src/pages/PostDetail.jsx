@@ -36,9 +36,9 @@ function PostDetail() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center text-sm text-gray-500 mb-8">
-          <Link to="/" className="hover:text-gray-700 flex items-center gap-1">
+          <a href="/" className="hover:text-gray-700 flex items-center gap-1">
             <FiHome className="w-4 h-4" /> Home
-          </Link>
+          </a>
           <span className="mx-2">/</span>
           <Link to="/garden-of-ideas" className="hover:text-gray-700">Garden of Ideas</Link>
           <span className="mx-2">/</span>

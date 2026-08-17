@@ -22,12 +22,12 @@ function OrderSuccess() {
          >
            Continue Shopping Courses
         </Link>
-         <Link 
-           to="/" // Link to home page
+         <a
+           href="/" // Link to home page
            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
          >
            Go to Homepage
-        </Link>
+        </a>
       </div>
     </div>
   );

@@ -1,8 +1,24 @@
 {
   "rewrites": [
     {
+      "source": "/material",
+      "destination": "/dc-pages/material/index.html"
+    },
+    {
+      "source": "/products",
+      "destination": "/dc-pages/products/index.html"
+    },
+    {
+      "source": "/dele-course",
+      "destination": "/dc-pages/dele-course/index.html"
+    },
+    {
+      "source": "/library",
+      "destination": "/dc-pages/library/index.html"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/app.html"
     }
   ]
 }
