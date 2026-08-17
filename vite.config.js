@@ -1,5 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { fileURLToPath, URL } from "node:url";
+
+const r = (p) => fileURLToPath(new URL(p, import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
@@ -25,6 +28,13 @@ export default defineConfig({
     chunkSizeWarningLimit: 800,
 
     rollupOptions: {
+      // Two HTML entries: the static homepage lives at "index.html" (site root),
+      // the React SPA shell has moved to "app.html" (everything except "/"
+      // rewrites to it in vercel.json).
+      input: {
+        index: r("./index.html"),
+        app: r("./app.html"),
+      },
       output: {
         manualChunks(id) {
           if (id.includes("node_modules")) {

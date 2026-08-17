@@ -1,23 +1,897 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/my-logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>CasaDeEle</title>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/dc-pages/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="/dc-pages/image-slot.js"></script>
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#fbf4e9;color:#17110e;font-family:'Host Grotesk','Helvetica Neue',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-wrap:pretty}
+  a{color:#a91f24;text-decoration:none}
+  a:hover{color:#8c1a1e}
+  @keyframes cde-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @keyframes cde-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes cde-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+  @keyframes cde-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes cde-ring{0%{box-shadow:0 0 0 0 rgba(169,31,36,.45)}70%{box-shadow:0 0 0 16px rgba(169,31,36,0)}100%{box-shadow:0 0 0 0 rgba(169,31,36,0)}}
+  @keyframes cde-wiggle{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+  @keyframes cde-pop{0%{transform:scale(0) translateY(10px);opacity:0}65%{transform:scale(1.18) translateY(-3px);opacity:1}100%{transform:scale(1) translateY(0);opacity:1}}
+  @keyframes cde-drift{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(16px,-20px) rotate(8deg)}}
+  @keyframes cde-secpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+  @keyframes cde-dash{to{stroke-dashoffset:-200}}
+  ::selection{background:#f2d17f;color:#17110e}
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-G513B5443R"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+  @keyframes cde2-rise{from{opacity:0;transform:translateY(28px)}}
+  @keyframes cde2-pop{from{opacity:0;transform:translateY(20px) scale(.97)}}
+  @keyframes cde2-fade{from{opacity:0}}
+  @keyframes cde2-sway{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-18px,14px) scale(1.06)}}
+  @keyframes cde2-bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-14px) rotate(4deg)}}
+  @keyframes cde2-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes cde2-progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes cde-blobA{0%{border-radius:58% 42% 46% 54%/48% 52% 48% 52%;transform:translate(0,0) rotate(0) scale(1)}33%{border-radius:44% 56% 62% 38%/56% 44% 56% 44%;transform:translate(26px,18px) rotate(6deg) scale(1.05)}66%{border-radius:52% 48% 38% 62%/42% 60% 40% 58%;transform:translate(-14px,32px) rotate(-4deg) scale(.98)}100%{border-radius:58% 42% 46% 54%/48% 52% 48% 52%;transform:translate(0,0) rotate(0) scale(1)}}
+  @keyframes cde-blobB{0%{border-radius:46% 54% 58% 42%/54% 46% 54% 46%;transform:translate(0,0) rotate(0) scale(1)}40%{border-radius:60% 40% 44% 56%/40% 58% 42% 60%;transform:translate(-30px,22px) rotate(-7deg) scale(1.06)}75%{border-radius:38% 62% 56% 44%/58% 42% 58% 42%;transform:translate(18px,-16px) rotate(5deg) scale(.97)}100%{border-radius:46% 54% 58% 42%/54% 46% 54% 46%;transform:translate(0,0) rotate(0) scale(1)}}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;animation-iteration-count:1 !important}}
+  @media (max-width:860px){
+    [data-m=hdr]{flex-wrap:wrap;gap:10px 16px}
+    [data-m=hdr] [data-m=hcta]{margin-left:auto;font-size:13px;padding:10px 16px}
+    [data-m=nav]{order:3;flex-basis:100%;margin-left:0;gap:20px;font-size:14px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;padding-bottom:2px}
+    [data-m=nav]::-webkit-scrollbar{display:none}
+    [data-m~=filterbar]{top:124px !important}
+  }
+  @media (max-width:760px){
+    [data-m~=stack]{grid-template-columns:minmax(0,1fr) !important}
+    [data-m~=days]{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+    [data-m~=unstick]{position:static !important;top:auto !important}
+    [data-m~=row]{grid-template-columns:auto minmax(0,1fr) !important;gap:14px !important}
+    [data-m~=rowmeta]{grid-column:1/-1;justify-content:space-between;width:100%}
+    [data-m~=stat]{padding:0 !important;justify-content:flex-start !important}
+    [data-m~=statcol]{border-left:none !important;border-top:1px solid rgba(23,17,14,.12);padding:18px 0 0 !important}
+    [data-m~=hidesm]{display:none !important}
+  }
+  @media (max-width:560px){
+    [data-m~=floatbar]{left:12px;right:12px;bottom:12px;flex-direction:column;align-items:stretch !important;border-radius:22px !important;padding:14px !important;gap:12px !important}
+    [data-m~=floatbar] > div:first-child{padding-right:0 !important;border-right:none !important;border-bottom:1px solid rgba(43,93,99,.18);padding-bottom:11px}
+    [data-m~=floatbar] > a{text-align:center;padding:12px 18px !important}
+    [data-m~=floatbar] > button{position:absolute;top:10px;right:10px}
+  }
+  @media (max-width:760px){
+    [data-m~=days] > div{min-height:190px !important;padding:16px 10px 14px !important}
+  }
+  @media (max-width:860px){
+    [data-m=nav] a{padding:9px 0}
+  }
+  @media (max-width:860px){
+    footer a:not([aria-label]){padding-top:7px;padding-bottom:7px}
+  }
+  @media (max-width:430px){
+    [data-m=hdr] [data-m=hcta]{font-size:12.5px;padding:9px 14px}
+    [data-m=nav]{gap:16px;font-size:13.5px}
+  }
+</style>
+<script src="/dc-pages/reveal.js"></script>
+</helmet>
 
-      gtag('config', 'G-G513B5443R');
-    </script>
-    </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<div style="max-width:100%;overflow-x:clip">
+<div data-progress-bar="" data-no-reveal="" style="position:fixed;top:0;left:0;right:0;height:3px;z-index:80;background:#a91f24;transform-origin:0 50%;transform:scaleX(0);transition:transform .1s linear;pointer-events:none"></div>
+
+
+<header style="position:sticky;top:0;z-index:50;background:rgba(251,244,233,.92);backdrop-filter:blur(14px);border-bottom:1.5px solid rgba(23,17,14,.1)">
+  <div data-m="hdr" style="max-width:1320px;margin:0 auto;padding:14px clamp(20px,4vw,56px);display:flex;align-items:center;gap:32px">
+    <a href="#top" style="display:flex;align-items:center;gap:11px;flex:none">
+      <img src="/dc-pages/assets/mark.png" alt="Casa de ELE" style="width:38px;height:38px;display:block;transition:transform .5s cubic-bezier(.2,.8,.3,1)" style-hover="transform:rotate(90deg) scale(1.1)">
+      <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:17px;letter-spacing:-.01em;color:#a91f24;line-height:1">Casa<br>de ELE</span>
+    </a>
+    <nav data-m="nav" style="display:flex;align-items:center;gap:26px;margin-left:auto;font-size:14.5px;font-weight:500;color:#17110e">
+      <a href="#top" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Home</a>
+      <a href="/dele-course" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Course</a>
+      <a href="/library" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Resources/ library</a>
+    </nav>
+    <a href="https://wa.me/919910167527?text=Hi" data-m="hcta" style="flex:none;background:#a91f24;color:#fff;font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:999px;box-shadow:0 3px 0 #6f1216" style-hover="background:#8c1a1e;color:#fff;transform:translateY(1px);box-shadow:0 2px 0 #6f1216" target="_blank" rel="noopener">Join Sunday's class</a>
+  </div>
+</header>
+
+<sc-if value="{{ floatingShow }}" hint-placeholder-val="{{ false }}">
+  <div data-m="floatbar" style="position:fixed;bottom:22px;right:22px;z-index:70;display:flex;align-items:center;gap:26px;background:#fff;border:1px solid rgba(23,17,14,.08);border-radius:999px;box-shadow:0 18px 40px -12px rgba(23,17,14,.28),0 4px 12px rgba(23,17,14,.08);padding:11px 12px 11px 34px;max-width:calc(100vw - 24px)">
+    <div style="display:flex;flex-direction:column;gap:5px;padding-right:26px;border-right:1px solid rgba(43,93,99,.18);white-space:nowrap">
+      <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#2b5d63">
+        <span style="width:6px;height:6px;border-radius:50%;background:#a91f24;animation:cde-pulse 1.8s ease-in-out infinite;flex:none;display:inline-block"></span>
+        Live class in
+      </span>
+      <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:19px;letter-spacing:.06em;color:#a91f24">{{ cd.days }}<span style="color:#d9a664;font-size:13px;font-weight:700;margin:0 1px">:</span>{{ cd.hours }}<span style="color:#d9a664;font-size:13px;font-weight:700;margin:0 1px">:</span>{{ cd.mins }}<span style="color:#d9a664;font-size:13px;font-weight:700;margin:0 1px">:</span>{{ cd.secs }}</span>
+    </div>
+    <a href="{{ discordUrl }}" style="background:#a91f24;color:#fff;font-weight:700;font-size:14.5px;padding:13px 30px;border-radius:999px;white-space:nowrap;box-shadow:0 3px 0 #6f1216" style-hover="background:#8c1a1e;color:#fff;transform:translateY(1px);box-shadow:0 2px 0 #6f1216" target="_blank" rel="noopener">Join our community</a>
+    <button type="button" onClick="{{ dismissFloating }}" aria-label="Dismiss" style="background:rgba(23,17,14,.05);border:none;border-radius:50%;width:24px;height:24px;flex:none;color:rgba(23,17,14,.45);font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:rgba(23,17,14,.1);color:#17110e">×</button>
+  </div>
+</sc-if>
+
+<section id="top" data-screen-label="01 Hero" style="position:relative;overflow:hidden;background:#fbf4e9;padding:clamp(48px,7vw,92px) clamp(20px,4vw,56px) clamp(56px,7vw,96px)">
+  <div style="position:absolute;top:-190px;right:-260px;width:600px;height:600px;background:radial-gradient(circle at 35% 65%,#f6e2bd 0%,#f6e2bd 55%,rgba(246,226,189,0) 78%);opacity:.85;animation:cde-blobA 26s ease-in-out infinite;pointer-events:none"></div>
+  <div style="position:absolute;top:60px;left:-300px;width:500px;height:500px;background:radial-gradient(circle at 70% 45%,#dfe7da 0%,#dfe7da 52%,rgba(223,231,218,0) 76%);opacity:.9;animation:cde-blobB 32s ease-in-out infinite;pointer-events:none"></div>
+  <div style="position:absolute;bottom:70px;right:8%;width:190px;height:190px;background:radial-gradient(circle at 50% 50%,rgba(169,31,36,.09) 0%,rgba(169,31,36,.06) 50%,rgba(169,31,36,0) 74%);animation:cde-blobB 21s ease-in-out infinite reverse;pointer-events:none"></div>
+  <div style="position:relative;max-width:900px;margin:0 auto;text-align:center">
+    <div style="position:relative;display:inline-block;margin-bottom:30px">
+      <div style="display:inline-flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(23,17,14,.08);border-radius:999px;padding:11px 20px 11px 16px;font-size:14.5px;font-weight:600;box-shadow:0 1px 2px rgba(23,17,14,.05)">
+        <span style="width:10px;height:10px;border-radius:50%;background:#a91f24;animation:cde-pulse 1.8s ease-in-out infinite;display:inline-block"></span>
+        <span>Next live class · Sunday 7:00 PM IST</span>
+        <span style="color:#a91f24;font-weight:700">Free · 60 minutes</span>
+      </div>
+      <div style="position:absolute;top:-30px;right:-26px;width:44px;height:34px">
+        <span style="position:absolute;left:8px;top:8px;width:4px;height:17px;border-radius:2px;background:#a91f24;transform:rotate(-24deg)"></span>
+        <span style="position:absolute;left:20px;top:2px;width:4px;height:20px;border-radius:2px;background:#a91f24;transform:rotate(-4deg)"></span>
+        <span style="position:absolute;left:32px;top:8px;width:4px;height:17px;border-radius:2px;background:#a91f24;transform:rotate(20deg)"></span>
+      </div>
+    </div>
+    <div style="position:absolute;left:-14px;top:clamp(70px,8.5vw,108px);width:80px;height:92px;pointer-events:none">
+      <span style="position:absolute;left:50px;top:0;width:5px;height:28px;border-radius:3px;background:#9aad86;transform:rotate(-30deg)"></span>
+      <span style="position:absolute;left:24px;top:30px;width:5px;height:28px;border-radius:3px;background:#9aad86;transform:rotate(-52deg)"></span>
+      <span style="position:absolute;left:4px;top:62px;width:5px;height:28px;border-radius:3px;background:#9aad86;transform:rotate(-72deg)"></span>
+    </div>
+    <h1 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(40px,6.4vw,84px);line-height:1.08;letter-spacing:-.03em;margin:0 0 26px">Learn Spanish the way people actually <span style="position:relative;display:inline-block;color:#a91f24">speak<svg viewBox="0 0 200 16" preserveAspectRatio="none" style="position:absolute;left:-2%;bottom:-.06em;width:104%;height:.19em;overflow:visible"><path d="M3 11 C 46 3, 108 3, 152 7 C 172 9, 186 11, 197 9" fill="none" stroke="#e8b23c" stroke-width="7" stroke-linecap="round"></path></svg></span> it.</h1>
+    <p style="font-size:clamp(17px,1.5vw,20px);line-height:1.55;max-width:46ch;color:rgba(23,17,14,.78);margin:0 auto 32px">No textbooks. No robot audio. Just real conversations, the shows you already want to watch, and a teacher who says your name out loud.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-bottom:44px">
+      <a href="/dele-course#top" style="display:inline-flex;align-items:center;gap:12px;background:#a91f24;color:#fff;font-weight:700;font-size:17px;padding:19px 34px;border-radius:999px;box-shadow:0 4px 14px rgba(111,18,22,.28)" style-hover="background:#8c1a1e;color:#fff;transform:translateY(-2px);box-shadow:0 8px 20px rgba(111,18,22,.32)">Join our course <span style="font-size:19px">→</span></a>
+      <a href="{{ discordUrl }}" style="display:inline-flex;align-items:center;gap:12px;background:transparent;color:#17110e;font-weight:700;font-size:17px;padding:19px 32px;border-radius:999px;border:1.5px solid rgba(23,17,14,.28)" style-hover="border-color:#17110e;color:#17110e;background:rgba(255,255,255,.6)" target="_blank" rel="noopener">Join our community <span style="font-size:19px">→</span></a>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:0;border-top:1px solid rgba(23,17,14,.12);padding-top:30px;max-width:760px;margin:0 auto">
+      <div data-m="stat" style="flex:1;min-width:190px;display:flex;align-items:center;gap:16px;justify-content:center;padding:0 22px">
+        <span style="flex:none;width:56px;height:56px;border-radius:50%;background:#f7e3e3;display:flex;align-items:center;justify-content:center">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#a91f24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"></circle><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"></path><path d="M16 6.2a2.8 2.8 0 0 1 0 5.4M17.5 14.4c2 .7 3.3 2.4 3.3 4.6"></path></svg>
+        </span>
+        <div style="text-align:left">
+          <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:32px;line-height:1;color:#a91f24">{{ studentsTaught }}</div>
+          <div style="font-size:14px;color:rgba(23,17,14,.72);margin-top:6px">{{ studentsLabel }}</div>
+          <div style="width:34px;height:3px;border-radius:2px;background:#9aad86;margin-top:10px"></div>
+        </div>
+      </div>
+      <div data-m="stat statcol" style="flex:1;min-width:190px;display:flex;align-items:center;gap:16px;justify-content:center;padding:0 22px;border-left:1px solid rgba(23,17,14,.12)">
+        <span style="flex:none;width:56px;height:56px;border-radius:50%;background:#f8e8c9;display:flex;align-items:center;justify-content:center">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#a91f24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.2V12l3.4 2"></path></svg>
+        </span>
+        <div style="text-align:left">
+          <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:32px;line-height:1;color:#a91f24">A1–C2</div>
+          <div style="font-size:14px;color:rgba(23,17,14,.72);margin-top:6px">all DELE Spanish levels</div>
+          <div style="width:34px;height:3px;border-radius:2px;background:#e8b23c;margin-top:10px"></div>
+        </div>
+      </div>
+      <div data-m="stat statcol" style="flex:1;min-width:190px;display:flex;align-items:center;gap:16px;justify-content:center;padding:0 22px;border-left:1px solid rgba(23,17,14,.12)">
+        <span style="flex:none;width:56px;height:56px;border-radius:50%;background:#dfe7da;display:flex;align-items:center;justify-content:center">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#a91f24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h4.5v-4.5H12V11h4.5V6.5"></path><path d="M16.5 6.5V3.5h4l-1.4 1.5 1.4 1.5z"></path></svg>
+        </span>
+        <div style="text-align:left">
+          <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:32px;line-height:1;color:#a91f24">Discord</div>
+          <div style="font-size:14px;color:rgba(23,17,14,.72);margin-top:6px">community learning</div>
+          <div style="width:34px;height:3px;border-radius:2px;background:#9aad86;margin-top:10px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="video" style="position:relative;max-width:980px;margin:clamp(48px,6vw,72px) auto 0;border:2px solid #17110e;border-radius:28px;overflow:hidden;aspect-ratio:16/9;background:#2b5d63;box-shadow:0 10px 0 #d9a664">
+    <image-slot id="intro-video-poster" shape="rect" placeholder="Drop the class video poster frame" style="width:100%;height:100%"></image-slot>
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+      <button type="button" onClick="{{ playVideo }}" style="pointer-events:auto;width:96px;height:96px;border-radius:50%;background:#a91f24;border:3px solid #17110e;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 0 #6f1216" style-hover="background:#8c1a1e;transform:translateY(2px);box-shadow:0 4px 0 #6f1216">
+        <span style="display:block;width:0;height:0;border-left:26px solid #fff;border-top:16px solid transparent;border-bottom:16px solid transparent;margin-left:7px"></span>
+      </button>
+    </div>
+  </div>
+  <p style="position:relative;text-align:center;margin:20px 0 0;font-size:14.5px;color:rgba(23,17,14,.55)">{{ videoNote }}</p>
+</section>
+
+
+<section data-screen-label="01b Manifesto" style="background:#fbf4e9;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:clamp(24px,4vw,56px);margin-bottom:clamp(40px,5vw,56px)">
+      <p style="flex:1 1 38%;min-width:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:700;font-size:clamp(26px,3.5vw,50px);line-height:1.16;letter-spacing:-.025em;margin:0;max-width:22ch">Most classes teach you to pass a test. We teach you to <span style="color:#a91f24">understand people</span>.</p>
+      <img src="/dc-pages/assets/manifesto-old-way-transparent.png" alt="Most Spanish courses, the old way: textbook dialogues plus grammar drills plus teachers who've never had to explain the subjunctive plus material not made for Indian learners equals questions left unanswered." style="flex:1 1 62%;min-width:0;width:100%;height:auto;display:block" />
+    </div>
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:clamp(24px,3vw,34px)">
+      <div style="position:relative;background:#fff;border:2px solid #17110e;border-radius:22px;padding:28px 24px 24px;box-shadow:0 6px 0 #a91f24;transform:rotate(-1.2deg);transition:transform .2s ease" style-hover="transform:rotate(0deg) translateY(-4px)">
+        <span style="position:absolute;top:-16px;left:-14px;width:38px;height:38px;border-radius:50%;background:#fff;color:#a91f24;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;border:2px solid #17110e">01</span>
+        <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:700;font-size:22px;margin:0 0 10px;line-height:1.2">Every dialect is the right dialect</h3>
+        <p style="font-size:15.5px;line-height:1.6;color:rgba(23,17,14,.72);margin:0">Madrid, Medellín, Buenos Aires, Lima. Indigenous and Afrodescendant voices included, not footnoted.</p>
+      </div>
+      <div style="position:relative;background:#fff;border:2px solid #17110e;border-radius:22px;padding:28px 24px 24px;box-shadow:0 6px 0 #a91f24;transform:rotate(1deg);transition:transform .2s ease" style-hover="transform:rotate(0deg) translateY(-4px)">
+        <span style="position:absolute;top:-16px;left:-14px;width:38px;height:38px;border-radius:50%;background:#fff;color:#a91f24;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;border:2px solid #17110e">02</span>
+        <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:700;font-size:22px;margin:0 0 10px;line-height:1.2">Culture first, conjugation second</h3>
+        <p style="font-size:15.5px;line-height:1.6;color:rgba(23,17,14,.72);margin:0">Grammar shows up when a story needs it — not on page four of a workbook you'll never finish.</p>
+      </div>
+      <div style="position:relative;background:#fff;border:2px solid #17110e;border-radius:22px;padding:28px 24px 24px;box-shadow:0 6px 0 #a91f24;transform:rotate(1.4deg);transition:transform .2s ease" style-hover="transform:rotate(0deg) translateY(-4px)">
+        <span style="position:absolute;top:-16px;left:-14px;width:38px;height:38px;border-radius:50%;background:#fff;color:#a91f24;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;border:2px solid #17110e">03</span>
+        <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:700;font-size:22px;margin:0 0 10px;line-height:1.2">A small room, never a lecture hall</h3>
+        <p style="font-size:15.5px;line-height:1.6;color:rgba(23,17,14,.72);margin:0">You can't hide in a group this small — which is exactly why people start speaking in week two.</p>
+      </div>
+      <div style="position:relative;background:#fff;border:2px solid #17110e;border-radius:22px;padding:28px 24px 24px;box-shadow:0 6px 0 #a91f24;transform:rotate(-.8deg);transition:transform .2s ease" style-hover="transform:rotate(0deg) translateY(-4px)">
+        <span style="position:absolute;top:-16px;left:-14px;width:38px;height:38px;border-radius:50%;background:#fff;color:#a91f24;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;border:2px solid #17110e">04</span>
+        <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:700;font-size:22px;margin:0 0 10px;line-height:1.2">Built for how you already learn</h3>
+        <p style="font-size:15.5px;line-height:1.6;color:rgba(23,17,14,.72);margin:0">Neurodiverse learners, slow starters, people who need it explained twice. All welcome, all planned for.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="courses" data-screen-label="02 Courses" style="background:#fbf4e9;padding:clamp(64px,8vw,112px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:clamp(32px,4vw,52px)">
+      <div>
+        <div data-reveal="" style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">02 — Courses</div>
+        <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(34px,4.4vw,62px);line-height:1.02;letter-spacing:-.03em;margin:0;max-width:16ch">Pick the room you're ready for.</h2>
+      </div>
+      <p style="font-size:16px;line-height:1.6;color:rgba(23,17,14,.7);max-width:34ch;margin:0">B1 and B2 are open today. Every one of them is taught live, in a group of six, with material built for Indian learners.</p>
+    </div>
+
+    <div data-m="stack" style="display:grid;grid-template-columns:minmax(190px,250px) 1fr;gap:clamp(18px,2.5vw,36px);align-items:start">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ levelRows }}" as="lv" hint-placeholder-count="6">
+          <button type="button" onClick="{{ lv.onClick }}" aria-label="{{ lv.aria }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;background:{{ lv.bg }};color:{{ lv.fg }};border:2px solid #17110e;border-radius:16px;padding:15px 18px;cursor:pointer;text-align:left;box-shadow:{{ lv.shadow }};transition:transform .2s cubic-bezier(.2,.8,.3,1),box-shadow .2s ease" style-hover="transform:translateY(-2px)">
+            <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:18px;letter-spacing:.02em">{{ lv.label }}</span>
+            <span style="font-size:11.5px;font-weight:700;letter-spacing:.08em;opacity:.8">{{ lv.status }}</span>
+          </button>
+        </sc-for>
+      </div>
+
+      <div style="background:#fff;border:2px solid #17110e;border-radius:24px;overflow:hidden;box-shadow:6px 7px 0 rgba(23,17,14,.16)">
+        <div style="background:{{ panel.headBg }};color:{{ panel.headFg }};padding:clamp(20px,2.6vw,28px);display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between">
+          <div>
+            <p style="margin:0 0 5px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(20px,2.4vw,28px);line-height:1.1">{{ panel.title }}</p>
+            <p style="margin:0;font-size:14px;opacity:.8">{{ panel.subtitle }}</p>
+          </div>
+          <span style="flex:none;background:{{ panel.pillBg }};color:{{ panel.pillFg }};border:2px solid #17110e;border-radius:999px;padding:6px 15px;font-size:12px;font-weight:800;letter-spacing:.08em">{{ panel.status }}</span>
+        </div>
+
+        <sc-if value="{{ panel.hasTable }}" hint-placeholder-val="{{ true }}">
+          <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;min-width:520px">
+              <thead>
+                <tr style="background:#f2d17f">
+                  <sc-for list="{{ panel.cols }}" as="col" hint-placeholder-count="3">
+                    <th style="text-align:left;padding:13px 18px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px;border-bottom:2px solid #17110e;white-space:nowrap">{{ col }}</th>
+                  </sc-for>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ panel.rows }}" as="row" hint-placeholder-count="4">
+                  <tr style="background:{{ row.bg }}">
+                    <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="3">
+                      <td style="padding:15px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">{{ cell }}</td>
+                    </sc-for>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin:0;padding:15px 20px;font-size:13.5px;line-height:1.5;color:#a91f24;border-top:1.5px solid rgba(23,17,14,.14)">{{ panel.note }}</p>
+        </sc-if>
+
+        <sc-if value="{{ panel.soon }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:clamp(24px,3vw,40px);display:flex;flex-direction:column;gap:14px">
+            <p style="margin:0;font-size:15.5px;line-height:1.6;color:rgba(23,17,14,.72)">{{ panel.soonNote }}</p>
+            <a href="https://wa.me/919910167527?text=Hi" style="align-self:flex-start;font-weight:700;font-size:15px" target="_blank" rel="noopener">Tell us you want this level →</a>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <div style="margin-top:26px;display:flex;flex-wrap:wrap;align-items:center;gap:14px;background:#fff;border:1.5px dashed rgba(23,17,14,.3);border-radius:20px;padding:20px 26px">
+      <span style="font-weight:700;font-size:15.5px">B1 and B2 are open today — A1, A2, C1 and C2 follow in later cohorts.</span>
+      <span style="font-size:15.5px;color:rgba(23,17,14,.7)">Spanish for Professionals is also coming soon —</span>
+      <a href="https://wa.me/919910167527?text=Hi" style="font-weight:700;font-size:15.5px" target="_blank" rel="noopener">talk to us about it →</a>
+    </div>
+  </div>
+</section>
+
+<section id="live" data-screen-label="03 Live classes" style="position:relative;background:#f2d17f;padding:clamp(64px,8vw,112px) clamp(20px,4vw,56px);border-top:2px solid #17110e;border-bottom:2px solid #17110e;overflow:hidden">
+  <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 12% 15%,rgba(169,31,36,.10),transparent 42%),radial-gradient(circle at 90% 78%,rgba(43,93,99,.14),transparent 46%),repeating-linear-gradient(135deg,rgba(23,17,14,.0175) 0 2px,transparent 2px 26px)"></div>
+  <div style="position:absolute;top:-90px;right:8%;width:280px;height:280px;border-radius:50%;border:2.5px dashed rgba(23,17,14,.28);animation:cde-spin 34s linear infinite;pointer-events:none"></div>
+  <div style="position:absolute;bottom:-60px;left:-60px;width:220px;height:220px;border-radius:50%;background:#2b5d63;opacity:.16;animation:cde-drift 9s ease-in-out infinite;pointer-events:none"></div>
+  <div style="position:absolute;top:18%;left:4%;width:70px;height:70px;border-radius:50%;background:#a91f24;opacity:.14;animation:cde-drift 7s ease-in-out infinite reverse;pointer-events:none"></div>
+  <div style="position:relative;max-width:1320px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:clamp(30px,4vw,48px)">
+      <span style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24">03 — Live classes</span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#a91f24;animation:cde-pulse 1.6s ease-in-out infinite"></span>
+    </div>
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:clamp(28px,4vw,64px);align-items:center">
+      <div style="position:relative">
+        <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(34px,4.4vw,62px);line-height:1.02;letter-spacing:-.03em;margin:0 0 20px;max-width:14ch">Sunday, 7 PM. Live, and small.</h2>
+        <p style="font-size:17px;line-height:1.6;color:rgba(23,17,14,.78);max-width:42ch;margin:0 0 30px">Sixty minutes, live, with a teacher who knows your name. Free live classes and a doubt session, every Sunday at 7 PM — fixed. Cameras on, textbooks nowhere.</p>
+        <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:0;border-top:2px solid #17110e;border-bottom:2px solid #17110e;padding:20px 0;margin-bottom:30px">
+          <div style="padding-right:16px">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.1em;color:rgba(23,17,14,.55);margin-bottom:7px">When</div>
+            <div style="font-weight:700;font-size:16px">Every Sunday, 7:00 PM IST</div>
+          </div>
+          <div style="padding:0 16px">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.1em;color:rgba(23,17,14,.55);margin-bottom:7px">How long</div>
+            <div style="font-weight:700;font-size:16px">60 minutes</div>
+          </div>
+          <div style="padding-left:16px">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.1em;color:rgba(23,17,14,.55);margin-bottom:7px">Price</div>
+            <div style="font-weight:700;font-size:16px">Free live classes</div>
+          </div>
+        </div>
+        <a href="{{ discordUrl }}" style="position:relative;display:inline-block;background:#a91f24;color:#fff;font-weight:700;font-size:17px;padding:19px 36px;border-radius:999px;box-shadow:0 5px 0 #6f1216;animation:cde-ring 2.4s ease-out infinite" style-hover="background:#8c1a1e;color:#fff;transform:translateY(2px);box-shadow:0 3px 0 #6f1216" target="_blank" rel="noopener">Join our community</a>
+      </div>
+      <div style="position:relative;background:#17110e;border-radius:28px;padding:clamp(26px,3vw,42px);color:#fff;border:2px solid #17110e;box-shadow:0 8px 0 rgba(23,17,14,.18)" style-hover="transform:rotate(-.6deg) translateY(-3px)">
+        <img src="/dc-pages/assets/mark.png" alt="" style="position:absolute;top:-22px;right:-22px;width:60px;height:60px;animation:cde-spin 22s linear infinite">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:26px">
+          <span style="width:9px;height:9px;border-radius:50%;background:#a91f24;animation:cde-pulse 1.8s ease-in-out infinite;display:inline-block"></span>
+          <span style="font-size:12.5px;font-weight:700;letter-spacing:.12em;color:#f2d17f">Doors open in</span>
+        </div>
+        <sc-if value="{{ showCountdown }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:26px">
+            <div style="background:rgba(255,255,255,.07);border-radius:16px;padding:18px 8px;text-align:center">
+              <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(28px,3.4vw,44px);line-height:1;color:#f2d17f">{{ cd.days }}</div>
+              <div style="font-size:11.5px;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.55);margin-top:9px">Days</div>
+            </div>
+            <div style="background:rgba(255,255,255,.07);border-radius:16px;padding:18px 8px;text-align:center">
+              <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(28px,3.4vw,44px);line-height:1;color:#f2d17f">{{ cd.hours }}</div>
+              <div style="font-size:11.5px;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.55);margin-top:9px">Hrs</div>
+            </div>
+            <div style="background:rgba(255,255,255,.07);border-radius:16px;padding:18px 8px;text-align:center">
+              <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(28px,3.4vw,44px);line-height:1;color:#f2d17f">{{ cd.mins }}</div>
+              <div style="font-size:11.5px;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.55);margin-top:9px">Min</div>
+            </div>
+            <div style="background:rgba(169,31,36,.16);border-radius:16px;padding:18px 8px;text-align:center;border:1.5px solid rgba(169,31,36,.4)">
+              <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(28px,3.4vw,44px);line-height:1;color:#a91f24;display:inline-block;animation:cde-secpulse 1s ease-in-out infinite">{{ cd.secs }}</div>
+              <div style="font-size:11.5px;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.55);margin-top:9px">Sec</div>
+            </div>
+          </div>
+        </sc-if>
+        <div style="border-top:1.5px solid rgba(255,255,255,.16);padding-top:22px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;gap:16px;font-size:15px"><span style="color:rgba(255,255,255,.6)">This week's theme</span><span style="font-weight:700;color:#fff">Ordering like a local</span></div>
+          <div style="display:flex;justify-content:space-between;gap:16px;font-size:15px"><span style="color:rgba(255,255,255,.6)">Level</span><span style="font-weight:700;color:#fff">Open to B1 &amp; B2</span></div>
+          <div style="display:flex;justify-content:space-between;gap:16px;font-size:15px"><span style="color:rgba(255,255,255,.6)">Where</span><span style="font-weight:700;color:#fff">Zoom link on signup</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="instructor" data-screen-label="04 Instructor" style="background:#f5e6d3;padding:clamp(64px,8vw,112px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <div data-reveal="" style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">04 — Instructors</div>
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:clamp(34px,4vw,54px)">
+      <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(34px,4.4vw,62px);line-height:1.02;letter-spacing:-.03em;margin:0;max-width:16ch">Teachers who'll remember your name.</h2>
+      <p style="font-size:16px;line-height:1.6;color:rgba(23,17,14,.7);max-width:34ch;margin:0">Small rooms only work with teachers who show up for them. Here's who's actually in yours.</p>
+    </div>
+
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(20px,2.5vw,30px);margin-bottom:clamp(34px,4vw,54px)">
+      <article style="background:#fff;border:2px solid #17110e;border-radius:26px;padding:26px;display:flex;flex-direction:column;box-shadow:0 6px 0 #a91f24">
+        <div style="position:relative;margin-bottom:20px">
+          <div style="border:2px solid #17110e;border-radius:18px;overflow:hidden;background:#d9a664;aspect-ratio:4/5">
+            <image-slot id="amrit-photo" shape="rect" placeholder="Drop a photo of Amrit" style="width:100%;height:100%"></image-slot>
+          </div>
+          <span style="position:absolute;top:-10px;right:-10px;background:#a91f24;color:#fff;border:2px solid #17110e;border-radius:999px;padding:5px 13px;font-weight:800;font-size:12px;letter-spacing:.03em;transform:rotate(3deg)">Founder</span>
+        </div>
+        <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:24px;margin:0 0 4px;letter-spacing:-.015em">Amrit Goyal</h3>
+        <p style="font-size:14.5px;font-weight:600;color:#a91f24;margin:0 0 14px">Teaches B1 and B2</p>
+        <p style="font-size:15px;line-height:1.6;color:rgba(23,17,14,.75);margin:0">Teaches through stories, films and food — grammar shows up quietly, in the background, when a story needs it.</p>
+      </article>
+
+      <article style="background:#fff;border:2px dashed rgba(23,17,14,.35);border-radius:26px;padding:26px;display:flex;flex-direction:column">
+        <div style="border:2px dashed rgba(23,17,14,.3);border-radius:18px;overflow:hidden;background:#f5e6d3;aspect-ratio:4/5;margin-bottom:20px">
+          <image-slot id="instructor-2-photo" shape="rect" placeholder="Drop a teacher photo" style="width:100%;height:100%"></image-slot>
+        </div>
+        <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:24px;margin:0 0 4px;letter-spacing:-.015em;color:rgba(23,17,14,.4)">Teacher name</h3>
+        <p style="font-size:14.5px;font-weight:600;color:rgba(23,17,14,.4);margin:0 0 14px">Levels taught</p>
+        <p style="font-size:15px;line-height:1.6;color:rgba(23,17,14,.45);margin:0">A line or two on their teaching style goes here.</p>
+      </article>
+
+      <article style="background:#fff;border:2px dashed rgba(23,17,14,.35);border-radius:26px;padding:26px;display:flex;flex-direction:column">
+        <div style="border:2px dashed rgba(23,17,14,.3);border-radius:18px;overflow:hidden;background:#f5e6d3;aspect-ratio:4/5;margin-bottom:20px">
+          <image-slot id="instructor-3-photo" shape="rect" placeholder="Drop a teacher photo" style="width:100%;height:100%"></image-slot>
+        </div>
+        <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:24px;margin:0 0 4px;letter-spacing:-.015em;color:rgba(23,17,14,.4)">Teacher name</h3>
+        <p style="font-size:14.5px;font-weight:600;color:rgba(23,17,14,.4);margin:0 0 14px">Levels taught</p>
+        <p style="font-size:15px;line-height:1.6;color:rgba(23,17,14,.45);margin:0">A line or two on their teaching style goes here.</p>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+<section data-screen-label="04b Welcome banner" style="background:#f5e6d3;padding:0 clamp(20px,4vw,56px) clamp(56px,7vw,96px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <a href="/library" style="display:block">
+      <img src="/dc-pages/assets/welcome-banner-3.png" alt="New here? Learning Spanish feels like home. Live classes of six. Real teachers. Conversations that stay. See our free learning resources." style="width:100%;height:auto;display:block;border-radius:24px;border:2px solid #17110e;box-shadow:0 10px 0 #d9a664">
+    </a>
+  </div>
+</section>
+
+<section id="testimonials" data-screen-label="05 Student stories" style="position:relative;background:#2b5d63;padding:clamp(64px,8vw,112px) 0 clamp(72px,7vw,100px);overflow:hidden">
+  <div style="position:absolute;top:-100px;right:-80px;width:320px;height:320px;border-radius:50%;border:2.5px dashed rgba(242,209,127,.3);animation:cde-spin 46s linear infinite;pointer-events:none"></div>
+  <div style="position:absolute;bottom:-20px;left:-60px;width:200px;height:200px;border-radius:50%;background:#f2d17f;opacity:.14;animation:cde-drift 10s ease-in-out infinite;pointer-events:none"></div>
+  <div style="position:relative;max-width:1320px;margin:0 auto;padding:0 clamp(20px,4vw,56px)">
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:clamp(34px,4vw,54px)">
+      <div>
+        <div data-reveal="" style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#f2d17f;margin-bottom:14px">05 — Student stories</div>
+        <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(34px,4.4vw,62px);line-height:1.02;letter-spacing:-.03em;margin:0;max-width:16ch;color:#fff">Hear it from the students.</h2>
+      </div>
+      <p style="font-size:16px;line-height:1.6;color:rgba(255,255,255,.75);max-width:34ch;margin:0">Short videos, recorded by real students, about what changed once they started showing up on Sundays.</p>
+    </div>
+  </div>
+
+  <div style="position:relative">
+    <div ref="{{ setTestTrackRef }}" onScroll="{{ onTestScroll }}" style="display:flex;gap:26px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:34px clamp(20px,4vw,56px) 40px;scrollbar-width:none">
+      <sc-for list="{{ testimonials }}" as="t" hint-placeholder-count="5">
+        <article style="flex:none;width:320px;scroll-snap-align:center;transform:{{ t.transformStyle }};opacity:{{ t.opacity }};transition:transform .15s ease-out,opacity .15s ease-out;background:#fff;border-radius:22px;border:2px solid {{ t.borderColor }};box-shadow:{{ t.shadow }};overflow:hidden;display:flex;flex-direction:column">
+          <div style="position:relative;aspect-ratio:3/4;background:#17110e">
+            <image-slot id="{{ t.videoId }}" shape="rect" placeholder="Drop a student video thumbnail" style="width:100%;height:100%"></image-slot>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+              <span style="width:56px;height:56px;border-radius:50%;background:#a91f24;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 #6f1216">
+                <span style="display:block;width:0;height:0;border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px"></span>
+              </span>
+            </div>
+            <span style="position:absolute;bottom:10px;left:10px;background:rgba(23,17,14,.6);color:#fff;font-size:11px;font-weight:700;letter-spacing:.04em;padding:4px 9px;border-radius:999px">0:{{ t.seconds }}</span>
+          </div>
+          <div style="padding:20px 20px 22px;display:flex;flex-direction:column;gap:10px;flex:1">
+            <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-size:32px;line-height:.6;color:#f2d17f">"</span>
+            <p style="font-size:14.5px;line-height:1.55;color:rgba(23,17,14,.75);margin:0;min-height:66px">What changed for them, in their own words, goes here.</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;border-top:1.5px solid rgba(23,17,14,.12);padding-top:12px;margin-top:auto">
+              <div>
+                <div style="font-weight:700;font-size:14.5px;color:#17110e">Student name</div>
+                <div style="font-size:12.5px;color:rgba(23,17,14,.55)">Level B1 → B2</div>
+              </div>
+              <span style="background:#d9a664;border-radius:999px;padding:4px 11px;font-weight:800;font-size:11px;color:#17110e;flex:none">Video</span>
+            </div>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+    <button type="button" onClick="{{ scrollTestPrev }}" aria-label="Previous testimonial" style="position:absolute;left:14px;top:38%;width:44px;height:44px;border-radius:50%;background:#f2d17f;border:2px solid #17110e;color:#17110e;font-size:20px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 #17110e" style-hover="background:#fff;transform:translateY(1px);box-shadow:0 2px 0 #17110e">‹</button>
+    <button type="button" onClick="{{ scrollTestNext }}" aria-label="Next testimonial" style="position:absolute;right:14px;top:38%;width:44px;height:44px;border-radius:50%;background:#f2d17f;border:2px solid #17110e;color:#17110e;font-size:20px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 #17110e" style-hover="background:#fff;transform:translateY(1px);box-shadow:0 2px 0 #17110e">›</button>
+  </div>
+
+  <div style="max-width:1320px;margin:22px auto 0;padding:0 clamp(20px,4vw,56px)">
+    <div style="height:4px;border-radius:999px;background:rgba(255,255,255,.18);overflow:hidden">
+      <div style="height:100%;border-radius:999px;background:#f2d17f;width:{{ testProgress }}%;transition:width .1s linear"></div>
+    </div>
+  </div>
+</section>
+
+<section id="library" data-screen-label="06 Library" style="position:relative;background:#f5e6d3;padding:clamp(84px,9vw,130px) clamp(20px,4vw,56px) clamp(64px,8vw,112px);overflow:hidden">
+  <div style="position:absolute;top:-70px;left:-70px;width:240px;height:240px;border-radius:50%;border:2.5px dashed rgba(23,17,14,.16);animation:cde-spin 40s linear infinite;pointer-events:none"></div>
+  <div style="position:absolute;bottom:-50px;right:5%;width:180px;height:180px;border-radius:50%;background:#93bbc0;opacity:.3;animation:cde-drift 8s ease-in-out infinite;pointer-events:none"></div>
+  <div style="position:relative;max-width:1320px;margin:0 auto">
+    <div data-reveal="" style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">06 — Our library</div>
+    <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(34px,4.4vw,62px);line-height:1.02;letter-spacing:-.03em;margin:0 0 18px;max-width:18ch;color:#17110e">Shows, podcasts and reads to practice between classes.</h2>
+    <p style="font-size:17px;line-height:1.6;color:rgba(23,17,14,.72);max-width:52ch;margin:0 0 34px">Sorted by level, so you're never guessing whether something is too hard. Free to browse, no account needed.</p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:clamp(26px,3vw,40px)">
+      <sc-for list="{{ chips }}" as="chip" hint-placeholder-count="4">
+        <button type="button" onClick="{{ chip.onClick }}" style="font-family:'Host Grotesk',system-ui,sans-serif;font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:999px;cursor:pointer;border:2px solid {{ chip.border }};background:{{ chip.bg }};color:{{ chip.fg }}">{{ chip.label }}</button>
+      </sc-for>
+    </div>
+
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:clamp(16px,2vw,24px)">
+      <sc-for list="{{ libItems }}" as="item" hint-placeholder-count="6">
+        <article style="position:relative;background:#fff;color:#17110e;border-radius:16px;padding:22px 22px 20px;display:flex;flex-direction:column;border:1.5px solid rgba(23,17,14,.16);border-top:4px solid {{ item.tint }}" style-hover="transform:translateY(-3px)">
+          <div style="display:flex;align-items:center;gap:9px;margin-bottom:18px">
+            <span style="border-radius:999px;padding:4px 11px;font-weight:800;font-size:12px;letter-spacing:.05em;border:1.5px solid #17110e;background:{{ item.tint }};color:#17110e">{{ item.level }}</span>
+            <span style="font-size:11.5px;font-weight:600;letter-spacing:.06em;color:rgba(23,17,14,.5)">{{ item.kind }}</span>
+          </div>
+          <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:700;font-size:23px;line-height:1.15;margin:0 0 10px;letter-spacing:-.015em">{{ item.title }}</h3>
+          <p style="font-size:14.5px;line-height:1.55;color:rgba(23,17,14,.7);margin:0 0 20px">{{ item.why }}</p>
+          <div style="margin-top:auto;display:flex;align-items:center;justify-content:space-between;border-top:1.5px solid rgba(23,17,14,.14);padding-top:14px">
+            <span style="font-size:13px;color:rgba(23,17,14,.55);font-weight:500">{{ item.room }}</span>
+            <span style="font-weight:700;font-size:14px;color:#a91f24">Open →</span>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+
+    <div data-m="stack" style="margin-top:clamp(34px,3.5vw,50px);display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(18px,2.2vw,26px)">
+
+      <div style="position:relative;background:#a91f24;border-radius:22px;padding:clamp(26px,3vw,34px);display:flex;flex-direction:column;gap:12px">
+        <div style="position:absolute;top:-14px;left:26px;background:#f2d17f;color:#17110e;border-radius:999px;padding:5px 16px;font-weight:800;font-size:12.5px;letter-spacing:.04em">Our editorial</div>
+        <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(25px,2.6vw,32px);line-height:1.05;margin:6px 0 0;letter-spacing:-.02em;color:#fff">El Desvelo</h3>
+        <p style="font-size:15.5px;line-height:1.6;color:rgba(255,255,255,.85);margin:0;flex:1">The first didactic Spanish magazine curated especially for Indian students — stories, culture and exercises, printed under our own name.</p>
+        <a href="/products" style="align-self:flex-start;background:#f2d17f;color:#17110e;font-weight:700;font-size:15px;padding:13px 24px;border-radius:999px;margin-top:6px" style-hover="background:#fff;color:#17110e">Read El Desvelo →</a>
+      </div>
+
+      <div style="position:relative;background:#2b5d63;border-radius:22px;padding:clamp(26px,3vw,34px);display:flex;flex-direction:column;gap:12px">
+        <div style="position:absolute;top:-14px;left:26px;background:#f2d17f;color:#17110e;border-radius:999px;padding:5px 16px;font-weight:800;font-size:12.5px;letter-spacing:.04em">Our community</div>
+        <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(25px,2.6vw,32px);line-height:1.05;margin:6px 0 0;letter-spacing:-.02em;color:#fff">Discord</h3>
+        <p style="font-size:15.5px;line-height:1.6;color:rgba(255,255,255,.85);margin:0;flex:1">Ask questions between classes, find a study partner, and practise with learners at your level. Lifetime access for every student.</p>
+        <a href="{{ discordUrl }}" style="align-self:flex-start;background:#f2d17f;color:#17110e;font-weight:700;font-size:15px;padding:13px 24px;border-radius:999px;margin-top:6px" style-hover="background:#fff;color:#17110e" target="_blank" rel="noopener">Join the Discord →</a>
+      </div>
+
+      <div style="position:relative;background:#799e83;border-radius:22px;padding:clamp(26px,3vw,34px);display:flex;flex-direction:column;gap:12px">
+        <div style="position:absolute;top:-14px;left:26px;background:#f2d17f;color:#17110e;border-radius:999px;padding:5px 16px;font-weight:800;font-size:12.5px;letter-spacing:.04em">Free to use</div>
+        <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(25px,2.6vw,32px);line-height:1.05;margin:6px 0 0;letter-spacing:-.02em;color:#fff">Free resources</h3>
+        <p style="font-size:15.5px;line-height:1.6;color:rgba(255,255,255,.85);margin:0;flex:1">Reading sheets, grammar one-pagers, word lists and audio — the whole shelf, open to anyone, no enrolment needed.</p>
+        <a href="/library#top" style="align-self:flex-start;background:#f2d17f;color:#17110e;font-weight:700;font-size:15px;padding:13px 24px;border-radius:999px;margin-top:6px" style-hover="background:#fff;color:#17110e">Open the library →</a>
+      </div>
+
+    </div>
+
+    <p style="margin:28px 0 0;font-size:15.5px;color:rgba(23,17,14,.6)">{{ libCount }} · Plus 20+ free and paid materials in <a href="#top" style="color:#a91f24;text-decoration:underline;text-underline-offset:3px">La Tienda de Ele</a>.</p>
+  </div>
+  </div>
+</section>
+
+<section id="story" data-screen-label="07 Our story" style="background:#fbf4e9;padding:clamp(64px,8vw,112px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(28px,4vw,64px);align-items:start;margin-bottom:clamp(40px,5vw,64px)">
+      <div>
+        <div data-reveal="" style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">07 — Our story</div>
+        <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(34px,4.4vw,62px);line-height:1.02;letter-spacing:-.03em;margin:0">Why we built Casa de ELE.</h2>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px;font-size:17px;line-height:1.65;color:rgba(23,17,14,.8);padding-top:8px">
+        <p style="margin:0">Most Spanish courses are built for someone in Madrid or Miami — dubbed textbook dialogues, grammar drills, teachers who've never had to explain the subjunctive to someone thinking in Hindi or Tamil first.</p>
+        <p style="margin:0">We built something else: small live classes, taught by teachers who show up every week, with material that treats Indian learners as the point, not an afterthought. Every regional accent counts, and questions get answered twice if they need to be.</p>
+        <p style="margin:0">We called it Casa de ELE — the house of ELE. Ele is our mascot, and he leads you through it: a school for lessons, a cinema couch for shows, a grammar grill for the technical stuff, a reading balcony, a recording room. Pick whichever door fits your Tuesday.</p>
+        <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:700;font-size:21px;line-height:1.4;color:#17110e">Same teaching, ten different doors in.</p>
+      </div>
+    </div>
+
+    <img src="/dc-pages/assets/our-story-doors.png" alt="Casa de ELE, the better way: five open doors — live classes of six, teachers who show up every week, material for Indian learners, every regional accent, questions answered twice. Same teaching, ten different doors in." style="width:100%;height:auto;border-radius:20px;display:block" />
+
+  </div>
+</section>
+
+<section id="wall" data-screen-label="08 Note wall" style="position:relative;background:#2b5d63;padding:clamp(60px,7vw,104px) clamp(20px,4vw,56px) clamp(64px,7vw,100px);overflow:hidden">
+  <div style="position:absolute;top:-110px;right:-90px;width:320px;height:320px;border-radius:50%;border:2.5px dashed rgba(242,209,127,.3);animation:cde-spin 46s linear infinite;pointer-events:none"></div>
+  <div style="position:absolute;bottom:-30px;left:-70px;width:220px;height:220px;border-radius:50%;background:#f2d17f;opacity:.14;animation:cde-drift 10s ease-in-out infinite;pointer-events:none"></div>
+
+  <div style="position:relative;max-width:1320px;margin:0 auto">
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:clamp(30px,4vw,48px)">
+      <div>
+        <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#f2d17f;margin-bottom:14px">08 — Student voices</div>
+        <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(32px,4.2vw,58px);line-height:1.03;letter-spacing:-.03em;margin:0;max-width:18ch;color:#fff">Leave a note on the wall.</h2>
+      </div>
+      <p style="font-size:16px;line-height:1.6;color:rgba(255,255,255,.75);max-width:34ch;margin:0">Been in a Saturday class or read something from the library? Tell the next learner what helped.</p>
+    </div>
+
+    <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:clamp(26px,3vw,44px);align-items:start">
+      <form onSubmit="{{ submitTestimonial }}" style="background:#fbf4e9;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.28);padding:clamp(20px,2vw,26px);display:flex;flex-direction:column;gap:14px;position:sticky;top:96px">
+        <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:21px;letter-spacing:-.02em;color:#17110e">Add yours</div>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:rgba(23,17,14,.6)">Your name
+          <input value="{{ draftName }}" onChange="{{ onName }}" placeholder="Ananya S." style="font:inherit;font-size:15px;font-weight:500;letter-spacing:normal;color:#17110e;background:#fff;border:1.5px solid rgba(23,17,14,.3);border-radius:12px;padding:11px 13px;outline:none" style-focus="border-color:#a91f24;box-shadow:0 0 0 3px rgba(169,31,36,.15)">
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:rgba(23,17,14,.6)">Level
+          <select value="{{ draftLevel }}" onChange="{{ onLevel }}" style="font:inherit;font-size:15px;font-weight:500;letter-spacing:normal;color:#17110e;background:#fff;border:1.5px solid rgba(23,17,14,.3);border-radius:12px;padding:11px 13px;outline:none" style-focus="border-color:#a91f24;box-shadow:0 0 0 3px rgba(169,31,36,.15)">
+            <option value="A1">A1</option>
+            <option value="A2">A2</option>
+            <option value="B1">B1</option>
+            <option value="B2">B2</option>
+            <option value="C1">C1</option>
+          </select>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:rgba(23,17,14,.6)">Your note
+          <textarea value="{{ draftText }}" onChange="{{ onText }}" rows="4" maxlength="240" placeholder="What helped you, in a couple of sentences." style="font:inherit;font-size:15px;font-weight:500;letter-spacing:normal;line-height:1.5;color:#17110e;background:#fff;border:1.5px solid rgba(23,17,14,.3);border-radius:12px;padding:11px 13px;outline:none;resize:vertical" style-focus="border-color:#a91f24;box-shadow:0 0 0 3px rgba(169,31,36,.15)"></textarea>
+        </label>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font-size:12.5px;color:rgba(23,17,14,.5)">{{ draftCount }}/240</span>
+          <button type="submit" style="flex:none;background:#a91f24;color:#fff;font:inherit;font-weight:700;font-size:14.5px;border:none;padding:12px 22px;border-radius:999px;box-shadow:0 3px 0 #6f1216;cursor:pointer" style-hover="background:#8c1a1e;transform:translateY(1px);box-shadow:0 2px 0 #6f1216">Pin it up</button>
+        </div>
+        <p style="margin:0;font-size:12.5px;line-height:1.5;color:{{ noticeColor }};min-height:18px">{{ notice }}</p>
+      </form>
+
+      <div data-m="stack" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:clamp(16px,1.6vw,22px)">
+        <sc-for list="{{ notes }}" as="n" hint-placeholder-count="4">
+          <article style="background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.24);padding:20px 20px 18px;display:flex;flex-direction:column;gap:12px;transform:{{ n.tilt }}">
+            <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-size:34px;line-height:.5;color:{{ n.accent }}">"</span>
+            <p style="margin:0;font-size:14.5px;line-height:1.6;color:rgba(23,17,14,.8);text-wrap:pretty">{{ n.text }}</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1.5px solid rgba(23,17,14,.12);padding-top:12px;margin-top:auto">
+              <div style="font-weight:700;font-size:14px;color:#17110e">{{ n.name }}</div>
+              <span style="background:#f2d17f;border:1.5px solid #17110e;border-radius:999px;padding:3px 10px;font-weight:800;font-size:11px;color:#17110e;flex:none">{{ n.level }}</span>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="background:#17110e;color:#fbf4e9;padding:clamp(56px,7vw,92px) clamp(20px,4vw,56px) 34px">
+  <div style="max-width:1320px;margin:0 auto">
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(28px,4vw,56px);padding-bottom:clamp(40px,5vw,64px);border-bottom:1.5px solid rgba(251,244,233,.18)">
+      <div style="grid-column:span 2;min-width:0">
+        <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Newsletter</div>
+        <iframe src="https://subscribe-forms.beehiiv.com/d64078b6-51f1-4490-8080-7da9acf3dbf5" title="Subscribe to Newsletter de Ele" loading="lazy" scrolling="no" style="width:100%;max-width:460px;height:270px;border:none;border-radius:20px;background:#fff;display:block"></iframe>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Explore</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:15.5px">
+          <a href="/dele-course" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Courses</a>
+          <a href="#live" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Live classes</a>
+          <a href="#video" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Intro video</a>
+          <a href="#testimonials" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Student stories</a>
+          <a href="/library" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Our library</a>
+          <a href="#story" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Our story</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Support</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:15.5px">
+          <a href="https://wa.me/919910167527?text=Hi" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)" target="_blank" rel="noopener">Contact us</a>
+          <a href="#courses" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">How it works</a>
+          <a href="/library" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Free materials</a>
+          <a href="#top" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Privacy policy</a>
+          <a href="#top" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Terms &amp; conditions</a>
+        </div>
+      </div>
+      <div>
+        <img src="/dc-pages/assets/mark.png" alt="" style="width:64px;height:64px;display:block;margin-bottom:18px">
+        <p style="font-size:15.5px;line-height:1.6;color:rgba(251,244,233,.7);margin:0 0 8px;max-width:26ch">Live Spanish classes for Indian learners — small groups, real culture, teachers who show up every week.</p>
+        <p style="font-size:15.5px;margin:0;color:#fbf4e9"><strong style="font-weight:700">Visión de:</strong> Amrit Goyal</p>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Follow</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <a href="https://www.instagram.com/casa_de_ele/" aria-label="Casa de ELE on Instagram" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"></circle></svg>
+          </a>
+          <a href="https://www.youtube.com/@CasadeELE" aria-label="Casa de ELE on YouTube" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.6 2.6 0 0 0-1.83-1.84C18.15 4.9 12 4.9 12 4.9s-6.15 0-7.77.46A2.6 2.6 0 0 0 2.4 7.2C2 8.85 2 12 2 12s0 3.15.4 4.8a2.6 2.6 0 0 0 1.83 1.84c1.62.46 7.77.46 7.77.46s6.15 0 7.77-.46a2.6 2.6 0 0 0 1.83-1.84C22 15.15 22 12 22 12s0-3.15-.4-4.8ZM10.1 15.3V8.7L15.7 12l-5.6 3.3Z"></path></svg>
+          </a>
+          <a href="https://open.spotify.com/show/1mFJ1S3vUJ8ekIMwkNhdy4?si=737aea0abfb1450d" aria-label="Casa de ELE on Spotify" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.1"></circle><path d="M7.3 9.1c3.1-.85 6.4-.5 9.1 1"></path><path d="M8 12.3c2.5-.68 5.1-.4 7.3.8"></path><path d="M8.7 15.4c1.9-.5 3.9-.3 5.6.6"></path></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/amrit-goyal-9980b1128/" aria-label="Amrit Goyal on LinkedIn" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM3 9.5h4v11H3v-11Zm6.5 0h3.83v1.5h.05a4.2 4.2 0 0 1 3.77-2.07c2.9 0 3.85 1.83 3.85 4.9v6.67h-4v-5.92c0-1.42-.5-2.38-1.75-2.38-1.06 0-1.7.72-1.98 1.42-.1.25-.13.6-.13.95v5.93h-4s.05-10.1 0-11Z"></path></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div style="padding-top:28px;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;font-size:13.5px;color:rgba(251,244,233,.55)">
+      <span>© 2026 Casa de ELE. Made with care for Spanish learners worldwide.</span>
+      <span>Every dialect welcome. Every learner too.</span>
+    </div>
+  </div>
+</footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;seatsLeft&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:2,&quot;min&quot;:0,&quot;max&quot;:6,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Live class&quot;},&quot;showCountdown&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Live class&quot;},&quot;libraryStartFilter&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;All&quot;,&quot;options&quot;:[&quot;All&quot;,&quot;A2&quot;,&quot;B1&quot;,&quot;B2&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Library&quot;},&quot;studentsTaught&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;50&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Hero&quot;},&quot;discordUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;https://discord.gg/K6ZhfvsYC&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Community&quot;}}">
+const LIB = [
+  { title: "El Jardinero", kind: "Netflix series", level: "A2", room: "El Sofá Cinemático", why: "The actors speak slowly and the mystery keeps you watching past your bedtime." },
+  { title: "Uribe.fm", kind: "Podcast", level: "B1", room: "La Ducha Sinfónica", why: "One country per episode — travel, festivals, superstitions, food." },
+  { title: "Extra en Español", kind: "Sitcom", level: "A2", room: "El Sofá Cinemático", why: "Twenty-minute episodes written for beginners that are somehow still funny." },
+  { title: "Radio Ambulante", kind: "Podcast", level: "B1", room: "La Sala de Grabación", why: "Long-form journalism from across Latin America. Hard, and worth it." },
+  { title: "Las Voces Afro", kind: "Reader", level: "B1", room: "El Archivo Total", why: "Afrodescendant writers, a decolonial view of the language you're learning." },
+  { title: "Destinos", kind: "Series", level: "A2", room: "La Escuela", why: "Made for learners in 1992, still the gentlest listening practice there is." },
+  { title: "Cuéntame cómo pasó", kind: "Series", level: "A2", room: "El Sofá Cinemático", why: "Family drama across fifty years of Spain. Everyday vocabulary, endless episodes." }
+];
+const TINTS = { A2: "#d9a664", B1: "#93bbc0", B2: "#799e83" };
+const TESTI_CARD_W = 320, TESTI_GAP = 26, TESTI_PITCH = TESTI_CARD_W + TESTI_GAP, TESTI_PAD = 32;
+const TESTI_SECONDS = ["42", "58", "35", "51", "39"];
+
+
+
+const LEVELS_LADDER = [
+  { id: "C2", status: "Coming soon", title: "DELE C2", subtitle: "Mastery", soon: true,
+    soonNote: "C2 opens in a later cohort. Join the community and we'll tell you the moment it does." },
+  { id: "C1", status: "Coming soon", title: "DELE C1", subtitle: "Advanced", soon: true,
+    soonNote: "C1 opens in a later cohort. Join the community and we'll tell you the moment it does." },
+  { id: "B2", status: "Open now", title: "DELE B2 · El Debate", subtitle: "15 weeks, live, in a group of six",
+    cols: ["What you'll do at B2"],
+    rows: [
+      ["Follow native-speed news and interviews"],
+      ["Defend a nuanced opinion under pushback"],
+      ["Write formally — emails, essays, reports"],
+      ["Catch idioms, sarcasm, regional slang"]
+    ],
+    note: "Full B2 syllabus, format tables and pricing live on the course page." },
+  { id: "B1", status: "Open now", title: "DELE B1 · Formato del examen", subtitle: "Duraciones oficiales · Cada prueba vale 25% del examen",
+    cols: ["Prueba", "Tareas", "Tiempo"],
+    rows: [
+      ["Comprensión de lectura", "T1: relacionar textos T2: selección múltiple T3: relacionar textos T4: completar párrafos T5: cloze gramatical", "70 min 30 ítems"],
+      ["Comprensión auditiva", "T1: selección múltiple T2: selección múltiple T3: selección múltiple T4: relacionar T5: selección múltiple", "40 min 30 ítems"],
+      ["Expresión e interacción escritas", "T1: carta / mensaje / foro / blog T2: composición / diario / biografía / etc. (elige 1 de 2)", "60 min 230–270 palabras"],
+      ["Expresión e interacción orales", "T1: presentación breve T2: conversación T3: describir fotografía + conversación T4: situación simulada", "15 min + 15 min preparación"]
+    ],
+    note: "Nota: el Instituto Cervantes no fija un reparto oficial de minutos para cada tarea escrita o de comprensión." },
+  { id: "A2", status: "Coming soon", title: "DELE A2", subtitle: "Elementary", soon: true,
+    soonNote: "A2 opens in a later cohort. Join the community and we'll tell you the moment it does." },
+  { id: "A1", status: "Coming soon", title: "DELE A1", subtitle: "Beginner", soon: true,
+    soonNote: "A1 opens in a later cohort. Join the community and we'll tell you the moment it does." }
+];
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { filter: null, now: Date.now(), subscribed: false, playing: false, floatingVisible: false, floatingDismissed: false, testScrollX: 0, testClientWidth: 0, testScrollWidth: 0, wallAdded: [], wallName: "", wallLevel: "B1", wallText: "", wallNotice: "", wallOk: false };
+    this.WALL_KEY = "cde-wall-notes";
+    this.WALL_SEED = [
+      { name: "Ananya S.", level: "B1", text: "I read one editorial piece before every class now. The Saturday conversation suddenly has words in it." },
+      { name: "Rohit M.", level: "A2", text: "The comics were the first thing I finished in Spanish without stopping to translate every line." },
+      { name: "Meher K.", level: "B2", text: "Course chapters between classes kept me from losing the thread over exam season." }
+    ];
+    this.submitWall = (e) => {
+      e.preventDefault();
+      const name = this.state.wallName.trim(), text = this.state.wallText.trim();
+      if (!name || !text) { this.setState({ wallNotice: "A name and a note, please.", wallOk: false }); return; }
+      const wallAdded = [{ name, level: this.state.wallLevel, text }, ...this.state.wallAdded];
+      try { localStorage.setItem(this.WALL_KEY, JSON.stringify(wallAdded)); } catch (err) {}
+      this.setState({ wallAdded, wallName: "", wallText: "", wallNotice: "Pinned up. Thank you!", wallOk: true });
+    };
+    this.setTestTrackRef = (el) => {
+      if (!el || this.trackEl === el) return;
+      this.trackEl = el;
+      this.setState({ testScrollX: el.scrollLeft, testClientWidth: el.clientWidth, testScrollWidth: el.scrollWidth });
+    };
+    this.onTestScroll = () => {
+      if (!this.trackEl) return;
+      this.setState({ testScrollX: this.trackEl.scrollLeft, testClientWidth: this.trackEl.clientWidth, testScrollWidth: this.trackEl.scrollWidth });
+    };
+  }
+  componentDidMount() {
+    this.timer = setInterval(() => this.setState({ now: Date.now() }), 1000);
+    this.onScroll = () => {
+      const hero = document.getElementById("top");
+      if (!hero) return;
+      this.setState({ floatingVisible: hero.getBoundingClientRect().bottom < 0 });
+    };
+    window.addEventListener("scroll", this.onScroll, { passive: true });
+    window.addEventListener("resize", this.onTestScroll, { passive: true });
+    this.onScroll();
+    try {
+      const saved = JSON.parse(localStorage.getItem(this.WALL_KEY) || "[]");
+      if (Array.isArray(saved) && saved.length) this.setState({ wallAdded: saved });
+    } catch (e) {}
+  }
+  componentWillUnmount() { clearInterval(this.timer); window.removeEventListener("scroll", this.onScroll); window.removeEventListener("resize", this.onTestScroll); }
+
+  nextClass() {
+    const t = new Date(this.state.now);
+    t.setUTCHours(13, 30, 0, 0);
+    while (t.getUTCDay() !== 0 || t.getTime() <= this.state.now) t.setUTCDate(t.getUTCDate() + 1);
+    return t;
+  }
+
+  renderVals() {
+    const wallAccents = ["#a91f24", "#2b5d63", "#d9a664"];
+    const wallTilts = ["rotate(-1.1deg)", "rotate(.8deg)", "rotate(-.4deg)", "rotate(1.2deg)"];
+    const notes = [...this.state.wallAdded, ...this.WALL_SEED].map((n, i) => ({
+      ...n,
+      accent: wallAccents[i % wallAccents.length],
+      tilt: wallTilts[i % wallTilts.length]
+    }));
+    const filter = this.state.filter ?? (this.props.libraryStartFilter || "All");
+    const courseLevel = this.state.courseLevel || "B1";
+    const levelRows = LEVELS_LADDER.map((lv) => {
+      const on = lv.id === courseLevel;
+      return {
+        label: lv.id,
+        status: lv.status,
+        aria: "Show " + lv.id + " details",
+        bg: on ? "#a91f24" : "#fff",
+        fg: on ? "#fff" : "#17110e",
+        shadow: on ? "0 5px 0 #6f1216" : "0 4px 0 rgba(23,17,14,.16)",
+        onClick: () => this.setState({ courseLevel: lv.id })
+      };
+    });
+    const active = LEVELS_LADDER.filter((lv) => lv.id === courseLevel)[0] || LEVELS_LADDER[3];
+    const panel = {
+      title: active.title,
+      subtitle: active.subtitle,
+      status: active.status,
+      headBg: active.soon ? "#f5e6d3" : "#a91f24",
+      headFg: active.soon ? "#17110e" : "#fff",
+      pillBg: active.soon ? "#fff" : "#f2d17f",
+      pillFg: "#17110e",
+      hasTable: !active.soon,
+      soon: !!active.soon,
+      soonNote: active.soonNote || "",
+      cols: active.cols || [],
+      note: active.note || "",
+      rows: (active.rows || []).map((cells, i) => ({ cells, bg: i % 2 ? "#fff" : "#fbf4e9" }))
+    };
+    const seatsLeft = Math.max(0, Math.min(6, this.props.seatsLeft ?? 2));
+    const taken = 6 - seatsLeft;
+
+    const chips = ["All", "A2", "B1", "B2"].map((id) => {
+      const on = id === filter;
+      return {
+        label: id === "All" ? "Everything" : "Level " + id,
+        bg: on ? "#f2d17f" : "#fff",
+        fg: "#17110e",
+        border: on ? "#17110e" : "rgba(23,17,14,.25)",
+        onClick: () => this.setState({ filter: id })
+      };
+    });
+
+    const items = LIB.filter((i) => filter === "All" || i.level === filter)
+      .map((i, idx) => Object.assign({}, i, {
+        tint: TINTS[i.level],
+        rotate: idx % 3 === 0 ? -1.4 : idx % 3 === 1 ? 1.2 : -0.4
+      }));
+
+    const seats = Array.from({ length: 6 }, (_, i) => Object.assign(
+      i < taken
+        ? { bg: "#17110e", fg: "#f2d17f", label: "·" }
+        : { bg: "#ffffff", fg: "#a91f24", label: "free" },
+      { delay: (i * 0.07).toFixed(2) }
+    ));
+
+    const viewportW = this.state.testClientWidth || 640;
+    const center = this.state.testScrollX + viewportW / 2;
+    const maxDist = viewportW / 2 || 300;
+    const testimonials = TESTI_SECONDS.map((secs, idx) => {
+      const cardCenter = TESTI_PAD + idx * TESTI_PITCH + TESTI_CARD_W / 2;
+      const norm = Math.max(-1, Math.min(1, (cardCenter - center) / maxDist));
+      const abs = Math.abs(norm);
+      const scale = (1 - abs * 0.12).toFixed(3);
+      const opacity = (1 - abs * 0.5).toFixed(2);
+      const translateY = (abs * 10).toFixed(1);
+      const rotate = (norm * 2.5).toFixed(2);
+      const active = abs < 0.3;
+      return {
+        videoId: "testi-video-" + (idx + 1),
+        seconds: secs,
+        transformStyle: "scale(" + scale + ") translateY(" + translateY + "px) rotate(" + rotate + "deg)",
+        opacity,
+        borderColor: active ? "#17110e" : "rgba(23,17,14,.14)",
+        shadow: active ? "0 10px 0 #17110e" : "0 4px 14px rgba(23,17,14,.12)"
+      };
+    });
+    const scrollableMax = Math.max(1, this.state.testScrollWidth - viewportW);
+    const testProgress = Math.max(0, Math.min(100, (this.state.testScrollX / scrollableMax) * 100));
+
+    const target = this.nextClass();
+    let diff = Math.max(0, target.getTime() - this.state.now);
+    const days = Math.floor(diff / 86400000); diff -= days * 86400000;
+    const hours = Math.floor(diff / 3600000); diff -= hours * 3600000;
+    const mins = Math.floor(diff / 60000); diff -= mins * 60000;
+    const secs = Math.floor(diff / 1000);
+    const pad = (n) => String(n).padStart(2, "0");
+
+    const nextDateLabel = target.toLocaleDateString("en-GB", {
+      weekday: "long", day: "numeric", month: "long", timeZone: "Asia/Kolkata"
+    }) + ", 7:00 PM IST";
+
+    return {
+      notes,
+      draftName: this.state.wallName,
+      draftLevel: this.state.wallLevel,
+      draftText: this.state.wallText,
+      draftCount: this.state.wallText.length,
+      notice: this.state.wallNotice,
+      noticeColor: this.state.wallOk ? "#2b5d63" : "#a91f24",
+      onName: (e) => this.setState({ wallName: e.target.value }),
+      onLevel: (e) => this.setState({ wallLevel: e.target.value }),
+      onText: (e) => this.setState({ wallText: e.target.value }),
+      submitTestimonial: this.submitWall,
+      chips,
+      libItems: items,
+      libCount: items.length + (items.length === 1 ? " title" : " titles") + (filter === "All" ? " in the shelf" : " at level " + filter),
+      seats,
+      seatsLeft,
+      discordUrl: this.props.discordUrl || "https://discord.gg/K6ZhfvsYC",
+      studentsTaught: this.props.studentsTaught || "6",
+      studentsLabel: this.props.studentsTaught ? "students taught Spanish" : "learners per live class, max",
+      levelRows,
+      panel,
+      seatsLabel: seatsLeft === 0 ? "Full — next week's open" : seatsLeft + (seatsLeft === 1 ? " seat left" : " seats left"),
+      showCountdown: this.props.showCountdown ?? true,
+      cd: { days: pad(days), hours: pad(hours), mins: pad(mins), secs: pad(secs) },
+      nextDateLabel,
+      playVideo: () => this.setState({ playing: true }),
+      videoNote: this.state.playing
+        ? "The real film goes here — drop your intro video in and this button plays it."
+        : "Filmed in a real classroom. No studio, no script.",
+
+      floatingShow: this.state.floatingVisible && !this.state.floatingDismissed,
+      dismissFloating: () => this.setState({ floatingDismissed: true }),
+      testimonials,
+      testProgress,
+      setTestTrackRef: this.setTestTrackRef,
+      onTestScroll: this.onTestScroll,
+      scrollTestPrev: () => this.trackEl && this.trackEl.scrollBy({ left: -TESTI_PITCH, behavior: "smooth" }),
+      scrollTestNext: () => this.trackEl && this.trackEl.scrollBy({ left: TESTI_PITCH, behavior: "smooth" })
+    };
+  }
+}
+
+</script>
+</body>
 </html>

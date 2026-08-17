@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/dc-pages/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="/dc-pages/image-slot.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#fbf4e9;color:#17110e;font-family:'Host Grotesk','Helvetica Neue',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-wrap:pretty}
+  a{color:#a91f24;text-decoration:none}
+  a:hover{color:#8c1a1e}
+  @keyframes cde-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes cde-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes cde-ring{0%{box-shadow:0 0 0 0 rgba(169,31,36,.45)}70%{box-shadow:0 0 0 16px rgba(169,31,36,0)}100%{box-shadow:0 0 0 0 rgba(169,31,36,0)}}
+  @keyframes cde-drift{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(16px,-20px) rotate(8deg)}}
+  @keyframes cde-float{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(2deg)}}
+  @keyframes cde-wiggle{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+  ::selection{background:#f2d17f;color:#17110e}
+
+  @keyframes cde2-rise{from{opacity:0;transform:translateY(28px)}}
+  @keyframes cde2-pop{from{opacity:0;transform:translateY(20px) scale(.97)}}
+  @keyframes cde2-fade{from{opacity:0}}
+  @keyframes cde2-sway{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-18px,14px) scale(1.06)}}
+  @keyframes cde2-bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-14px) rotate(4deg)}}
+  @keyframes cde2-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  @keyframes cde2-progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes cde-spin-c{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;animation-iteration-count:1 !important}}
+  @media (max-width:860px){
+    [data-m=hdr]{flex-wrap:wrap;gap:10px 16px}
+    [data-m=hdr] [data-m=hcta]{margin-left:auto;font-size:13px;padding:10px 16px}
+    [data-m=nav]{order:3;flex-basis:100%;margin-left:0;gap:20px;font-size:14px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;padding-bottom:2px}
+    [data-m=nav]::-webkit-scrollbar{display:none}
+    [data-m~=filterbar]{top:124px !important}
+  }
+  @media (max-width:760px){
+    [data-m~=stack]{grid-template-columns:minmax(0,1fr) !important}
+    [data-m~=bento]{grid-template-columns:minmax(0,1fr) !important}
+    [data-m~=bento] > *{grid-column:auto !important;grid-row:auto !important}
+    [data-m~=days]{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+    [data-m~=unstick]{position:static !important;top:auto !important}
+    [data-m~=row]{grid-template-columns:auto minmax(0,1fr) !important;gap:14px !important}
+    [data-m~=rowmeta]{grid-column:1/-1;justify-content:space-between;width:100%}
+    [data-m~=stat]{padding:0 !important;justify-content:flex-start !important}
+    [data-m~=statcol]{border-left:none !important;border-top:1px solid rgba(23,17,14,.12);padding:18px 0 0 !important}
+    [data-m~=hidesm]{display:none !important}
+    [data-m~=loop]{aspect-ratio:auto !important;max-width:none !important;display:flex;flex-direction:column;gap:10px}
+    [data-m~=loop] > div{position:static !important;transform:none !important;white-space:normal !important;text-align:center}
+    [data-m~=loop] > div:first-child{display:none !important}
+    [data-m~=loop] > img{display:none !important}
+  }
+  @media (max-width:560px){
+    [data-m~=floatbar]{left:12px;right:12px;bottom:12px;flex-direction:column;align-items:stretch !important;border-radius:22px !important;padding:14px !important;gap:12px !important}
+    [data-m~=floatbar] > div:first-child{padding-right:0 !important;border-right:none !important;border-bottom:1px solid rgba(43,93,99,.18);padding-bottom:11px}
+    [data-m~=floatbar] > a{text-align:center;padding:12px 18px !important}
+    [data-m~=floatbar] > button{position:absolute;top:10px;right:10px}
+  }
+  @media (max-width:760px){
+    [data-m~=days] > div{min-height:190px !important;padding:16px 10px 14px !important}
+  }
+  @media (max-width:860px){
+    [data-m=nav] a{padding:9px 0}
+  }
+  @media (max-width:860px){
+    footer a:not([aria-label]){padding-top:7px;padding-bottom:7px}
+  }
+  @media (max-width:430px){
+    [data-m=hdr] [data-m=hcta]{font-size:12.5px;padding:9px 14px}
+    [data-m=nav]{gap:16px;font-size:13.5px}
+  }
+</style>
+<script src="/dc-pages/reveal.js"></script>
+</helmet>
+
+<div style="max-width:100%;overflow-x:clip">
+<div data-progress-bar="" data-no-reveal="" style="position:fixed;top:0;left:0;right:0;height:3px;z-index:80;background:#a91f24;transform-origin:0 50%;transform:scaleX(0);transition:transform .1s linear;pointer-events:none"></div>
+
+
+<header style="position:sticky;top:0;z-index:50;background:rgba(251,244,233,.92);backdrop-filter:blur(14px);border-bottom:1.5px solid rgba(23,17,14,.1)">
+  <div data-m="hdr" style="max-width:1320px;margin:0 auto;padding:14px clamp(20px,4vw,56px);display:flex;align-items:center;gap:32px">
+    <a href="/#top" style="display:flex;align-items:center;gap:11px;flex:none">
+      <img src="/dc-pages/assets/mark.png" alt="Casa de ELE" style="width:38px;height:38px;display:block;transition:transform .5s cubic-bezier(.2,.8,.3,1)" style-hover="transform:rotate(90deg) scale(1.1)">
+      <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:17px;letter-spacing:-.01em;color:#a91f24;line-height:1">Casa<br>de ELE</span>
+    </a>
+    <nav data-m="nav" style="display:flex;align-items:center;gap:26px;margin-left:auto;font-size:14.5px;font-weight:500;color:#17110e">
+      <a href="/#top" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Home</a>
+      <a href="/dele-course" style="color:#a91f24;font-weight:700">Course</a>
+      <a href="/library" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Resources/ library</a>
+    </nav>
+    <a href="https://wa.me/919910167527?text=Hi" data-m="hcta" style="flex:none;background:#a91f24;color:#fff;font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:999px;box-shadow:0 3px 0 #6f1216" style-hover="background:#8c1a1e;color:#fff;transform:translateY(1px);box-shadow:0 2px 0 #6f1216" target="_blank" rel="noopener">Join Saturday's class</a>
+  </div>
+</header>
+
+<section id="top" data-screen-label="01 Choose your level" style="position:relative;background:#fbf4e9;padding:clamp(40px,5vw,68px) clamp(20px,4vw,56px) clamp(48px,6vw,80px);overflow:hidden">
+  <div style="position:absolute;top:-160px;right:-140px;width:520px;height:520px;border-radius:50%;background:#93bbc0;opacity:.2;filter:blur(6px);animation:cde2-sway 11s ease-in-out infinite;pointer-events:none"></div>
+
+  <div style="position:relative;max-width:1320px;margin:0 auto">
+    <div style="text-align:center;max-width:44ch;margin:0 auto clamp(30px,4vw,46px)">
+      <h1 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(36px,5vw,64px);line-height:1.02;letter-spacing:-.035em;margin:0 0 16px">Choose your level</h1>
+      <p style="font-size:clamp(16px,1.3vw,18.5px);line-height:1.6;color:rgba(23,17,14,.72);margin:0">Pick a level and the whole page follows — units, mock exams, price and schedule.</p>
+    </div>
+
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:clamp(18px,2.5vw,28px);align-items:stretch">
+      <sc-for list="{{ panels }}" as="p" hint-placeholder-count="2">
+        <button type="button" onClick="{{ p.onClick }}" aria-pressed="{{ p.selected }}" style="position:relative;text-align:left;cursor:pointer;font-family:'Host Grotesk',system-ui,sans-serif;border:2px solid #17110e;border-radius:28px;padding:clamp(24px,3vw,38px);display:flex;flex-direction:column;gap:20px;background:{{ p.bg }};color:{{ p.fg }};box-shadow:{{ p.shadow }};transform:{{ p.lift }};transition:transform .18s ease,box-shadow .18s ease" style-hover="transform:translateY(-4px);box-shadow:0 12px 0 #6f1216">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+            <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(58px,8vw,104px);line-height:.82;letter-spacing:-.05em">{{ p.id }}</span>
+            <span style="flex:none;border-radius:999px;padding:7px 15px;font-weight:800;font-size:12px;letter-spacing:.06em;background:{{ p.badgeBg }};color:{{ p.badgeFg }};border:1.5px solid {{ p.badgeBorder }}">{{ p.badge }}</span>
+          </div>
+
+          <div>
+            <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(20px,2vw,26px);letter-spacing:-.02em;margin-bottom:8px">{{ p.name }}</div>
+            <p style="font-size:15.5px;line-height:1.55;margin:0;color:{{ p.softFg }};max-width:34ch">{{ p.proves }}</p>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:22px;border-top:1.5px solid {{ p.rule }};padding-top:18px;margin-top:auto">
+            <div>
+              <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:22px;line-height:1">{{ p.weeks }}</div>
+              <div style="font-size:12.5px;font-weight:600;color:{{ p.softFg }};margin-top:5px">weeks, live</div>
+            </div>
+            <div>
+              <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:22px;line-height:1">{{ p.price }}</div>
+              <div style="font-size:12.5px;font-weight:600;color:{{ p.softFg }};margin-top:5px">everything in</div>
+            </div>
+            <div>
+              <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:22px;line-height:1">6</div>
+              <div style="font-size:12.5px;font-weight:600;color:{{ p.softFg }};margin-top:5px">seats per room</div>
+            </div>
+          </div>
+
+          <span style="display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:15px;color:{{ p.ctaFg }}">{{ p.cta }} <span>→</span></span>
+        </button>
+      </sc-for>
+    </div>
+
+    <p style="text-align:center;font-size:14.5px;color:rgba(23,17,14,.62);margin:clamp(22px,3vw,32px) auto 0;max-width:46ch">Not sure where you stand? Sit the first class free — we'll place you honestly. <a href="#faq" style="font-weight:700">Read the placement questions</a></p>
+  </div>
+</section>
+
+
+
+<sc-if value="{{ isB2 }}" hint-placeholder-val="{{ false }}">
+<section id="b2-story" data-screen-label="B2 story — headline" style="position:relative;background:#f5e6d3;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px);overflow:hidden">
+  <div style="position:absolute;top:-140px;right:-120px;width:440px;height:440px;border-radius:50%;background:#93bbc0;opacity:.22;animation:cde2-sway 12s ease-in-out infinite;pointer-events:none"></div>
+  <div style="position:absolute;bottom:-90px;left:-70px;width:240px;height:240px;border-radius:50%;border:2.5px dashed rgba(169,31,36,.25);animation:cde-spin 44s linear infinite;pointer-events:none"></div>
+  <div style="position:relative;max-width:900px;margin:0 auto;text-align:center">
+    <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">B2 — The full story</div>
+    <h1 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(30px,4vw,50px);line-height:1.08;letter-spacing:-.025em;margin:0 0 20px">PASS DELE B2 &amp; UNLOCK NATIONAL/INTERNATIONAL JOB OPPORTUNITIES.</h1>
+    <p style="font-size:16.5px;line-height:1.6;color:rgba(23,17,14,.72);margin:0 auto 28px;max-width:56ch">Get a complete <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">88-Hour Roadmap</span> from experts. Weekly live sessions &amp; regular assessment across all 4 sections, based on actual DELE Evaluation Standards <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">(Pass DELE with no more surprises!)</span></p>
+    <a href="https://wa.me/919910167527?text=Hi" style="display:inline-flex;align-items:center;gap:10px;background:#a91f24;color:#fff;border:2px solid #17110e;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;letter-spacing:.04em;padding:16px 30px;border-radius:999px;box-shadow:0 5px 0 #6f1216" target="_blank" rel="noopener">I WANT TO PASS DELE B2 <span style="display:inline-block">→</span></a>
+  </div>
+  <div style="position:relative;max-width:1100px;margin:clamp(38px,5vw,64px) auto 0">
+    <image-slot id="b2-hero-photo" shape="rounded" radius="22" placeholder="Drop the B2 &ldquo;this is for you if&rdquo; graphic" style="width:100%;aspect-ratio:16/9;border:2px solid #17110e;border-radius:22px;box-shadow:7px 8px 0 rgba(23,17,14,.16)"></image-slot>
+    <img src="/dc-pages/assets/mark.png" alt="" style="position:absolute;top:-22px;left:-20px;width:56px;height:56px;animation:cde-spin 22s linear infinite;pointer-events:none">
+  </div>
+</section>
+
+<section data-screen-label="B2 story — the feeling" style="background:#fbf4e9;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <p style="font-size:clamp(19px,2.3vw,26px);line-height:1.35;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;margin:0 0 clamp(28px,3.5vw,42px);max-width:34ch">If you're prepping for DELE B2, you already know the feeling.</p>
+    <div data-m="stack" style="max-width:68ch;margin-bottom:clamp(32px,4vw,48px)">
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">1</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">You can hold a conversation. Maybe you can write a blog, read a news article, or understand a native speaker without asking them to repeat twice. Somewhere in the last few months, your Spanish has improved.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0;border-top:1.5px solid rgba(23,17,14,.14)">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">2</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">But then you open a past DELE paper…</p>
+      </div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0;border-top:1.5px solid rgba(23,17,14,.14)">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">3</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">Suddenly, you're not sure if that's Reading Task 3 or Task 4.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0;border-top:1.5px solid rgba(23,17,14,.14)">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">4</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">Or maybe you're not sure whether what you're writing is actually good enough to pass B2.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0;border-top:1.5px solid rgba(23,17,14,.14)">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">5</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">You record a voice note practicing Tarea 3 and you're not sure if what you just said would get <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">apto</span> or not.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0;border-top:1.5px solid rgba(23,17,14,.14)">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">6</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">Because you don't really know how good your Spanish needs to be to pass DELE B2.</p>
+      </div>
+    </div>
+    <div style="background:#17110e;color:#fff;border-radius:26px;padding:clamp(28px,4vw,48px);margin-bottom:clamp(24px,3vw,32px)">
+      <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(20px,2.8vw,34px);line-height:1.2;letter-spacing:-.01em">Knowing Spanish and knowing how to <span style="color:#f2d17f">perform Spanish under DELE conditions</span> are two different skills.</p>
+    </div>
+    <p style="max-width:72ch;font-size:16px;line-height:1.6;color:rgba(23,17,14,.75);margin:0 0 clamp(24px,3vw,34px)">And this is where many students struggle. Not necessarily because their Spanish isn't good enough. But because they don't know the format, syllabus, tasks, timing, and evaluation criteria they're actually being tested on.</p>
+    <div style="background:#f2d17f;border:2px solid #17110e;border-radius:22px;padding:clamp(24px,3vw,36px);text-align:center;transform:rotate(-1deg);box-shadow:0 6px 0 rgba(23,17,14,.2)">
+      <p style="margin:0 0 6px;font-size:13.5px;font-weight:800;letter-spacing:.14em;color:#a91f24">YES</p>
+      <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(19px,2.5vw,30px);line-height:1.2">DELE HAS A DEFINED EXAM STRUCTURE AND EVALUATION CRITERIA.</p>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="B2 story — credibility" style="background:#f5e6d3;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <p style="max-width:70ch;font-size:16.5px;line-height:1.6;font-style:italic;color:rgba(23,17,14,.7);margin:0 0 clamp(28px,3.5vw,40px)">But before I go further, why should you even listen to me on this? Whatever I've said, or will say, isn't a random opinion. Here's why I'm qualified to say it.</p>
+    <div data-m="bento" style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:clamp(14px,1.8vw,20px)">
+      <image-slot id="b2-teacher-photo" shape="rounded" radius="22" placeholder="Drop Amrit's photo" style="grid-column:span 4;aspect-ratio:1/1;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.18)"></image-slot>
+      <div style="grid-column:span 8;background:#fff;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.16);padding:clamp(24px,3vw,34px);display:flex;flex-direction:column;gap:16px;justify-content:center">
+        <span style="align-self:flex-start;background:#f2d17f;border:2px solid #17110e;border-radius:999px;padding:5px 14px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:11.5px;letter-spacing:.12em">WHO'S TEACHING YOU</span>
+        <p style="margin:0;font-size:16px;line-height:1.65;color:rgba(23,17,14,.78);text-wrap:pretty">Hi! I'm Amrit, a trained Spanish teacher and curriculum designer. I completed my Master's at <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">Instituto Caro y Cuervo, Colombia</span>, where I underwent extensive training in Spanish language teaching and pedagogy.</p>
+        <p style="margin:0;font-size:16px;line-height:1.65;color:rgba(23,17,14,.78);text-wrap:pretty">That experience equipped me to work with <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">foreign learners, Indigenous learners, and deaf learners</span>, giving me a deeper understanding of how differently people learn, communicate, and overcome language barriers.</p>
+      </div>
+      <div style="grid-column:span 6;background:#17110e;color:#fff;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.2);padding:clamp(22px,2.6vw,30px);display:flex;flex-direction:column;gap:12px;justify-content:center">
+        <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(40px,5vw,60px);line-height:.85;color:#f2d17f">6+</span>
+        <p style="margin:0;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,.82);text-wrap:pretty">years teaching Spanish. Right now, I am teaching at Instituto Cervantes, working closely with Spanish learners in a structured academic environment.</p>
+      </div>
+      <div style="grid-column:span 6;background:#f2d17f;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.2);padding:clamp(22px,2.6vw,30px);display:flex;flex-direction:column;gap:10px;justify-content:center">
+        <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13px;letter-spacing:.12em;color:#a91f24">CASA DE ELE</span>
+        <p style="margin:0;font-size:15.5px;line-height:1.6;color:rgba(23,17,14,.8);text-wrap:pretty">Today, with the help of <span style="text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px">Casa de Ele</span>, a Spanish learning community, I bring all of this together to help learners prepare strategically for internationally recognised exams like DELE and SIELE.</p>
+      </div>
+    </div>
+    <div style="margin-top:clamp(14px,1.8vw,20px);background:#a91f24;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.2);padding:clamp(18px,2.2vw,24px);display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:center">
+        <div style="position:relative;height:clamp(240px,26vw,330px);flex:none">
+          <video ref="{{ videoRef2 }}" src="/dc-pages/assets/b1-testimonial.mp4" controls="controls" playsinline="playsinline" preload="metadata" onPlay="{{ onVideoPlay2 }}" style="display:block;height:100%;width:auto;aspect-ratio:478/850;object-fit:cover;background:#000;border:2px solid #17110e;border-radius:16px"></video>
+          <sc-if value="{{ showPlay2 }}" hint-placeholder-val="{{ true }}">
+            <button type="button" onClick="{{ playVideo2 }}" aria-label="Play the testimonial" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(23,17,14,.25);border:none;border-radius:16px;cursor:pointer;transition:background .2s ease" style-hover="background:rgba(23,17,14,.1)">
+              <span style="width:54px;height:54px;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 rgba(23,17,14,.35);transition:transform .22s cubic-bezier(.2,.8,.3,1)" style-hover="transform:scale(1.08)">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="#17110e" aria-hidden="true"><path d="M8 5l12 7-12 7z"/></svg>
+              </span>
+            </button>
+          </sc-if>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <span style="align-self:flex-start;background:#fff;color:#a91f24;border:2px solid #17110e;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:800;letter-spacing:.1em">STUDENT STORY</span>
+          <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(17px,1.9vw,21px);line-height:1.3;color:#fff;text-wrap:pretty">Here's what one of my students had to say after passing DELE C1, she's currently doing her PhD in Spain.</p>
+        </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="B2 story — exam format" style="background:#fbf4e9;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">Now, coming back to DELE exam format &amp; criteria…</div>
+    <div style="max-width:66ch;display:flex;flex-direction:column;gap:clamp(14px,1.8vw,20px);margin-bottom:clamp(32px,4vw,48px)">
+      <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">I've worked with students across dozens of DELE cycles. Some of them spoke better Spanish than the person sitting next to them who passed.</p>
+      <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(24px,3vw,34px);line-height:1.15;color:#a91f24">Yet they failed.</p>
+      <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">Not because their Spanish wasn't good enough but because nobody had shown them what the exam was actually testing.</p>
+    </div>
+    <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(20px,2.5vw,30px);line-height:1.2;margin:0 0 24px;max-width:40ch">Here's the exam format of DELE B2 and the criteria for how you're ranked:</h3>
+    <image-slot id="b2-exam-format-table" shape="rect" placeholder="Drop the DELE B2 exam-format &amp; scoring table" style="width:100%;aspect-ratio:16/9;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16)"></image-slot>
+  </div>
+</section>
+
+<section data-screen-label="B2 story — the gap" style="background:#f5e6d3;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(24px,3vw,36px);line-height:1.15;letter-spacing:-.025em;margin:0 0 14px;max-width:36ch">And this is where a lot of DELE preparation goes wrong. Most courses teach Spanish, but not how to pass DELE.</h2>
+    <svg viewBox="0 0 160 14" width="140" height="12" style="display:block;margin-bottom:26px" aria-hidden="true"><path d="M2 8 Q22 1 42 8 T82 8 T122 8 T158 8" stroke="#a91f24" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+    <div style="background:#fff;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.16);overflow:hidden;margin-bottom:clamp(32px,4vw,48px)">
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.7vw,18px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease" style-hover="background:#fdf7ec">
+          <span style="width:34px;height:34px;flex:none;border-radius:11px;background:#93bbc0;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px">1</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">You learn grammar and vocabulary, but not the actual tasks, timing, or scoring.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">So you know Spanish, but still don't feel ready for the exam.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.7vw,18px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:34px;height:34px;flex:none;border-radius:11px;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px">2</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">You practise without knowing what needs improvement.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Mock tests are easy to find, but who tells you what you're doing wrong in Speaking and Writing? Without feedback, you never know how close you are to passing.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.7vw,18px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:34px;height:34px;flex:none;border-radius:11px;background:#d9a664;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px">3</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">You don't know what the examiner expects.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Nobody breaks down what makes a speaking or writing answer good enough. So you’re left wondering, &ldquo;Would this actually pass?&rdquo;</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.7vw,18px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:34px;height:34px;flex:none;border-radius:11px;background:#799e83;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px">4</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">You practise one accent, then hear another in the exam.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Different accents and speaking styles can make familiar Spanish difficult to follow. And when you can't understand the audio, the panic sets in.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.7vw,18px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:34px;height:34px;flex:none;border-radius:11px;background:#93bbc0;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px">5</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">You struggle to stay consistent.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">DELE needs regular practice, especially for Speaking and Writing. Without accountability, it's easy to lose momentum or fall behind.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.7vw,18px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:34px;height:34px;flex:none;border-radius:11px;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px">6</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">You get endless resources, but no clear study plan.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">YouTube, PDFs, and websites give you plenty to study, but DELE has a specific syllabus. So instead of preparing, you're constantly figuring out what to study next.</p>
+          </div>
+        </div>
+    </div>
+    <div data-m="stack" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:clamp(16px,2vw,22px);margin-bottom:clamp(24px,3vw,34px)">
+      <div style="background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:28px;background:#fbf4e9">
+        <p style="margin:0 0 8px;font-size:13px;font-weight:800;letter-spacing:.12em;color:rgba(23,17,14,.45)">SO THE QUESTION ISN'T</p>
+        <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(18px,2.1vw,23px);line-height:1.3;color:rgba(23,17,14,.45)">&ldquo;How much Spanish do I know?&rdquo;</p>
+      </div>
+      <div style="background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:28px;background:#17110e;border-color:#17110e">
+        <p style="margin:0 0 8px;font-size:13px;font-weight:800;letter-spacing:.12em;color:#f2d17f">THE QUESTION IS</p>
+        <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(18px,2.1vw,23px);line-height:1.3;color:#fff">&ldquo;Can I perform at the level the DELE expects?&rdquo;</p>
+      </div>
+    </div>
+    <div style="background:#a91f24;color:#fff;border-radius:22px;padding:clamp(24px,3vw,38px);text-align:center;margin-bottom:clamp(20px,2.5vw,28px)">
+      <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(20px,2.7vw,32px);line-height:1.2">THAT'S EXACTLY WHAT WE SET OUT TO CHANGE.</p>
+    </div>
+    <p style="max-width:76ch;font-size:16px;line-height:1.6;color:rgba(23,17,14,.75);margin:0">Considering all the needs of students, we've built our DELE B2 course, &ldquo; <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">The DELE Evaluation-Standards Method,</span>&rdquo; to prepare you for exactly what the exam demands and how to perform under DELE's actual grading criteria.</p>
+  </div>
+</section>
+
+<section data-screen-label="B2 story — what you get" style="background:#fbf4e9;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">Here's what you will get</div>
+    <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(24px,3vw,36px);line-height:1.15;letter-spacing:-.025em;margin:0 0 14px">HERE'S WHAT YOU WILL GET:</h2>
+    <svg viewBox="0 0 160 14" width="140" height="12" style="display:block;margin-bottom:26px" aria-hidden="true"><path d="M2 8 Q22 1 42 8 T82 8 T122 8 T158 8" stroke="#a91f24" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+    <div style="background:#fff;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.16);overflow:hidden;margin-bottom:clamp(44px,5.5vw,72px)">
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">1</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">1 live weekly session — every Saturday, 7–8 PM.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Stay accountable, ask questions, and keep your preparation on track.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;background:#fbf4e9;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">2</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">A structured DELE theme every week.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Writing, Speaking, Listening, and Reading all follow one theme, keeping your preparation focused and relevant.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">3</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">Weekly Writing practice:</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Know what you're doing well, what needs work, and whether your response is exam-ready.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;background:#fbf4e9;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">4</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">DELE-style Listening practice.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Listen to exam-style audio, answer under time, and review your answers.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">5</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">Weekly Speaking prompt + personal review.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Record your response and submit it for feedback within 1–2 days. Know what you're doing well, what needs work, and whether your answer is actually exam-ready.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;background:#fbf4e9;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">6</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">Timed Reading practice every week.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Complete a comprehension task under exam conditions and review your answers. Build the confidence to understand the passage and manage your time without panicking.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">7</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">40–50 theme-based, exam-relevant words every week:</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">not random vocab you'll never use.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;background:#fbf4e9;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">8</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">Weekly mistake review as a group.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Go through common mistakes, understand why they happen, and learn how to fix them. Instead of repeating the same errors, you know exactly what to work on next.</p>
+          </div>
+        </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:26px">
+      <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(18px,2.3vw,26px);line-height:1.25;max-width:40ch">PLUS, HERE ARE SOME BONUSES YOU WON'T SEE ANYONE ELSE OFFERING:</p>
+      <div style="flex:1;height:2px;background:repeating-linear-gradient(90deg,rgba(23,17,14,.3) 0 8px,transparent 8px 16px)"></div>
+    </div>
+    <div style="position:relative;margin-bottom:clamp(36px,4.5vw,56px)">
+      <span style="position:absolute;top:-15px;left:clamp(18px,3vw,34px);z-index:2;background:#a91f24;color:#fff;border:2px solid #17110e;border-radius:999px;padding:8px 18px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:12.5px;letter-spacing:.14em;transform:rotate(-2deg);box-shadow:0 4px 0 rgba(23,17,14,.25)">8 BONUSES · WORTH IT ALONE</span>
+      <div style="background:#f5e6d3;border:2px dashed rgba(23,17,14,.38);border-radius:26px;padding:clamp(28px,3.4vw,40px) clamp(20px,3vw,34px) clamp(22px,3vw,34px)">
+        <div data-m="stack" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:clamp(12px,1.6vw,16px)">
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:center;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:16px 18px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#93bbc0;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">01</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">EXPERT SUPPORT</p>
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">3 Grammar Masterclasses</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:center;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:16px 18px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#93bbc0;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">02</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">EXPERT SUPPORT</p>
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">5 Conversation Classes with Different Spanish Accents</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:center;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:16px 18px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">03</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">EXTRA PRACTICE</p>
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">Self-Paced Grammar &amp; Mistake PDFs</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:center;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:16px 18px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">04</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">EXTRA PRACTICE</p>
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">Hard-Accent Audio Library</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:center;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:16px 18px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">05</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">EXTRA PRACTICE</p>
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">5 DELE-Style Mock Tests</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:center;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:16px 18px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">06</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">EXTRA PRACTICE</p>
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">1 Full-Length Simulated Mock Exam</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:center;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:16px 18px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#799e83;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">07</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">COMMUNITY</p>
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">Lifetime Discord Community Access</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:center;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:16px 18px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#d9a664;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">08</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">REWARD</p>
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">100% Fee Refund for the Top Performer</p>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+    <div data-m="stack" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(18px,2.5vw,32px);align-items:center;background:#2b5d63;color:#fff;border-radius:24px;padding:clamp(24px,3vw,38px)">
+      <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(44px,6vw,76px);line-height:.9;color:#f2d17f">88</span>
+      <p style="margin:0;font-size:clamp(16px,1.9vw,21px);line-height:1.45;font-weight:600">8 hours per week × 11 weeks = 88 hours of structured preparation.</p>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="B2 story — the system" style="background:#f5e6d3;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">The system</div>
+    <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(24px,3vw,36px);line-height:1.15;letter-spacing:-.025em;margin:0 0 14px">SO WHAT ARE YOU ACTUALLY GETTING?</h2>
+    <svg viewBox="0 0 160 14" width="140" height="12" style="display:block;margin-bottom:26px" aria-hidden="true"><path d="M2 8 Q22 1 42 8 T82 8 T122 8 T158 8" stroke="#a91f24" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+    <p style="max-width:72ch;font-size:16px;line-height:1.6;color:rgba(23,17,14,.75);margin:0 0 clamp(30px,4vw,48px)">You're not getting another Spanish course. You're getting an 11-week DELE B2 preparation system built to take you from:</p>
+    <div data-m="loop" style="position:relative;width:100%;max-width:620px;aspect-ratio:1/1;margin:0 auto clamp(30px,4vw,48px)">
+      <div style="position:absolute;inset:1%;border-radius:50%;border:1.5px solid rgba(23,17,14,.1)"></div>
+      <div style="position:absolute;inset:11%;border-radius:50%;border:2.5px dashed rgba(169,31,36,.35);animation:cde-spin 60s linear infinite"></div>
+      <div style="position:absolute;inset:22%;border-radius:50%;border:1.5px dashed rgba(43,93,99,.3);animation:cde-spin 90s linear infinite reverse">
+        <span style="position:absolute;left:50%;top:0;transform:translate(-50%,-50%);width:11px;height:11px;border-radius:50%;background:#2b5d63;border:2px solid #17110e"></span>
+      </div>
+      <div style="position:absolute;inset:32%;border-radius:50%;border:1.5px dotted rgba(217,166,100,.55);animation:cde-spin 42s linear infinite">
+        <span style="position:absolute;left:100%;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#d9a664;border:2px solid #17110e"></span>
+      </div>
+      <div style="position:absolute;inset:41%;border-radius:50%;border:1.5px solid rgba(23,17,14,.14);animation:cde-spin 28s linear infinite reverse">
+        <span style="position:absolute;left:50%;top:100%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:#a91f24;border:2px solid #17110e"></span>
+      </div>
+      <div style="position:absolute;inset:46.5%;border-radius:50%;background:radial-gradient(circle,rgba(242,209,127,.5) 0%,rgba(242,209,127,0) 70%)"></div>
+      <img src="/dc-pages/assets/mark.png" alt="" style="position:absolute;left:50%;top:50%;width:64px;height:64px;animation:cde-spin-c 24s linear infinite;pointer-events:none">
+      <div style="position:absolute;left:50%;top:11%;transform:translate(-50%,-50%);background:#fff;color:#17110e;border:2px solid #17110e;border-radius:999px;padding:11px 17px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(11px,1.1vw,13.5px);letter-spacing:.04em;white-space:nowrap;box-shadow:0 4px 0 rgba(23,17,14,.2)">UNDERSTAND</div>
+      <div style="position:absolute;left:80.49%;top:25.68%;transform:translate(-50%,-50%);background:#fff;color:#17110e;border:2px solid #17110e;border-radius:999px;padding:11px 17px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(11px,1.1vw,13.5px);letter-spacing:.04em;white-space:nowrap;box-shadow:0 4px 0 rgba(23,17,14,.2)">PRACTISE</div>
+      <div style="position:absolute;left:88.02%;top:58.68%;transform:translate(-50%,-50%);background:#fff;color:#17110e;border:2px solid #17110e;border-radius:999px;padding:11px 17px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(11px,1.1vw,13.5px);letter-spacing:.04em;white-space:nowrap;box-shadow:0 4px 0 rgba(23,17,14,.2)">GET EVALUATED</div>
+      <div style="position:absolute;left:66.92%;top:85.14%;transform:translate(-50%,-50%);background:#fff;color:#17110e;border:2px solid #17110e;border-radius:999px;padding:11px 17px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(11px,1.1vw,13.5px);letter-spacing:.04em;white-space:nowrap;box-shadow:0 4px 0 rgba(23,17,14,.2)">FIX</div>
+      <div style="position:absolute;left:33.08%;top:85.14%;transform:translate(-50%,-50%);background:#fff;color:#17110e;border:2px solid #17110e;border-radius:999px;padding:11px 17px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(11px,1.1vw,13.5px);letter-spacing:.04em;white-space:nowrap;box-shadow:0 4px 0 rgba(23,17,14,.2)">REPEAT</div>
+      <div style="position:absolute;left:11.98%;top:58.68%;transform:translate(-50%,-50%);background:#fff;color:#17110e;border:2px solid #17110e;border-radius:999px;padding:11px 17px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(11px,1.1vw,13.5px);letter-spacing:.04em;white-space:nowrap;box-shadow:0 4px 0 rgba(23,17,14,.2)">KNOW YOUR READINESS</div>
+      <div style="position:absolute;left:19.51%;top:25.68%;transform:translate(-50%,-50%);background:#a91f24;color:#fff;border:2px solid #17110e;border-radius:999px;padding:11px 17px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(11px,1.1vw,13.5px);letter-spacing:.04em;white-space:nowrap;box-shadow:0 4px 0 rgba(23,17,14,.2)">PASS DELE</div>
+    </div>
+    <div style="background:#17110e;color:#fff;border-radius:22px;padding:clamp(24px,3vw,38px);text-align:center">
+      <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(19px,2.6vw,32px);line-height:1.25">11 WEEKS. 88 HOURS. 4 SECTIONS. <span style="color:#f2d17f">1 CLEAR GOAL: DELE B2.</span></p>
+    </div>
+  </div>
+</section>
+
+<section id="b2-offer" data-screen-label="B2 story — the offer" style="position:relative;background:#f2d17f;padding:clamp(64px,8vw,112px) clamp(20px,4vw,56px);border-top:2px solid #17110e;border-bottom:2px solid #17110e">
+  <div style="max-width:660px;margin:0 auto;text-align:center">
+    <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">Enrolment</div>
+    <div data-m="stack" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px">
+      <div style="background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:20px;background:#fffdfa">
+        <p style="margin:0 0 6px;font-size:12px;font-weight:800;letter-spacing:.1em;color:#a91f24">COURSE STARTS</p>
+        <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(17px,2vw,22px)">31 August 2026</p>
+      </div>
+      <div style="background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:20px;background:#fffdfa">
+        <p style="margin:0 0 6px;font-size:12px;font-weight:800;letter-spacing:.1em;color:#a91f24">FINAL ENROLMENT</p>
+        <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(17px,2vw,22px)">28 August 2026</p>
+      </div>
+    </div>
+    <div style="text-align:left;background:#17110e;color:#fff;border-radius:26px;padding:clamp(28px,3.6vw,42px);box-shadow:0 8px 0 rgba(23,17,14,.2)">
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+        <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(36px,5vw,56px);line-height:.95;color:#f2d17f">₹4,999</span>
+        <span style="font-size:15px;color:rgba(255,255,255,.65)">— Standard Price</span>
+      </div>
+      <ul style="list-style:none;margin:0 0 26px;padding:0;display:flex;flex-direction:column;gap:11px;font-size:15.5px;line-height:1.45">
+        <li style="display:flex;gap:11px"><span style="color:#f2d17f;font-weight:800;flex:none">→</span><span>Early Bird: First 3 enrolments save ₹400</span></li>
+        <li style="display:flex;gap:11px"><span style="color:#f2d17f;font-weight:800;flex:none">→</span><span>Cohort capped at 8 students.</span></li>
+        <li style="display:flex;gap:11px"><span style="color:#f2d17f;font-weight:800;flex:none">→</span><span>Enrol with a study partner and both save ₹200.</span></li>
+      </ul>
+      <div style="height:1.5px;background:rgba(255,255,255,.16);margin:0 0 24px"></div>
+      <ul style="list-style:none;margin:0 0 28px;padding:0;display:flex;flex-direction:column;gap:11px;font-size:15.5px;line-height:1.45">
+        <li style="display:flex;gap:11px"><span style="color:#f2d17f;font-weight:800;flex:none">✓</span><span>11 Weeks of Structured DELE Preparation</span></li>
+        <li style="display:flex;gap:11px"><span style="color:#f2d17f;font-weight:800;flex:none">✓</span><span>Weekly Live Sessions with DELE Experts</span></li>
+        <li style="display:flex;gap:11px"><span style="color:#f2d17f;font-weight:800;flex:none">✓</span><span>100% Refund for the Top Performer</span></li>
+        <li style="display:flex;gap:11px"><span style="color:#f2d17f;font-weight:800;flex:none">✓</span><span>DELE-Standard Evaluation &amp; Personalised Feedback</span></li>
+        <li style="display:flex;gap:11px"><span style="color:#f2d17f;font-weight:800;flex:none">✓</span><span>5 Full-Length Mock Exams + 1 Premium Mock</span></li>
+      </ul>
+      <a href="https://wa.me/919910167527?text=Hi" style="display:flex;align-items:center;justify-content:center;gap:10px;background:#f2d17f;color:#17110e;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px" target="_blank" rel="noopener">I want to pass DELE B2 <span style="display:inline-block">→</span></a>
+    </div>
+  </div>
+</section>
+</sc-if>
+
+<sc-if value="{{ isB1 }}" hint-placeholder-val="{{ true }}">
+<section id="b1-story" data-screen-label="B1 story — headline" style="position:relative;background:#f5e6d3;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px);overflow:hidden">
+  <div style="position:absolute;top:-140px;right:-120px;width:440px;height:440px;border-radius:50%;background:#93bbc0;opacity:.22;animation:cde2-sway 12s ease-in-out infinite;pointer-events:none"></div>
+  <div style="position:relative;max-width:900px;margin:0 auto;text-align:center">
+    <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">B1 — The full story</div>
+    <h1 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(30px,4vw,50px);line-height:1.08;letter-spacing:-.025em;margin:0 0 20px">PASS DELE B2 SPANISH &amp; UNLOCK DOORS TO NATIONAL/INTERNATIONAL JOB OPPORTUNITIES!</h1>
+    <p style="font-size:16.5px;line-height:1.6;color:rgba(23,17,14,.72);margin:0 auto 12px;max-width:56ch">Get A Complete <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">88-Hour Roadmap</span> From Experts. Weekly Live Sessions &amp; Regular Assessment across all 4 sections based on actual <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">&ldquo;DELE Evaluation Standards.&rdquo;</span></p>
+    <p style="font-size:16.5px;line-height:1.6;font-weight:700;color:#a91f24;margin:0 auto 28px">(Pass DELE with no more surprises!)</p>
+    <a href="https://wa.me/919910167527?text=Hi" style="display:inline-flex;align-items:center;gap:10px;background:#a91f24;color:#fff;border:2px solid #17110e;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;letter-spacing:.04em;padding:16px 30px;border-radius:999px;box-shadow:0 5px 0 #6f1216" target="_blank" rel="noopener">I WANT TO PASS DELE B2 <span style="display:inline-block">→</span></a>
+  </div>
+  <div style="position:relative;max-width:1100px;margin:clamp(38px,5vw,64px) auto 0">
+    <img src="/dc-pages/assets/b1-this-is-for-you.png" alt="This is for you if: you need a B1 certificate for visa, residency or citizenship; you need it for university admission; your employer requires it for a job or promotion; you've studied Spanish but aren't sure you're DELE-ready; you want structured preparation, regular evaluation and clear feedback before exam day." style="width:100%;height:auto;display:block;border:2px solid #17110e;border-radius:22px;box-shadow:7px 8px 0 rgba(23,17,14,.16)">
+  </div>
+</section>
+
+<section data-screen-label="B1 story — the feeling" style="background:#fbf4e9;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(26px,3.4vw,42px);line-height:1.1;letter-spacing:-.03em;margin:0 0 14px;max-width:26ch">YOUR SPANISH CAN BE GOOD ENOUGH FOR DELE B2 &amp; YOU CAN STILL FAIL.</h2>
+    <svg viewBox="0 0 160 14" width="140" height="12" style="display:block;margin-bottom:26px" aria-hidden="true"><path d="M2 8 Q22 1 42 8 T82 8 T122 8 T158 8" stroke="#a91f24" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+    <p style="font-size:clamp(19px,2.3vw,26px);line-height:1.35;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;margin:0 0 clamp(28px,3.5vw,42px);max-width:34ch">If you're prepping for DELE B2, you already know the feeling.</p>
+    <div data-m="stack" style="max-width:68ch;margin-bottom:clamp(32px,4vw,48px)">
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">1</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">You can hold a conversation.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0;border-top:1.5px solid rgba(23,17,14,.14)">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">2</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">Maybe you can write a blog, read a new article, or comprehend a native speaker without asking them to repeat twice.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0;border-top:1.5px solid rgba(23,17,14,.14)">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">3</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">Somewhere in the last few months, your Spanish has improved..</p>
+      </div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0;border-top:1.5px solid rgba(23,17,14,.14)">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">4</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">But then you open a past DELE paper….</p>
+      </div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0;border-top:1.5px solid rgba(23,17,14,.14)">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">5</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">Suddenly, you're not sure if that's reading Task 3 or Task 4.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0;border-top:1.5px solid rgba(23,17,14,.14)">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">6</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">Or maybe, you're not sure whether what you're writing is actually good enough to pass B2.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0;border-top:1.5px solid rgba(23,17,14,.14)">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">7</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">You record a voice note practicing Tarea 3 and you're not sure if what you just said would get <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">apto</span> or not.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:start;padding:clamp(15px,1.9vw,19px) 0;border-top:1.5px solid rgba(23,17,14,.14)">
+        <span style="width:32px;height:32px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:3px">8</span>
+        <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">Because you don't really know how good your Spanish needs to be to pass DELE B2.</p>
+      </div>
+    </div>
+    <div style="background:#17110e;color:#fff;border-radius:26px;padding:clamp(28px,4vw,48px);margin-bottom:clamp(24px,3vw,32px)">
+      <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(20px,2.8vw,34px);line-height:1.2;letter-spacing:-.01em">Knowing Spanish and knowing how to <span style="color:#f2d17f">perform Spanish under DELE conditions</span> are two different skills.</p>
+    </div>
+    <div style="max-width:72ch;display:flex;flex-direction:column;gap:12px;margin-bottom:clamp(24px,3vw,34px)">
+      <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.75)">And this is where many students struggle.</p>
+      <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.75)">Not necessarily because their Spanish isn't good enough.</p>
+      <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.75)">But because they don't know the format, syllabus, tasks, timing, and evaluation criteria they're actually being tested on.</p>
+    </div>
+    <div style="background:#f2d17f;border:2px solid #17110e;border-radius:22px;padding:clamp(24px,3vw,36px);text-align:center;transform:rotate(-1deg);box-shadow:0 6px 0 rgba(23,17,14,.2)">
+      <p style="margin:0 0 6px;font-size:13.5px;font-weight:800;letter-spacing:.14em;color:#a91f24">YES,</p>
+      <p style="margin:0 0 10px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(19px,2.5vw,30px);line-height:1.2">DELE HAS A FRE*KING SYLLABUS…</p>
+      <p style="margin:0;font-size:15.5px;line-height:1.55;color:rgba(23,17,14,.72)">And a certain criteria.. that it takes into account while evaluating your score.</p>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="B1 story — credibility" style="background:#f5e6d3;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <div style="max-width:70ch;margin:0 0 clamp(28px,3.5vw,40px);display:flex;flex-direction:column;gap:8px">
+      <p style="margin:0;font-size:16.5px;line-height:1.6;font-style:italic;color:rgba(23,17,14,.7)">But before I disclose this further, why should you even bother to listen to me?</p>
+      <p style="margin:0;font-size:16.5px;line-height:1.6;font-style:italic;color:rgba(23,17,14,.7)">Whatever I have said / or will say are not random statements.</p>
+      <p style="margin:0;font-size:16.5px;line-height:1.6;font-weight:700;color:#17110e">I'm fully qualified to give my take on this.</p>
+    </div>
+
+    <div data-m="bento" style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:clamp(14px,1.8vw,20px)">
+
+      <image-slot id="b1-teacher-photo" shape="rounded" radius="22" placeholder="Drop Amrit's photo" style="grid-column:span 4;aspect-ratio:1/1;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.18)"></image-slot>
+
+      <div style="grid-column:span 8;background:#fff;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.16);padding:clamp(24px,3vw,34px);display:flex;flex-direction:column;gap:16px;justify-content:center">
+        <span style="align-self:flex-start;background:#f2d17f;border:2px solid #17110e;border-radius:999px;padding:5px 14px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:11.5px;letter-spacing:.12em">WHO'S TEACHING YOU</span>
+        <p style="margin:0;font-size:16px;line-height:1.65;color:rgba(23,17,14,.78);text-wrap:pretty">Hi! I'm Amrit, a trained Spanish teacher and curriculum designer. I completed my Master's at <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">Instituto Caro y Cuervo, Colombia</span>, where I underwent extensive training in Spanish language teaching and pedagogy.</p>
+        <p style="margin:0;font-size:16px;line-height:1.65;color:rgba(23,17,14,.78);text-wrap:pretty">That experience equipped me to work with <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">foreign learners, Indigenous learners, and deaf learners</span>, giving me a deeper understanding of how differently people learn, communicate, and overcome language barriers.</p>
+      </div>
+
+      <div style="grid-column:span 6;background:#17110e;color:#fff;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.2);padding:clamp(22px,2.6vw,30px);display:flex;flex-direction:column;gap:12px;justify-content:center">
+        <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(40px,5vw,60px);line-height:.85;color:#f2d17f">2+</span>
+        <p style="margin:0;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,.82);text-wrap:pretty">years now, I've been teaching at Instituto Cervantes. Here, I continue to work closely with Spanish learners in a structured academic environment.</p>
+      </div>
+
+      <div style="grid-column:span 6;background:#f2d17f;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.2);padding:clamp(22px,2.6vw,30px);display:flex;flex-direction:column;gap:10px;justify-content:center">
+        <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13px;letter-spacing:.12em;color:#a91f24">CASA DE ELE</span>
+        <p style="margin:0;font-size:15.5px;line-height:1.6;color:rgba(23,17,14,.8);text-wrap:pretty">And today, with the help of <span style="text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px">Casa de Ele</span>, a Spanish learning community, I bring all of this experience together to help Spanish learners prepare strategically for internationally recognised exams like DELE and SIELE.</p>
+      </div>
+
+    </div>
+    <div style="margin-top:clamp(14px,1.8vw,20px);background:#a91f24;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.2);padding:clamp(18px,2.2vw,24px);display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.8vw,20px);align-items:center">
+        <div style="position:relative;height:clamp(240px,26vw,330px);flex:none">
+          <video ref="{{ videoRef }}" src="/dc-pages/assets/b1-testimonial.mp4" controls="controls" playsinline="playsinline" preload="metadata" onPlay="{{ onVideoPlay }}" style="display:block;height:100%;width:auto;aspect-ratio:478/850;object-fit:cover;background:#000;border:2px solid #17110e;border-radius:16px"></video>
+          <sc-if value="{{ showPlay }}" hint-placeholder-val="{{ true }}">
+            <button type="button" onClick="{{ playVideo }}" aria-label="Play the testimonial" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(23,17,14,.25);border:none;border-radius:16px;cursor:pointer;transition:background .2s ease" style-hover="background:rgba(23,17,14,.1)">
+              <span style="width:54px;height:54px;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 rgba(23,17,14,.35);transition:transform .22s cubic-bezier(.2,.8,.3,1)" style-hover="transform:scale(1.08)">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="#17110e" aria-hidden="true"><path d="M8 5l12 7-12 7z"/></svg>
+              </span>
+            </button>
+          </sc-if>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <span style="align-self:flex-start;background:#fff;color:#a91f24;border:2px solid #17110e;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:800;letter-spacing:.1em">STUDENT TESTIMONIAL</span>
+          <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(17px,1.9vw,21px);line-height:1.3;color:#fff;text-wrap:pretty">Here's what one of my students had to say after successfully passing the DELE C1 exam, who is currently doing her Phd in Spain:</p>
+        </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="B1 story — exam format" style="background:#fbf4e9;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">Now, coming back to DELE exam format &amp; criteria…</div>
+    <div style="max-width:66ch;display:flex;flex-direction:column;gap:clamp(14px,1.8vw,20px);margin-bottom:clamp(32px,4vw,48px)">
+      <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">I've watched <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">100+ students</span> walk into DELE. Some of them spoke better Spanish than the person sitting next to them who passed.</p>
+      <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(24px,3vw,34px);line-height:1.15;color:#a91f24">Yet, they failed.</p>
+      <p style="margin:0;font-size:clamp(16px,1.7vw,17.5px);line-height:1.7;color:rgba(23,17,14,.78);text-wrap:pretty">Not because their Spanish wasn't good enough… Because nobody had shown them what the exam was actually testing.</p>
+    </div>
+    <div data-m="stack" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,36px);align-items:center;background:#2b5d63;color:#fff;border-radius:24px;padding:clamp(24px,3vw,38px);margin-bottom:clamp(32px,4vw,48px)">
+      <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(30px,4vw,44px);line-height:1;color:#f2d17f;white-space:nowrap">DELE</span>
+      <div>
+        <p style="margin:0 0 8px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(18px,2.2vw,24px);line-height:1.3">DELE tests more than your Spanish.</p>
+        <p style="margin:0;font-size:clamp(15.5px,1.8vw,17px);line-height:1.6;color:rgba(255,255,255,.85)">It tests whether you can understand, speak, read and write in Spanish, within a specific time, format, and set of criteria. And your performance is scored against those specific parameters.</p>
+      </div>
+    </div>
+    <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(20px,2.5vw,30px);line-height:1.2;margin:0 0 24px;max-width:40ch">Here's the exam format of DELE B2 and the criteria for how you're ranked:</h3>
+    <div style="background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:0;overflow:hidden;margin-bottom:clamp(20px,2.5vw,30px)">
+      <div style="background:#a91f24;color:#fff;padding:clamp(18px,2.4vw,26px) clamp(20px,2.6vw,28px)">
+        <p style="margin:0 0 4px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(19px,2.3vw,26px)">DELE B2 · Formato del examen</p>
+        <p style="margin:0;font-size:14px;color:rgba(255,255,255,.8)">Duraciones oficiales · Cada prueba vale 25% del examen</p>
+      </div>
+      <div data-m="tablewrap" style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;min-width:640px">
+          <thead>
+            <tr style="background:#f2d17f">
+              <th style="text-align:left;padding:14px 18px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14.5px;border-bottom:2px solid #17110e;white-space:nowrap">Prueba</th>
+              <th style="text-align:left;padding:14px 18px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14.5px;border-bottom:2px solid #17110e;border-left:1.5px solid rgba(23,17,14,.18);white-space:nowrap">Tareas</th>
+              <th style="text-align:left;padding:14px 18px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14.5px;border-bottom:2px solid #17110e;border-left:1.5px solid rgba(23,17,14,.18);white-space:nowrap">Tiempo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#fbf4e9">
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;color:#a91f24">Comprensión de lectura</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">T1: selección múltiple (texto largo) T2: relacionar textos T3: completar textos con fragmentos T4: cloze gramatical</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">70 min 36 ítems</td>
+            </tr>
+            <tr style="background:#fff">
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;color:#a91f24">Comprensión auditiva</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">T1: monólogos breves T2: conversación T3: entrevista T4: relacionar monólogos T5: noticias / selección múltiple</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">40 min 30 ítems</td>
+            </tr>
+            <tr style="background:#fbf4e9">
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;color:#a91f24">Expresión e interacción escritas</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">T1: carta formal a partir de un audio (150–180 palabras) T2: redacción a partir de un gráfico o texto (150–180 palabras, elige 1 de 2)</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">80 min 2 tareas</td>
+            </tr>
+            <tr style="background:#fff">
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;color:#a91f24">Expresión e interacción orales</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">T1: valorar propuestas y conversar T2: describir una fotografía + conversación T3: conversación a partir de una encuesta</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">20 min + 20 min preparación</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:0;padding:16px 20px;font-size:13.5px;line-height:1.5;color:#a91f24;border-top:1.5px solid rgba(23,17,14,.14)">Nota: el Instituto Cervantes no fija un reparto oficial de minutos para cada tarea escrita o de comprensión.</p>
+    </div>
+    <div style="background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:0;overflow:hidden;margin-bottom:clamp(20px,2.5vw,30px)">
+      <div style="background:#a91f24;color:#fff;padding:clamp(18px,2.4vw,26px) clamp(20px,2.6vw,28px)">
+        <p style="margin:0 0 4px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(19px,2.3vw,26px)">DELE B1 · ¿Cómo se evalúa?</p>
+        <p style="margin:0;font-size:14px;color:rgba(255,255,255,.8)">Resumen práctico del sistema oficial de calificación</p>
+      </div>
+      <div data-m="tablewrap" style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;min-width:640px">
+          <thead>
+            <tr style="background:#f2d17f">
+              <th style="text-align:left;padding:14px 18px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14.5px;border-bottom:2px solid #17110e;white-space:nowrap">Parte</th>
+              <th style="text-align:left;padding:14px 18px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14.5px;border-bottom:2px solid #17110e;border-left:1.5px solid rgba(23,17,14,.18);white-space:nowrap">Cómo se puntúa</th>
+              <th style="text-align:left;padding:14px 18px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14.5px;border-bottom:2px solid #17110e;border-left:1.5px solid rgba(23,17,14,.18);white-space:nowrap">Qué se valora</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#fbf4e9">
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;color:#a91f24">Comprensión</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">Automática: 1 punto por respuesta correcta; 0 por incorrecta. No se penalizan errores.</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">Comprensión de lectura + auditiva. Cada prueba se convierte a una escala de 25 puntos.</td>
+            </tr>
+            <tr style="background:#fff">
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;color:#a91f24">Expresión escrita</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">Examinador: bandas 0–3. 40% escala holística + 60% escala analítica; las 2 tareas analíticas pesan igual.</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">Adecuación al género · Coherencia · Corrección · Alcance</td>
+            </tr>
+            <tr style="background:#fbf4e9">
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;color:#a91f24">Expresión oral</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">Examinador: bandas 0–3. 40% escala holística + 60% escala analítica; T1–2 = 50% y T3–4 = 50% dentro de la analítica.</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">Coherencia · Fluidez · Corrección · Alcance</td>
+            </tr>
+            <tr style="background:#fff">
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;color:#a91f24">Resultado final</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">100 puntos máximos. Grupo 1 = lectura + escrita; Grupo 2 = auditiva + oral.</td>
+              <td style="padding:16px 18px;vertical-align:top;font-size:14.5px;line-height:1.5;border-top:1.5px solid rgba(23,17,14,.14);border-left:1.5px solid rgba(23,17,14,.14);color:rgba(23,17,14,.78)">Apto: mínimo 30/50 en cada grupo.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:0;padding:16px 20px;font-size:13.5px;line-height:1.5;color:#a91f24;border-top:1.5px solid rgba(23,17,14,.14)">Bandas: 2 = nivel B1; 3 = supera el nivel; 1 = no alcanza el nivel; 0 = desempeño insuficiente/no válido.</p>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="B1 story — the gap" style="background:#f5e6d3;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(24px,3vw,36px);line-height:1.15;letter-spacing:-.025em;margin:0 0 14px;max-width:36ch">And this is where a lot of DELE preparation goes wrong.</h2>
+    <svg viewBox="0 0 160 14" width="140" height="12" style="display:block;margin-bottom:26px" aria-hidden="true"><path d="M2 8 Q22 1 42 8 T82 8 T122 8 T158 8" stroke="#a91f24" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+    <div style="background:#fff;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.16);overflow:hidden;margin-bottom:clamp(32px,4vw,48px)">
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.7vw,18px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease" style-hover="background:#fdf7ec">
+          <span style="width:34px;height:34px;flex:none;border-radius:11px;background:#93bbc0;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px">1</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">They teach Spanish, but not how to pass DELE.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">You learn grammar and vocabulary, but not the actual tasks, timing, or scoring. So you know Spanish, but still don’t feel ready for the exam.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.7vw,18px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:34px;height:34px;flex:none;border-radius:11px;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px">2</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">You get practice, but no real feedback.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Mock tests are easy to find, but who tells you what you’re doing wrong in Speaking and Writing? Without feedback, you never know how close you are to passing.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.7vw,18px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:34px;height:34px;flex:none;border-radius:11px;background:#d9a664;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px">3</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">You don’t know what the examiner expects.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Nobody breaks down what makes a speaking or writing answer good enough. So you’re left wondering, &ldquo;Would this actually pass?&rdquo;</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.7vw,18px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:34px;height:34px;flex:none;border-radius:11px;background:#799e83;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px">4</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">You practise one accent, then hear another in the exam.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Different accents and speaking styles can make familiar Spanish difficult to follow. And when you can’t understand the audio, the panic sets in.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.7vw,18px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:34px;height:34px;flex:none;border-radius:11px;background:#93bbc0;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px">5</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">You prepare alone, so staying consistent becomes difficult.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">DELE needs regular practice, especially for Speaking and Writing. Without accountability, it’s easy to lose momentum or fall behind.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.7vw,18px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:34px;height:34px;flex:none;border-radius:11px;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px">6</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">You get endless resources, but no clear study plan.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">YouTube, PDFs and websites give you plenty to study, but the DELE has a specific syllabus. So instead of preparing, you’re constantly figuring out what to study next.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(14px,1.7vw,18px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:34px;height:34px;flex:none;border-radius:11px;background:#d9a664;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:14px">7</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">You spend more, but still have to figure things out yourself.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Tutors, courses, mock tests and study materials can quickly add up. Yet you can still end up piecing your entire preparation together alone.</p>
+          </div>
+        </div>
+    </div>
+    <div style="background:#a91f24;color:#fff;border-radius:22px;padding:clamp(24px,3vw,38px);text-align:center;margin-bottom:clamp(20px,2.5vw,28px)">
+      <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(20px,2.7vw,32px);line-height:1.2">THAT'S EXACTLY WHAT WE SET OUT TO CHANGE.</p>
+    </div>
+    <p style="max-width:76ch;font-size:16px;line-height:1.6;color:rgba(23,17,14,.75);margin:0">Considering all the needs of students, we've built our <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">DELE B2 course</span> to prepare you for exactly what the exam demands &amp; how to perform under the DELE evaluation standards.</p>
+  </div>
+</section>
+
+<section data-screen-label="B1 story — what you get" style="background:#fbf4e9;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">Here's what you will get</div>
+    <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(24px,3vw,36px);line-height:1.15;letter-spacing:-.025em;margin:0 0 14px">HERE'S WHAT YOU WILL GET:</h2>
+    <svg viewBox="0 0 160 14" width="140" height="12" style="display:block;margin-bottom:26px" aria-hidden="true"><path d="M2 8 Q22 1 42 8 T82 8 T122 8 T158 8" stroke="#a91f24" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+    <div style="background:#fff;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.16);overflow:hidden;margin-bottom:clamp(44px,5.5vw,72px)">
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">1</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">1 live weekly session: every Saturday, 7–8 PM.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Stay connected, ask questions, review your progress, and know exactly where you stand instead of preparing alone.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;background:#fbf4e9;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">2</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">A structured DELE theme every week.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Writing, Speaking, Listening, and Reading all follow one theme and are evaluated using DELE-style criteria, so your preparation stays focused and relevant.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">3</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">Weekly Writing practice + detailed feedback.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Complete a timed task and receive feedback within 2 days, so you know exactly what is costing you marks and how to improve it.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;background:#fbf4e9;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">4</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">DELE-style Listening practice.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Listen to an exam-style audio, answer under time, and check your answers. Gradually become comfortable with different accents and real exam-style listening.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">5</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">Weekly Speaking prompt + personal review.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Record your response and submit it for feedback within 1–2 days. Know what you’re doing well, what needs work, and whether your answer is actually exam-ready.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;background:#fbf4e9;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">6</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">Timed Reading practice every week.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Complete a comprehension task under exam conditions and review your answers. Build the confidence to understand the passage and manage your time without panicking.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">7</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">Theme-based vocabulary you can actually use.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Get a focused list of words and expressions every week, so you’re not wasting time memorising random vocabulary that may never help you in the exam.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(13px,1.6vw,16px);align-items:start;padding:clamp(18px,2.2vw,24px) clamp(18px,2.4vw,28px);transition:background .18s ease;background:#fbf4e9;border-top:2px solid #17110e" style-hover="background:#fdf7ec">
+          <span style="width:30px;height:30px;flex:none;border-radius:50%;background:#a91f24;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13.5px;margin-top:1px">8</span>
+          <div data-m="stack" style="display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:6px clamp(20px,3vw,40px);align-items:baseline">
+            <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16.5px,1.8vw,18px);line-height:1.3">Weekly mistake review as a group.</p>
+            <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.72);text-wrap:pretty">Go through the common mistakes, understand why they happen, and learn how to fix them. Instead of repeating the same errors, you know exactly what to work on next.</p>
+          </div>
+        </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:26px">
+      <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(18px,2.3vw,26px);line-height:1.25;max-width:40ch">PLUS, HERE ARE SOME BONUSES THAT YOU WILL NEVER SEE ANYONE ELSE OFFERING:</p>
+      <div style="flex:1;height:2px;background:repeating-linear-gradient(90deg,rgba(23,17,14,.3) 0 8px,transparent 8px 16px)"></div>
+    </div>
+    <div style="position:relative;margin-bottom:clamp(36px,4.5vw,56px)">
+      <span style="position:absolute;top:-15px;left:clamp(18px,3vw,34px);z-index:2;background:#a91f24;color:#fff;border:2px solid #17110e;border-radius:999px;padding:8px 18px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:12.5px;letter-spacing:.14em;transform:rotate(-2deg);box-shadow:0 4px 0 rgba(23,17,14,.25)">9 BONUSES · WORTH IT ALONE</span>
+      <div style="background:#f5e6d3;border:2px dashed rgba(23,17,14,.38);border-radius:26px;padding:clamp(28px,3.4vw,40px) clamp(20px,3vw,34px) clamp(22px,3vw,34px)">
+        <div data-m="stack" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:clamp(12px,1.6vw,16px)">
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:start;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:18px 20px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#d9a664;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">01</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">REWARD</p>
+            <p style="margin:0 0 7px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">100% Fee Refund for the TOP Performer.</p>
+            <p style="margin:0;font-size:14.5px;line-height:1.55;color:rgba(23,17,14,.7);text-wrap:pretty">Perform consistently on the leadership chart and get your course fee refunded. Your hard work gets recognised &amp; rewarded.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:start;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:18px 20px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#93bbc0;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">02</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">EXPERT SUPPORT</p>
+            <p style="margin:0 0 7px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">3 Grammar Masterclasses with Expert Teachers.</p>
+            <p style="margin:0;font-size:14.5px;line-height:1.55;color:rgba(23,17,14,.7);text-wrap:pretty">Learn directly from professionally trained Spanish teachers who break down common grammatical errors, so you can stop repeating mistakes you don’t even realise you’re making.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:start;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:18px 20px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#93bbc0;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">03</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">EXPERT SUPPORT</p>
+            <p style="margin:0 0 7px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">5 Free Conversation Classes with Different Spanish Accents.</p>
+            <p style="margin:0;font-size:14.5px;line-height:1.55;color:rgba(23,17,14,.7);text-wrap:pretty">Practise listening and speaking with 5 different dialects, so an unfamiliar accent on exam day doesn’t leave you confused or stuck.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:start;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:18px 20px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">04</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">EXTRA PRACTICE</p>
+            <p style="margin:0 0 7px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">Self-Paced Grammar &amp; Mistake PDFs.</p>
+            <p style="margin:0;font-size:14.5px;line-height:1.55;color:rgba(23,17,14,.7);text-wrap:pretty">Get focused resources on difficult grammar topics, frequent mistakes, and detailed evaluations. You can revisit what you’re struggling with, whenever you need to.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:start;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:18px 20px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">05</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">EXTRA PRACTICE</p>
+            <p style="margin:0 0 7px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">DELE-Based Vocabulary for Every Theme.</p>
+            <p style="margin:0;font-size:14.5px;line-height:1.55;color:rgba(23,17,14,.7);text-wrap:pretty">Get a focused vocabulary list with every session, built around the themes you’re likely to encounter in the exam. No more wasting time memorising random words.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:start;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:18px 20px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">06</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">EXTRA PRACTICE</p>
+            <p style="margin:0 0 7px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">Hard-Accent Audio Library.</p>
+            <p style="margin:0;font-size:14.5px;line-height:1.55;color:rgba(23,17,14,.7);text-wrap:pretty">Practise with a dedicated collection of challenging accents and listening exercises. Train your ears before the exam, not during it.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:start;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:18px 20px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">07</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">EXTRA PRACTICE</p>
+            <p style="margin:0 0 7px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">5 High-Quality Mock Tests.</p>
+            <p style="margin:0;font-size:14.5px;line-height:1.55;color:rgba(23,17,14,.7);text-wrap:pretty">Access a complete library of carefully selected mocks to practise regularly and build confidence with the actual exam format.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:start;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:18px 20px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">08</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">EXTRA PRACTICE</p>
+            <p style="margin:0 0 7px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">1 Premium DELE Mock Exam.</p>
+            <p style="margin:0;font-size:14.5px;line-height:1.55;color:rgba(23,17,14,.7);text-wrap:pretty">Experience a realistic, exam-style mock under timed conditions, so you can know exactly what exam day feels like before you get there.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:15px;align-items:start;background:#fff;border:2px solid #17110e;border-radius:16px;box-shadow:4px 5px 0 rgba(23,17,14,.16);padding:18px 20px">
+          <span style="width:46px;height:46px;flex:none;border-radius:13px;background:#799e83;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16px">09</span>
+          <div>
+            <p style="margin:0 0 4px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:rgba(23,17,14,.45)">COMMUNITY</p>
+            <p style="margin:0 0 7px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:16.5px;line-height:1.3">Lifetime Discord Community Access.</p>
+            <p style="margin:0;font-size:14.5px;line-height:1.55;color:rgba(23,17,14,.7);text-wrap:pretty">Stay connected with fellow DELE students even after the course. Keep practising, asking questions, and staying accountable without preparing alone.</p>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(19px,2.4vw,28px);line-height:1.2;margin:0 0 22px;max-width:40ch">HERE'S THE COMPLETE BREAKDOWN OF 88 HOURS OF DELE B2:</h3>
+    <img src="/dc-pages/assets/b1-88-hours.png" alt="11-week DELE preparation, 8 hours every week: writing practice 1.5 hrs per week and 16.5 hrs over 11 weeks; writing correction 2 hrs and 22 hrs; listening/audio 1 hr and 11 hrs; speaking audio record 0.5 hr and 5.5 hrs; self-study and corrections 1 hr and 11 hrs; Saturday doubt session 1 hr and 11 hrs; Sunday live session 1 hr and 11 hrs. 88 hours total over 11 weeks." style="width:100%;height:auto;display:block;border:2px solid #17110e;border-radius:22px;box-shadow:7px 8px 0 rgba(23,17,14,.16)">
+  </div>
+</section>
+
+<section data-screen-label="B1 story — the system" style="background:#f5e6d3;padding:clamp(56px,7vw,96px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">The system</div>
+    <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(24px,3vw,36px);line-height:1.15;letter-spacing:-.025em;margin:0 0 14px">SO WHAT ARE YOU ACTUALLY GETTING?</h2>
+    <svg viewBox="0 0 160 14" width="140" height="12" style="display:block;margin-bottom:26px" aria-hidden="true"><path d="M2 8 Q22 1 42 8 T82 8 T122 8 T158 8" stroke="#a91f24" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+    <div style="max-width:72ch;display:flex;flex-direction:column;gap:10px;margin:0 0 clamp(30px,4vw,44px)">
+      <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.75)">You're not getting another Spanish course.</p>
+      <p style="margin:0;font-size:16px;line-height:1.6;color:rgba(23,17,14,.75)">You're getting an <span style="background:linear-gradient(transparent 56%,#f2d17f 56%);padding:0 1px">11-week DELE B2 preparation system</span> built to take you from:</p>
+    </div>
+    <div style="max-width:760px;margin:0 auto clamp(36px,4.5vw,56px)">
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(16px,2vw,22px);align-items:center;background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:clamp(18px,2.2vw,24px) clamp(20px,2.6vw,28px)">
+        <span style="width:52px;height:52px;flex:none;border-radius:50%;background:#93bbc0;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:19px;color:#17110e">1</span>
+        <div>
+          <p style="margin:0 0 4px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(17px,2vw,21px);line-height:1.2;letter-spacing:.01em">UNDERSTAND THE EXAM</p>
+          <p style="margin:0;font-size:15.5px;line-height:1.55;color:rgba(23,17,14,.7)">Know the tasks, timing &amp; evaluation criteria.</p>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;color:rgba(23,17,14,.32);font-size:22px;line-height:1">↓</div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(16px,2vw,22px);align-items:center;background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:clamp(18px,2.2vw,24px) clamp(20px,2.6vw,28px)">
+        <span style="width:52px;height:52px;flex:none;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:19px;color:#17110e">2</span>
+        <div>
+          <p style="margin:0 0 4px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(17px,2vw,21px);line-height:1.2;letter-spacing:.01em">PRACTISE</p>
+          <p style="margin:0;font-size:15.5px;line-height:1.55;color:rgba(23,17,14,.7)">Train all 4 sections with DELE-style tasks.</p>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;color:rgba(23,17,14,.32);font-size:22px;line-height:1">↓</div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(16px,2vw,22px);align-items:center;background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:clamp(18px,2.2vw,24px) clamp(20px,2.6vw,28px)">
+        <span style="width:52px;height:52px;flex:none;border-radius:50%;background:#d9a664;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:19px;color:#17110e">3</span>
+        <div>
+          <p style="margin:0 0 4px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(17px,2vw,21px);line-height:1.2;letter-spacing:.01em">GET EVALUATED</p>
+          <p style="margin:0;font-size:15.5px;line-height:1.55;color:rgba(23,17,14,.7)">Know exactly where you’re losing marks.</p>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;color:rgba(23,17,14,.32);font-size:22px;line-height:1">↓</div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(16px,2vw,22px);align-items:center;background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:clamp(18px,2.2vw,24px) clamp(20px,2.6vw,28px)">
+        <span style="width:52px;height:52px;flex:none;border-radius:50%;background:#799e83;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:19px;color:#17110e">4</span>
+        <div>
+          <p style="margin:0 0 4px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(17px,2vw,21px);line-height:1.2;letter-spacing:.01em">FIX &amp; IMPROVE</p>
+          <p style="margin:0;font-size:15.5px;line-height:1.55;color:rgba(23,17,14,.7)">Work on your mistakes with expert feedback.</p>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;color:rgba(23,17,14,.32);font-size:22px;line-height:1">↓</div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(16px,2vw,22px);align-items:center;background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:clamp(18px,2.2vw,24px) clamp(20px,2.6vw,28px)">
+        <span style="width:52px;height:52px;flex:none;border-radius:50%;background:#93bbc0;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:19px;color:#17110e">5</span>
+        <div>
+          <p style="margin:0 0 4px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(17px,2vw,21px);line-height:1.2;letter-spacing:.01em">REPEAT</p>
+          <p style="margin:0;font-size:15.5px;line-height:1.55;color:rgba(23,17,14,.7)">Practise until your performance improves.</p>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;color:rgba(23,17,14,.32);font-size:22px;line-height:1">↓</div>
+      <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(16px,2vw,22px);align-items:center;background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:clamp(18px,2.2vw,24px) clamp(20px,2.6vw,28px)">
+        <span style="width:52px;height:52px;flex:none;border-radius:50%;background:#a91f24;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:19px;color:#fff">6</span>
+        <div>
+          <p style="margin:0 0 4px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(17px,2vw,21px);line-height:1.2;letter-spacing:.01em">KNOW WHERE YOU STAND</p>
+          <p style="margin:0;font-size:15.5px;line-height:1.55;color:rgba(23,17,14,.7)">Build a clear picture of your DELE readiness before exam day.</p>
+        </div>
+      </div>
+    </div>
+    <div style="background:#17110e;color:#fff;border-radius:26px;padding:clamp(28px,3.6vw,44px);margin-bottom:clamp(20px,2.5vw,28px)">
+      <p style="margin:0 0 18px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(20px,2.7vw,32px);line-height:1.2">YOU DON'T NEED TO JUST KNOW MORE SPANISH.</p>
+      <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px;font-size:clamp(15.5px,1.8vw,17px);line-height:1.5;color:rgba(255,255,255,.88)">
+        <li style="display:flex;gap:12px"><span style="color:#f2d17f;font-weight:800;flex:none">→</span><span>You need to know whether your Spanish can perform under DELE conditions.</span></li>
+        <li style="display:flex;gap:12px"><span style="color:#f2d17f;font-weight:800;flex:none">→</span><span>You need to know what the examiner expects.</span></li>
+        <li style="display:flex;gap:12px"><span style="color:#f2d17f;font-weight:800;flex:none">→</span><span>You need to practise the actual tasks.</span></li>
+        <li style="display:flex;gap:12px"><span style="color:#f2d17f;font-weight:800;flex:none">→</span><span>You need feedback on your speaking &amp; writing.</span></li>
+        <li style="display:flex;gap:12px"><span style="color:#f2d17f;font-weight:800;flex:none">→</span><span>And you need to know where you stand before exam day.</span></li>
+      </ul>
+    </div>
+    <div style="background:#f2d17f;border:2px solid #17110e;border-radius:22px;padding:clamp(22px,2.8vw,32px);text-align:center;box-shadow:0 6px 0 rgba(23,17,14,.2);margin-bottom:clamp(18px,2.2vw,24px)">
+      <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(18px,2.3vw,26px);line-height:1.2">THAT'S WHAT THIS PROGRAM IS BUILT FOR.</p>
+    </div>
+    <div style="background:#a91f24;color:#fff;border-radius:22px;padding:clamp(24px,3vw,38px);text-align:center">
+      <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(19px,2.6vw,32px);line-height:1.25">11 WEEKS. 4 SECTIONS. <span style="color:#f2d17f">1 CLEAR GOAL: DELE B2.</span></p>
+    </div>
+  </div>
+</section>
+
+<section id="b1-offer" data-screen-label="B1 story — the offer" style="position:relative;background:#f2d17f;padding:clamp(64px,8vw,112px) clamp(20px,4vw,56px);border-top:2px solid #17110e;border-bottom:2px solid #17110e">
+  <div style="max-width:660px;margin:0 auto;text-align:center">
+    <div style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">Enrolment</div>
+    <div data-m="stack" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px">
+      <div style="background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:20px;background:#fffdfa">
+        <p style="margin:0 0 6px;font-size:12px;font-weight:800;letter-spacing:.1em;color:#a91f24">COURSE STARTS</p>
+        <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(17px,2vw,22px)">31 August 2026</p>
+      </div>
+      <div style="background:#fff;border:2px solid #17110e;border-radius:20px;box-shadow:5px 6px 0 rgba(23,17,14,.16);padding:20px;background:#fffdfa">
+        <p style="margin:0 0 6px;font-size:12px;font-weight:800;letter-spacing:.1em;color:#a91f24">FINAL ENROLMENT DEADLINE</p>
+        <p style="margin:0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(17px,2vw,22px)">28 August 2026</p>
+      </div>
+    </div>
+    <div style="text-align:left;background:#17110e;color:#fff;border-radius:26px;padding:clamp(28px,3.6vw,42px);box-shadow:0 8px 0 rgba(23,17,14,.2)">
+      <p style="margin:0 0 16px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(17px,2vw,22px);line-height:1.2;color:#f2d17f">ENROL BEFORE THE DEADLINE</p>
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+        <span style="font-size:15px;color:rgba(255,255,255,.65)">Fixed Price:</span>
+        <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(36px,5vw,56px);line-height:.95;color:#f2d17f">₹4,299</span>
+      </div>
+      <p style="margin:0 0 26px;font-size:15.5px;line-height:1.5;color:rgba(255,255,255,.75)">Enrollment closes on <span style="text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;color:#fff">28 August 2026</span>.</p>
+      <a href="https://wa.me/919910167527?text=Hi" style="display:flex;align-items:center;justify-content:center;gap:10px;background:#f2d17f;color:#17110e;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px" target="_blank" rel="noopener">I WANT TO PASS DELE B2 <span style="display:inline-block">→</span></a>
+    </div>
+    <p style="margin:26px 0 0;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(16px,1.9vw,20px);line-height:1.35;color:#17110e">PASS DELE B2 &amp; grab national/international working opportunities.</p>
+  </div>
+</section>
+</sc-if>
+
+<section id="exam" data-screen-label="04 Exam structure" style="background:#f5e6d3;padding:clamp(64px,8vw,112px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <div data-reveal="" style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">04 — How the exam works</div>
+    <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(32px,4vw,52px);line-height:1.05;letter-spacing:-.03em;margin:0 0 40px;max-width:20ch">Four skills, graded in two groups.</h2>
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-bottom:28px">
+      <sc-for list="{{ examSkills }}" as="skill" hint-placeholder-count="4">
+        <div data-reveal-card="" style="background:#fff;border:2px solid #17110e;border-radius:20px;overflow:hidden;display:flex;flex-direction:column" style-hover="transform:translateY(-3px)">
+          <div style="aspect-ratio:3/2;background:#fff;overflow:hidden">
+            <sc-if value="{{ skill.img }}" hint-placeholder-val="{{ false }}"><img data-reveal-img="" src="{{ skill.img }}" alt="{{ skill.name }}" style="width:100%;height:100%;object-fit:contain;display:block;transition:transform .45s cubic-bezier(.2,.8,.3,1)" style-hover="transform:scale(1.07) rotate(-1deg)"></sc-if>
+          </div>
+          <div style="padding:20px 22px 24px">
+            <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:700;font-size:18.5px;margin:0 0 8px">{{ skill.name }}</h3>
+            <p style="font-size:14.5px;line-height:1.55;color:rgba(23,17,14,.7);margin:0">{{ skill.desc }}</p>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="background:#fff;border:1.5px dashed rgba(23,17,14,.3);border-radius:18px;padding:20px 26px;font-size:15px;line-height:1.6;color:rgba(23,17,14,.75)">Reading and listening form one group, writing and speaking the other. You need a passing average in both groups to pass overall — we track this in every mock so nothing's a surprise on exam day.</div>
+  </div>
+</section>
+
+<section id="schedule" data-screen-label="06 Schedule" style="background:#fbf4e9;padding:clamp(64px,8vw,112px) clamp(20px,4vw,56px)">
+  <div style="max-width:1320px;margin:0 auto">
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:clamp(28px,4vw,56px);align-items:center;margin-bottom:clamp(40px,5vw,64px)">
+      <div>
+        <div data-reveal="" style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">06 — Class schedule</div>
+        <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(32px,4vw,52px);line-height:1.05;letter-spacing:-.03em;margin:0 0 10px;max-width:18ch">One live class a week, same time, <span style="position:relative;display:inline-block;color:#a91f24">every week.<img src="/dc-pages/assets/schedule-swash.png" alt="" style="position:absolute;left:-2%;bottom:-16px;width:104%;pointer-events:none"></span></h2>
+        <p style="font-size:clamp(15px,1.2vw,17px);line-height:1.6;color:rgba(23,17,14,.72);margin:28px 0 0">Consistency is what makes progress.<br>We'll see you <strong style="color:#a91f24">this Saturday.</strong></p>
+      </div>
+      <div style="display:flex;justify-content:center">
+        <img data-reveal-img="" src="/dc-pages/assets/schedule-illustration.png" alt="A desk calendar with Saturday marked, a mug of coffee and a plant" style="width:100%;max-width:520px;height:auto;display:block;transition:transform .5s cubic-bezier(.2,.8,.3,1)" style-hover="transform:rotate(-1.5deg) scale(1.03)">
+      </div>
+    </div>
+
+    <div data-m="days" style="position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:12px">
+      <sc-for list="{{ schedule }}" as="day" hint-placeholder-count="7">
+        <div data-reveal-card="" style="background:{{ day.bg }};color:{{ day.fg }};border:2px solid {{ day.border }};border-radius:18px;padding:22px 12px 20px;text-align:center;min-height:250px;display:flex;flex-direction:column;align-items:center;gap:14px;transition:transform .25s cubic-bezier(.2,.8,.3,1),box-shadow .25s ease" style-hover="transform:translateY(-8px);box-shadow:0 12px 26px rgba(23,17,14,.13)">
+          <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:15px;letter-spacing:.1em">{{ day.short }}</span>
+          <sc-if value="{{ day.icon }}" hint-placeholder-val="{{ false }}"><img src="{{ day.icon }}" alt="" style="width:auto;height:74px;max-width:100%;object-fit:contain;display:block;transition:transform .35s cubic-bezier(.2,.8,.3,1)" style-hover="transform:scale(1.14) rotate(-4deg)"></sc-if>
+          <sc-if value="{{ day.tag }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:12.5px;line-height:1.4;font-weight:600">{{ day.tag }}</span>
+          </sc-if>
+          <span style="margin-top:auto;width:34px;height:3px;border-radius:3px;background:{{ day.dash }}"></span>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;align-items:flex-end;justify-content:flex-end;gap:clamp(10px,2vw,26px);margin-top:22px">
+      <img data-m="hidesm" src="/dc-pages/assets/schedule-arrow.png" alt="" style="flex:1;min-width:0;max-width:640px;height:auto;opacity:.9;pointer-events:none">
+      <img src="/dc-pages/assets/schedule-note.png" alt="Same day, same time. Every week." style="flex:none;width:clamp(200px,20vw,270px);height:auto;margin-bottom:6px">
+    </div>
+  </div>
+</section>
+
+<section id="stories" data-screen-label="07 Student stories" style="position:relative;background:#fbf4e9;padding:clamp(64px,8vw,112px) clamp(20px,4vw,56px);overflow:hidden">
+  <div style="position:relative;max-width:1320px;margin:0 auto">
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:clamp(24px,3vw,48px);align-items:center;margin-bottom:clamp(36px,4vw,56px)">
+      <div>
+        <div data-reveal="" style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:6px">07 — What past students say</div>
+        <img src="/dc-pages/assets/stories-eyebrow-line.png" alt="" style="display:block;width:112px;height:auto;margin:0 0 26px;pointer-events:none">
+        <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(32px,4vw,52px);line-height:1.06;letter-spacing:-.03em;margin:0;max-width:16ch">They sat the exam. Then they told us <span style="position:relative;display:inline-block;color:#a91f24">how it went.<img src="/dc-pages/assets/stories-swash.png" alt="" style="position:absolute;left:-2%;bottom:-14px;width:104%;pointer-events:none"></span></h2>
+        <img src="/dc-pages/assets/stories-sparkle.png" alt="" style="display:block;width:66px;height:auto;margin:30px 0 0 clamp(0px,18vw,300px);animation:cde-drift 6s ease-in-out infinite;pointer-events:none">
+      </div>
+      <div style="display:flex;justify-content:center">
+        <img data-reveal-img="" src="/dc-pages/assets/stories-illustration.png" alt="Three students talking after class" style="width:100%;max-width:660px;height:auto;display:block;transition:transform .5s cubic-bezier(.2,.8,.3,1)" style-hover="transform:scale(1.03) rotate(-1deg)">
+      </div>
+    </div>
+
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(18px,2vw,30px)">
+      <sc-for list="{{ testimonials }}" as="t" hint-placeholder-count="3">
+        <div data-reveal-card="" style="background:#fefaf4;border-radius:22px;padding:30px 28px 26px;display:flex;flex-direction:column;gap:16px;box-shadow:0 2px 14px rgba(23,17,14,.06);transition:transform .25s cubic-bezier(.2,.8,.3,1),box-shadow .25s ease" style-hover="transform:translateY(-8px);box-shadow:0 16px 30px rgba(23,17,14,.12)">
+          <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:44px;line-height:.6;color:#d9a664">&ldquo;</span>
+          <p style="font-size:15.5px;line-height:1.62;color:rgba(23,17,14,.82);margin:0;flex:1">{{ t.quote }}</p>
+          <div style="height:1.5px;background:rgba(217,166,100,.5)"></div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <img src="{{ t.avatar }}" alt="" style="flex:none;width:52px;height:52px;border-radius:50%;display:block;transition:transform .3s cubic-bezier(.2,.8,.3,1)" style-hover="transform:scale(1.12) rotate(-5deg)">
+            <span style="flex:1;font-weight:700;font-size:14.5px;color:#17110e">{{ t.name }}</span>
+            <span style="flex:none;background:#d9a664;border-radius:999px;padding:6px 14px;font-weight:800;font-size:11.5px;color:#17110e;transition:transform .25s cubic-bezier(.2,.8,.3,1),background .25s ease" style-hover="transform:rotate(-4deg) scale(1.08);background:#f2d17f">{{ t.badge }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <img src="/dc-pages/assets/stories-flourish.png" alt="Real students. Real results." style="display:block;width:clamp(280px,36vw,470px);height:auto;margin:clamp(30px,4vw,48px) auto 0">
+  </div>
+</section>
+
+<section id="faq" data-screen-label="08 FAQ" style="background:#f5e6d3;padding:clamp(64px,8vw,112px) clamp(20px,4vw,56px)">
+  <div style="max-width:800px;margin:0 auto">
+    <div data-reveal="" style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:14px">08 — Questions</div>
+    <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(32px,4vw,52px);line-height:1.05;letter-spacing:-.03em;margin:0 0 12px">Before you ask us directly.</h2>
+    <svg viewBox="0 0 160 14" width="140" height="12" style="display:block;margin-bottom:28px" aria-hidden="true"><path d="M2 8 Q22 1 42 8 T82 8 T122 8 T158 8" stroke="#a91f24" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <sc-for list="{{ faqItems }}" as="faq" hint-placeholder-count="5">
+        <div style="background:#fff;border:1.5px solid rgba(23,17,14,.16);border-radius:16px;overflow:hidden;transition:transform .22s cubic-bezier(.2,.8,.3,1),box-shadow .22s ease" style-hover="transform:scale(1.035);box-shadow:0 10px 26px rgba(23,17,14,.14)">
+          <button type="button" onClick="{{ faq.toggle }}" style="width:100%;display:flex;align-items:center;gap:16px;padding:18px 22px;background:none;border:none;cursor:pointer;text-align:left;font-family:'Host Grotesk',system-ui,sans-serif">
+            <span style="flex:1;font-weight:700;font-size:16px;color:#17110e">{{ faq.q }}</span>
+            <span style="flex:none;font-size:18px;color:rgba(23,17,14,.4);transform:{{ faq.chevron }};transition:transform .2s">⌄</span>
+          </button>
+          <sc-if value="{{ faq.isOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:0 22px 20px;font-size:15px;line-height:1.6;color:rgba(23,17,14,.72)">{{ faq.a }}</div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section style="position:relative;background:#a91f24;padding:clamp(40px,5vw,64px) clamp(20px,4vw,56px);overflow:hidden">
+  <svg viewBox="0 0 40 40" width="30" height="30" style="position:absolute;top:16px;left:6%;animation:cde-float 5s ease-in-out infinite;pointer-events:none" aria-hidden="true"><path d="M20 2 C21 14 26 19 38 20 C26 21 21 26 20 38 C19 26 14 21 2 20 C14 19 19 14 20 2 Z" fill="#f2d17f"/></svg>
+  <svg viewBox="0 0 40 40" width="22" height="22" style="position:absolute;bottom:14px;right:14%;animation:cde-wiggle 4s ease-in-out infinite;pointer-events:none" aria-hidden="true"><path d="M20 2 C21 14 26 19 38 20 C26 21 21 26 20 38 C19 26 14 21 2 20 C14 19 19 14 20 2 Z" fill="#f2d17f"/></svg>
+  <div style="position:relative;max-width:1320px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px">
+    <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(22px,2.6vw,32px);color:#fff;margin:0">Ready to start? Enrolment closes 28 August.</h3>
+    <a href="https://wa.me/919910167527?text=Hi" style="flex:none;background:#f2d17f;color:#17110e;font-weight:700;font-size:16px;padding:16px 30px;border-radius:999px;animation:cde-ring 2.4s ease-out infinite" style-hover="background:#fff;color:#17110e" target="_blank" rel="noopener">Reserve your seat</a>
+  </div>
+</section>
+
+<footer style="background:#17110e;color:#fbf4e9;padding:clamp(56px,7vw,92px) clamp(20px,4vw,56px) 34px">
+  <div style="max-width:1320px;margin:0 auto">
+    <div data-m="stack"  style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(28px,4vw,56px);padding-bottom:clamp(40px,5vw,64px);border-bottom:1.5px solid rgba(251,244,233,.18)">
+      <div>
+        <img src="/dc-pages/assets/mark.png" alt="" style="width:64px;height:64px;display:block;margin-bottom:18px">
+        <p style="font-size:15.5px;line-height:1.6;color:rgba(251,244,233,.7);margin:0;max-width:30ch">Live Spanish classes for Indian learners — small groups, real culture, teachers who show up every week.</p>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Explore</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:15.5px">
+          <a href="/dele-course" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">DELE course</a>
+          <a href="/#live" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Live classes</a>
+          <a href="/#testimonials" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Student stories</a>
+          <a href="/library" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Our library</a>
+          <a href="/#story" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Our story</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Support</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:15.5px">
+          <a href="https://wa.me/919910167527?text=Hi" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)" target="_blank" rel="noopener">Contact us</a>
+          <a href="#exam" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">How it works</a>
+          <a href="/library" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Free materials</a>
+          <a href="/#top" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Privacy policy</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Follow</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <a href="https://www.instagram.com/casa_de_ele/" aria-label="Casa de ELE on Instagram" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"></circle></svg>
+          </a>
+          <a href="https://www.youtube.com/@CasadeELE" aria-label="Casa de ELE on YouTube" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.6 2.6 0 0 0-1.83-1.84C18.15 4.9 12 4.9 12 4.9s-6.15 0-7.77.46A2.6 2.6 0 0 0 2.4 7.2C2 8.85 2 12 2 12s0 3.15.4 4.8a2.6 2.6 0 0 0 1.83 1.84c1.62.46 7.77.46 7.77.46s6.15 0 7.77-.46a2.6 2.6 0 0 0 1.83-1.84C22 15.15 22 12 22 12s0-3.15-.4-4.8ZM10.1 15.3V8.7L15.7 12l-5.6 3.3Z"></path></svg>
+          </a>
+          <a href="https://open.spotify.com/show/1mFJ1S3vUJ8ekIMwkNhdy4?si=737aea0abfb1450d" aria-label="Casa de ELE on Spotify" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.1"></circle><path d="M7.3 9.1c3.1-.85 6.4-.5 9.1 1"></path><path d="M8 12.3c2.5-.68 5.1-.4 7.3.8"></path><path d="M8.7 15.4c1.9-.5 3.9-.3 5.6.6"></path></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/amrit-goyal-9980b1128/" aria-label="Amrit Goyal on LinkedIn" style="width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(251,244,233,.28);display:flex;align-items:center;justify-content:center;color:#fbf4e9;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,border-color .2s ease,background .2s ease" style-hover="color:#17110e;background:#f2d17f;border-color:#f2d17f;transform:translateY(-3px)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM3 9.5h4v11H3v-11Zm6.5 0h3.83v1.5h.05a4.2 4.2 0 0 1 3.77-2.07c2.9 0 3.85 1.83 3.85 4.9v6.67h-4v-5.92c0-1.42-.5-2.38-1.75-2.38-1.06 0-1.7.72-1.98 1.42-.1.25-.13.6-.13.95v5.93h-4s.05-10.1 0-11Z"></path></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div style="padding-top:28px;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;font-size:13.5px;color:rgba(251,244,233,.55)">
+      <span>© 2026 Casa de ELE. Made with care for Spanish learners worldwide.</span>
+      <span>Every dialect welcome. Every learner too.</span>
+    </div>
+  </div>
+</footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultLevel&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;B1&quot;,&quot;options&quot;:[&quot;B1&quot;,&quot;B2&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Course&quot;},&quot;seatsLeft&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:0,&quot;max&quot;:6,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Course&quot;}}">
+const LEVELS = {
+  B1: {
+    name: "DELE B1", weeks: 11, price: 4299,
+    units: [
+      { title: "Everyday negotiations", topics: "Renting, banking and small complaints, handled without panic." },
+      { title: "Opinions with backup", topics: "Agreeing, disagreeing and giving reasons in real time." },
+      { title: "Telling a story in the past", topics: "Imperfect vs. preterite, finally making sense." },
+      { title: "Reading between the lines", topics: "Newspaper snippets, ads, and what they're really saying." },
+      { title: "The mock reading & listening exam", topics: "Timed practice under real DELE conditions, scored the same way." },
+      { title: "The mock speaking exam", topics: "Paired interview practice with feedback that same week." }
+    ]
+  },
+  B2: {
+    name: "DELE B2", weeks: 11, price: 4999,
+    units: [
+      { title: "Identity", topics: "Describing character, relationships and first impressions in detail." },
+      { title: "Family", topics: "Family structures and describing the people closest to you." },
+      { title: "Housing", topics: "Renting, home descriptions, and neighbourhood life." },
+      { title: "Food", topics: "Ordering, recipes, and giving opinions on food and eating habits." },
+      { title: "Health", topics: "Symptoms, appointments, and giving advice on wellbeing." },
+      { title: "Shopping", topics: "Comparing products, negotiating price, and making complaints." },
+      { title: "Work", topics: "Job interviews, workplace situations, and professional writing." },
+      { title: "Education", topics: "Study systems, qualifications, and arguing for or against them." },
+      { title: "Leisure", topics: "Hobbies, plans, and describing free time in detail." },
+      { title: "Travel", topics: "Itineraries, mishaps, and narrating travel experiences." },
+      { title: "Technology", topics: "Opinions on technology and its impact, in formal register." },
+      { title: "Environment", topics: "Environmental issues and structuring a written argument." }
+    ]
+  }
+};
+const PREREQUISITES = [
+  "You've completed A2 (or equivalent) already.",
+  "You can hold a short conversation, even if it's shaky.",
+  "You're preparing for university, work, or a visa that asks for DELE.",
+  "You want an internationally recognised certificate, not just conversation practice."
+];
+const EXAM_SKILLS = [
+  { code: "R", img: "/dc-pages/assets/skill-reading.png", name: "Reading comprehension", desc: "Understanding written texts of increasing length and difficulty.", bg: "#93bbc0" },
+  { code: "L", img: "/dc-pages/assets/skill-listening.png", name: "Listening comprehension", desc: "Following spoken Spanish at natural speed, across accents.", bg: "#f2d17f" },
+  { code: "W", img: "/dc-pages/assets/skill-writing.png", name: "Written expression", desc: "Producing structured, appropriate writing for a given task.", bg: "#d9a664" },
+  { code: "S", img: "/dc-pages/assets/skill-speaking.png", name: "Speaking", desc: "A monologue and a paired interaction with an examiner.", bg: "#799e83" }
+];
+const PRICING_INCLUDES = [
+  "One live class every week, capped at 6 students",
+  "A full mock exam under timed conditions",
+  "Written feedback on every mock submission",
+  "Recording of every class you attend",
+  "Direct access to your teacher between classes"
+];
+const SCHEDULE = [
+  { label: "Mon", icon: "/dc-pages/assets/day-mon.png" },
+  { label: "Tue", icon: "/dc-pages/assets/day-tue.png" },
+  { label: "Wed", icon: "/dc-pages/assets/day-wed.png", tag: "Doubt-clearing sessions" },
+  { label: "Thu", icon: "/dc-pages/assets/day-thu.png" },
+  { label: "Fri", icon: "/dc-pages/assets/day-fri.png" },
+  { label: "Sat", icon: "/dc-pages/assets/day-sat.png" },
+  { label: "Sun", icon: "/dc-pages/assets/day-sun.png", tag: "Live class 7 PM IST", active: true }
+];
+const TESTIMONIALS = [
+  { quote: "I walked in already knowing the format. That's the part nobody else prepares you for.", name: "Placeholder name", badge: "Passed DELE B1", avatar: "/dc-pages/assets/story-avatar-1.png" },
+  { quote: "The mock speaking exam gave me the exact same nerves as the real one. Good practice for that.", name: "Placeholder name", badge: "Passed DELE B2", avatar: "/dc-pages/assets/story-avatar-2.png" },
+  { quote: "A small group meant the teacher actually caught my mistakes before the exam did.", name: "Placeholder name", badge: "Passed DELE B1", avatar: "/dc-pages/assets/story-avatar-3.png" }
+];
+const FAQ_BY_LEVEL = {
+  B1: [
+    { q: "Do I register for the exam separately?", a: "Yes. Casa de ELE prepares you for the exam; you register and sit it directly with Instituto Cervantes." },
+    { q: "What happens if I don't pass one skill?", a: "DELE grades in two groups — you need a passing average in each group to pass overall. We flag where you're weak well before exam day." },
+    { q: "Can I join without finishing A2?", a: "You can, if you're already comfortable with basic conversation. We'll tell you honestly in your first class if the level isn't right yet." },
+    { q: "Is the certificate recognised outside Spain?", a: "Yes. DELE is issued by Instituto Cervantes and recognised by universities, employers and immigration authorities worldwide." },
+    { q: "What if I need to miss a live class?", a: "Every class is recorded, and you can join the same unit in the next cohort if you miss one." }
+  ],
+  B2: [
+    { q: "What if I'm not sure I'm ready to commit to a whole exam cycle?", a: "That uncertainty is exactly why the course exists. You don't need to already feel exam-ready — you need a plan that gets you there by November, with proof along the way (your weekly bands) instead of guessing." },
+    { q: "Will I actually get personal feedback, or just an answer key?", a: "Reading and Listening are self-corrected because those are objective, right-or-wrong skills — no value added by a teacher marking a multiple choice answer. Writing and Speaking, which are subjective and where students actually get stuck, are corrected personally, every week, using the same scales the real examiners use." },
+    { q: "I've tried courses before and quit.", a: "Most self-study fails because there's no structure and no one checking your work. Here, your teacher sees your voice notes and your writing every single week — there's a person on the other end, not just a syllabus you're supposed to follow alone." }
+  ]
+};
+
+class Component extends DCLogic {
+  state = { levelId: this.props.defaultLevel || "B1", openUnit: null, openFaq: null, videoStarted: false };
+
+  setVideo = (el) => { this.video = el; };
+  setVideo2 = (el) => { this.video2 = el; };
+
+  playVideo2 = () => {
+    this.setState({ video2Started: true });
+    if (this.video2) { try { this.video2.play(); } catch (e) {} }
+  };
+
+  playVideo = () => {
+    this.setState({ videoStarted: true });
+    if (this.video) { try { this.video.play(); } catch (e) {} }
+  };
+
+  renderVals() {
+    const levelId = this.state.levelId;
+    const data = LEVELS[levelId];
+    const seatsLeft = Math.max(0, Math.min(6, this.props.seatsLeft ?? 3));
+
+    const units = data.units.map((u, idx) => ({
+      num: idx + 1,
+      title: u.title,
+      topics: u.topics,
+      isOpen: this.state.openUnit === idx,
+      borderColor: this.state.openUnit === idx ? "#a91f24" : "rgba(23,17,14,.14)",
+      chevron: this.state.openUnit === idx ? "rotate(180deg)" : "rotate(0deg)",
+      toggle: () => this.setState((s) => ({ openUnit: s.openUnit === idx ? null : idx }))
+    }));
+
+    const faqItems = (FAQ_BY_LEVEL[levelId] || FAQ_BY_LEVEL.B1).map((f, idx) => ({
+      q: f.q, a: f.a,
+      isOpen: this.state.openFaq === idx,
+      chevron: this.state.openFaq === idx ? "rotate(180deg)" : "rotate(0deg)",
+      toggle: () => this.setState((s) => ({ openFaq: s.openFaq === idx ? null : idx }))
+    }));
+
+    const schedule = SCHEDULE.map((d) => ({
+      label: d.label,
+      short: d.label.toUpperCase(),
+      icon: d.icon,
+      tag: d.tag || false,
+      bg: d.active ? "#a91f24" : "#fffdfa",
+      fg: d.active ? "#fff" : "#17110e",
+      border: d.active ? "#a91f24" : "rgba(23,17,14,.12)",
+      dash: d.active ? "#f2d17f" : "rgba(121,158,131,.55)"
+    }));
+
+    const PROVES = {
+      B1: "Proof you can handle everyday Spanish on your own — work, travel, paperwork, conversation.",
+      B2: "Proof you can argue, write formally and follow native-speed Spanish without help. 11 weeks, 88 hours, weekly live sessions and DELE-standard feedback on all four sections."
+    };
+    const NAMES = { B1: "Intermediate", B2: "Upper intermediate" };
+    const panels = ["B1", "B2"].map((id) => {
+      const on = levelId === id;
+      const d = LEVELS[id];
+      return {
+        id, selected: on,
+        name: NAMES[id],
+        proves: PROVES[id],
+        weeks: d.weeks,
+        price: "₹" + d.price.toLocaleString("en-IN"),
+        bg: on ? "#a91f24" : "#fff",
+        fg: on ? "#fff" : "#17110e",
+        softFg: on ? "rgba(255,255,255,.75)" : "rgba(23,17,14,.65)",
+        rule: on ? "rgba(255,255,255,.28)" : "rgba(23,17,14,.14)",
+        shadow: on ? "0 10px 0 #6f1216" : "0 8px 0 #d9a664",
+        lift: on ? "translateY(-4px)" : "translateY(0)",
+        badge: on ? "SELECTED" : "TAP TO SELECT",
+        badgeBg: on ? "#f2d17f" : "transparent",
+        badgeFg: on ? "#17110e" : "rgba(23,17,14,.55)",
+        badgeBorder: on ? "#17110e" : "rgba(23,17,14,.25)",
+        cta: on ? "Showing this course below" : "See this course",
+        ctaFg: on ? "#f2d17f" : "#a91f24",
+        onClick: () => {
+          this.setState({ levelId: id, openUnit: null }, () => {
+            // the level's story section mounts on this render — wait for layout
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              const target = document.getElementById(id === "B2" ? "b2-story" : "b1-story");
+              if (!target) return;
+              const scroller = (function () {
+                let n = target.parentElement;
+                while (n && n !== document.body) {
+                  const st = getComputedStyle(n).overflowY;
+                  if ((st === "auto" || st === "scroll") && n.scrollHeight > n.clientHeight + 4) return n;
+                  n = n.parentElement;
+                }
+                return null;
+              })();
+              if (scroller) {
+                const y = target.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop - 76;
+                scroller.scrollTo({ top: y, behavior: "smooth" });
+              } else {
+                const y = target.getBoundingClientRect().top + window.scrollY - 76;
+                window.scrollTo({ top: y, behavior: "smooth" });
+              }
+            }));
+          });
+        }
+      };
+    });
+
+    return {
+      level: { name: data.name, weeks: data.weeks, priceLabel: "₹" + data.price.toLocaleString("en-IN") },
+      isB2: levelId === "B2",
+      isB1: levelId === "B1",
+      videoRef: this.setVideo,
+      playVideo: this.playVideo,
+      onVideoPlay: () => { if (!this.state.videoStarted) this.setState({ videoStarted: true }); },
+      showPlay: !this.state.videoStarted,
+      videoRef2: this.setVideo2,
+      playVideo2: this.playVideo2,
+      onVideoPlay2: () => { if (!this.state.video2Started) this.setState({ video2Started: true }); },
+      showPlay2: !this.state.video2Started,
+      panels,
+      b1TabBg: levelId === "B1" ? "#a91f24" : "transparent",
+      b1TabFg: levelId === "B1" ? "#fff" : "rgba(251,244,233,.75)",
+      b2TabBg: levelId === "B2" ? "#a91f24" : "transparent",
+      b2TabFg: levelId === "B2" ? "#fff" : "rgba(251,244,233,.75)",
+      selectB1: () => this.setState({ levelId: "B1", openUnit: null }),
+      selectB2: () => this.setState({ levelId: "B2", openUnit: null }),
+      prerequisites: PREREQUISITES,
+      units,
+      examSkills: EXAM_SKILLS,
+      pricingIncludes: PRICING_INCLUDES,
+      schedule,
+      testimonials: TESTIMONIALS,
+      faqItems,
+      seatsLeft
+    };
+  }
+}
+
+</script>
+</body>
+</html>

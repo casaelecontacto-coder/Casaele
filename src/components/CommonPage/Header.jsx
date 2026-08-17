@@ -27,14 +27,20 @@ const Header = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   // 3. Update links to use translation keys instead of hardcoded strings
+  // `static: true` marks routes served as plain static HTML (via a Vercel
+  // rewrite) rather than by a React Router route. Those must use a real <a>
+  // tag so the browser does a full navigation instead of a client-side
+  // transition, which would bypass the rewrite entirely.
   const links = [
-    { name: t("nav.material"), path: "/material" },
+    { name: t("nav.material"), path: "/material", static: true },
     { name: t("nav.school"), path: "/school" },
     { name: t("nav.courses"), path: "/courses" },
-    { name: t("nav.products"), path: "/products" },
+    { name: t("nav.products"), path: "/products", static: true },
     { name: t("nav.magazine"), path: "/magazine" },
     { name: t("nav.about"), path: "/about" },
     { name: t("nav.contact"), path: "/contact" },
+    { name: "DELE Course", path: "/dele-course", static: true },
+    { name: "Library", path: "/library", static: true },
   ];
 
   useEffect(() => {
@@ -101,13 +107,13 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between w-full px-4 sm:px-8 lg:px-16 py-4 bg-white shadow-sm">
       <div className="flex items-center gap-4">
-        <Link to="/" className="flex items-center gap-2 flex-shrink-0">
+        <a href="/" className="flex items-center gap-2 flex-shrink-0">
           <img
             src="/Horizontal_1.svg"
             alt="CasaDeEle Logo"
             className="h-8 w-auto"
           />
-        </Link>
+        </a>
 
         {/* Language Dropdown */}
         <div className="relative" ref={langDropdownRef}>
@@ -180,19 +186,33 @@ const Header = () => {
 
       {/* Desktop Navbar */}
       <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-        {links.map((link) => (
-          <Link
-            key={link.path} // Use path as key since name changes with language
-            to={link.path}
-            className={`transition-colors ${
-              pathname === link.path
-                ? "text-black font-semibold"
-                : "text-gray-500 hover:text-black"
-            }`}
-          >
-            {link.name}
-          </Link>
-        ))}
+        {links.map((link) =>
+          link.static ? (
+            <a
+              key={link.path}
+              href={link.path}
+              className={`transition-colors ${
+                pathname === link.path
+                  ? "text-black font-semibold"
+                  : "text-gray-500 hover:text-black"
+              }`}
+            >
+              {link.name}
+            </a>
+          ) : (
+            <Link
+              key={link.path} // Use path as key since name changes with language
+              to={link.path}
+              className={`transition-colors ${
+                pathname === link.path
+                  ? "text-black font-semibold"
+                  : "text-gray-500 hover:text-black"
+              }`}
+            >
+              {link.name}
+            </Link>
+          )
+        )}
 
         {isAdmin && (
           <Link
@@ -267,20 +287,35 @@ const Header = () => {
       {/* Mobile Navbar */}
       {isMenuOpen && (
         <div className="absolute top-0 left-0 w-full h-screen bg-white flex flex-col items-center justify-center gap-8 md:hidden z-40">
-          {links.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`text-2xl transition-colors ${
-                pathname === link.path
-                  ? "text-black font-semibold"
-                  : "text-gray-500 hover:text-black"
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {link.name}
-            </Link>
-          ))}
+          {links.map((link) =>
+            link.static ? (
+              <a
+                key={link.path}
+                href={link.path}
+                className={`text-2xl transition-colors ${
+                  pathname === link.path
+                    ? "text-black font-semibold"
+                    : "text-gray-500 hover:text-black"
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link.name}
+              </a>
+            ) : (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`text-2xl transition-colors ${
+                  pathname === link.path
+                    ? "text-black font-semibold"
+                    : "text-gray-500 hover:text-black"
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link.name}
+              </Link>
+            )
+          )}
 
           {/* Cart Link for Mobile */}
           <Link

@@ -149,7 +149,7 @@ const Download = () => {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Invalid Download Link</h1>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => (window.location.href = '/')}
             className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"
           >
             Return to Home
@@ -168,7 +168,7 @@ const Download = () => {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Download Unavailable</h1>
           <p className="text-gray-600 mb-6">The download information could not be loaded. Please try again or contact support.</p>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => (window.location.href = '/')}
             className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"
           >
             Return to Home

@@ -63,7 +63,7 @@ function HowWeHelp() {
             <p className="text-gray-700 mb-6 text-sm sm:text-base leading-relaxed">
               No textbooks & random courses. We adapt our courses/learning materials depending on your personal needs & goals. If you’re with us, you get the most time to speak/practice Spanish.
             </p>
-            <button onClick={() => navigate('/material')}
+            <button onClick={() => (window.location.href = '/material')}
               className="bg-[rgba(173,21,24,1)] text-white px-5 py-3 rounded-xl font-semibold hover:bg-red-700 transition flex items-center justify-center md:justify-start mx-auto md:mx-0">
               Take me to a Spanish lesson now
               <GoArrowRight className="ml-2 w-4 h-4 inline-block" />
