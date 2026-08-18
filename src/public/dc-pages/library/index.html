@@ -67,8 +67,24 @@
     [data-m=hdr] [data-m=hcta]{font-size:12.5px;padding:9px 14px}
     [data-m=nav]{gap:16px;font-size:13.5px}
   }
+
+@media (max-width:980px){
+  [data-m~=hburger]{display:flex !important}
+  [data-m~=navwrap]{
+    display:flex !important;flex-direction:column;align-items:flex-start;gap:22px;
+    position:fixed;top:0;right:0;height:100vh;width:min(78vw,320px);
+    background:#f5e6d3;padding:88px 28px 28px;box-shadow:-8px 0 30px rgba(0,0,0,.15);
+    transform:translateX(100%);transition:transform .32s cubic-bezier(.2,.8,.3,1);
+    z-index:70;overflow-y:auto
+  }
+  [data-m~=navwrap] [data-m~=nav]{flex-direction:column;align-items:flex-start;gap:20px;font-size:17px;margin-left:0}
+  [data-m~=navwrap] [data-m~=hcta]{margin-top:6px}
+  header[data-nav-open] [data-m~=navwrap]{transform:translateX(0)}
+  header[data-nav-open] [data-m~=navbackdrop]{display:block}
+}
 </style>
 <script src="/dc-pages/reveal.js"></script>
+<script src="/dc-pages/nav-toggle.js"></script>
 </helmet>
 
 <div style="max-width:100%;overflow-x:clip">
@@ -76,17 +92,28 @@
 
 
 <header style="position:sticky;top:0;z-index:50;background:rgba(251,244,233,.92);backdrop-filter:blur(14px);border-bottom:1.5px solid rgba(23,17,14,.1)">
+  <div data-m="navbackdrop" style="display:none;position:fixed;inset:0;background:rgba(23,17,14,.4);z-index:65"></div>
   <div data-m="hdr" style="max-width:1320px;margin:0 auto;padding:14px clamp(20px,4vw,56px);display:flex;align-items:center;gap:32px">
     <a href="/#top" style="display:flex;align-items:center;gap:11px;flex:none">
       <img src="/dc-pages/assets/mark.png" alt="Casa de ELE" style="width:38px;height:38px;display:block;transition:transform .5s cubic-bezier(.2,.8,.3,1)" style-hover="transform:rotate(90deg) scale(1.1)">
       <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:17px;letter-spacing:-.01em;color:#a91f24;line-height:1">Casa<br>de ELE</span>
     </a>
+    <div data-m="navwrap" style="display:flex;align-items:center;gap:32px;margin-left:auto">
     <nav data-m="nav" style="display:flex;align-items:center;gap:26px;margin-left:auto;font-size:14.5px;font-weight:500;color:#17110e">
       <a href="/#top" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Home</a>
       <a href="/dele-course" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Course</a>
       <a href="/library" style="color:#a91f24;font-weight:700">Resources/ library</a>
+      <a href="/school" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">School</a>
+      <a href="/courses" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Courses</a>
+      <a href="/magazine" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Magazine</a>
+      <a href="/about" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">About</a>
+      <a href="/contact" style="color:#17110e;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#a91f24;transform:translateY(-3px) rotate(-2deg)">Contact</a>
     </nav>
-    <a href="https://wa.me/919910167527?text=Hi" data-m="hcta" style="flex:none;background:#a91f24;color:#fff;font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:999px;box-shadow:0 3px 0 #6f1216" style-hover="background:#8c1a1e;color:#fff;transform:translateY(1px);box-shadow:0 2px 0 #6f1216" target="_blank" rel="noopener">Join Saturday's class</a>
+    <a href="https://discord.com/channels/1531362020866261042/1531362022069895352" data-m="hcta" style="flex:none;background:#a91f24;color:#fff;font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:999px;box-shadow:0 3px 0 #6f1216" style-hover="background:#8c1a1e;color:#fff;transform:translateY(1px);box-shadow:0 2px 0 #6f1216" target="_blank" rel="noopener">Join Sunday's class</a>
+    </div>
+    <button data-m="hburger" aria-label="Open menu" aria-expanded="false" style="display:none;flex:none;width:38px;height:38px;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:#17110e;padding:0">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="5" x2="20" y2="5"></line><line x1="2" y1="11" x2="20" y2="11"></line><line x1="2" y1="17" x2="20" y2="17"></line></svg>
+    </button>
   </div>
 </header>
 
@@ -97,7 +124,7 @@
   <div style="position:absolute;top:-70px;left:-100px;width:300px;height:300px;border-radius:50%;background:#f2d17f;opacity:.4;filter:blur(4px);animation:cde2-sway 9s ease-in-out infinite"></div>
   <div style="position:relative;max-width:760px;margin:0 auto;text-align:center">
     <div data-reveal="" style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:16px">Resources &amp; library</div>
-    <h1 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(36px,5vw,64px);line-height:1.06;letter-spacing:-.03em;margin:0 0 20px">Everything to practice between Saturdays.</h1>
+    <h1 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(36px,5vw,64px);line-height:1.06;letter-spacing:-.03em;margin:0 0 20px">Everything to practice between Sundays.</h1>
     <p style="font-size:clamp(16px,1.4vw,19px);line-height:1.55;max-width:48ch;color:rgba(23,17,14,.75);margin:0 auto 34px">Course chapters, our own editorial, and pieces written by students just like you. Free to browse, sorted by level.</p>
   </div>
     <div style="position:relative;max-width:1125px;margin:0 auto;aspect-ratio:1558/1009;perspective:1700px">
@@ -136,7 +163,7 @@
       <div>
         <div style="font-size:12px;font-weight:700;letter-spacing:.14em;color:rgba(251,244,233,.5);margin-bottom:18px">Support</div>
         <div style="display:flex;flex-direction:column;gap:12px;font-size:15.5px">
-          <a href="https://wa.me/919910167527?text=Hi" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)" target="_blank" rel="noopener">Contact us</a>
+          <a href="https://discord.com/channels/1531362020866261042/1531362022069895352" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)" target="_blank" rel="noopener">Contact us</a>
           <a href="/material" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Course chapters</a>
           <a href="/#top" style="color:#fbf4e9;display:inline-block;transition:transform .22s cubic-bezier(.2,.8,.3,1),color .2s ease,background .2s ease,box-shadow .2s ease" style-hover="color:#f2d17f;transform:translateX(6px)">Privacy policy</a>
         </div>
