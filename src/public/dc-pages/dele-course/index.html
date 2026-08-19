@@ -64,10 +64,11 @@
     [data-m~=stat]{padding:0 !important;justify-content:flex-start !important}
     [data-m~=statcol]{border-left:none !important;border-top:1px solid rgba(23,17,14,.12);padding:18px 0 0 !important}
     [data-m~=hidesm]{display:none !important}
-    [data-m~=loop]{aspect-ratio:auto !important;max-width:none !important;display:flex;flex-direction:column;gap:10px}
-    [data-m~=loop] > div{position:static !important;transform:none !important;white-space:normal !important;text-align:center}
-    [data-m~=loop] > div:first-child{display:none !important}
-    [data-m~=loop] > img{display:none !important}
+    [data-m~=loop]{aspect-ratio:auto !important;max-width:420px !important;display:flex;flex-direction:column;align-items:stretch;gap:12px;margin-bottom:clamp(30px,4vw,48px) !important}
+    [data-m~=loop] > [data-m~=ring]{display:none !important}
+    [data-m~=loop] > img{position:static !important;display:block !important;margin:0 auto 14px !important;width:48px !important;height:48px !important;animation:none !important}
+    [data-m~=loop] > div:not([data-m~=ring]){position:static !important;transform:none !important;white-space:normal !important;text-align:center;font-size:13px !important;padding:13px 18px !important}
+    [data-m~=loop] > div:not([data-m~=ring]):not(:last-child)::after{content:"↓";display:block;font-size:13px;line-height:1;color:rgba(23,17,14,.4);margin:11px auto -25px}
   }
   @media (max-width:560px){
     [data-m~=floatbar]{left:12px;right:12px;bottom:12px;flex-direction:column;align-items:stretch !important;border-radius:22px !important;padding:14px !important;gap:12px !important}
@@ -117,7 +118,6 @@
   <div style="position:relative;max-width:1320px;margin:0 auto">
     <div style="text-align:center;max-width:44ch;margin:0 auto clamp(30px,4vw,46px)">
       <h1 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(36px,5vw,64px);line-height:1.02;letter-spacing:-.035em;margin:0 0 16px">Choose your level</h1>
-      <p style="font-size:clamp(16px,1.3vw,18.5px);line-height:1.6;color:rgba(23,17,14,.72);margin:0">Pick a level and the whole page follows — units, mock exams, price and schedule.</p>
     </div>
 
     <div data-m="levelpair" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:clamp(18px,2.5vw,28px);align-items:stretch">
@@ -149,7 +149,7 @@
       </sc-for>
     </div>
 
-    <p style="text-align:center;font-size:14.5px;color:rgba(23,17,14,.62);margin:clamp(22px,3vw,32px) auto 0;max-width:46ch">Not sure where you stand? Sit the first class free — we'll place you honestly. <a href="#faq" style="font-weight:700">Read the placement questions</a></p>
+    <p style="text-align:center;font-size:14.5px;color:rgba(23,17,14,.62);margin:clamp(22px,3vw,32px) auto 0;max-width:46ch">Not sure what specific level you are? <a href="https://wa.me/919910167527?text=Hi" target="_blank" rel="noopener" style="font-weight:700">DM us</a> and we'll let you know.</p>
   </div>
 </section>
 
@@ -199,7 +199,7 @@
     <img src="/dc-pages/assets/amrit-credibility.png" alt="Know who built this course: Amrit Goyal, Spanish educator and curriculum designer" style="display:block;width:100%;height:auto;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.18)">
     <div style="margin-top:clamp(14px,1.8vw,20px);background:#a91f24;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.2);padding:clamp(22px,2.8vw,34px);display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(26px,3.4vw,44px);align-items:center">
         <div style="position:relative;height:clamp(280px,32vw,420px);flex:none">
-          <video ref="{{ videoRef2 }}" src="/dc-pages/assets/b1-testimonial.mp4" controls="controls" playsinline="playsinline" preload="metadata" onPlay="{{ onVideoPlay2 }}" style="display:block;height:100%;width:auto;aspect-ratio:478/850;object-fit:cover;background:#000;border:2px solid #17110e;border-radius:16px"></video>
+          <video ref="{{ videoRef2 }}" src="/dc-pages/assets/b1-testimonial.mp4" poster="/dc-pages/assets/b1-testimonial-poster.png" controls="controls" playsinline="playsinline" preload="metadata" onPlay="{{ onVideoPlay2 }}" style="display:block;height:100%;width:auto;aspect-ratio:478/850;object-fit:cover;background:#000;border:2px solid #17110e;border-radius:16px"></video>
           <sc-if value="{{ showPlay2 }}" hint-placeholder-val="{{ true }}">
             <button type="button" onClick="{{ playVideo2 }}" aria-label="Play the testimonial" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(23,17,14,.25);border:none;border-radius:16px;cursor:pointer;transition:background .2s ease" style-hover="background:rgba(23,17,14,.1)">
               <span style="width:54px;height:54px;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 rgba(23,17,14,.35);transition:transform .22s cubic-bezier(.2,.8,.3,1)" style-hover="transform:scale(1.08)">
@@ -438,18 +438,18 @@
     <svg viewBox="0 0 160 14" width="140" height="12" style="display:block;margin-bottom:26px" aria-hidden="true"><path d="M2 8 Q22 1 42 8 T82 8 T122 8 T158 8" stroke="#a91f24" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
     <p style="max-width:72ch;font-size:16px;line-height:1.6;color:rgba(23,17,14,.75);margin:0 0 clamp(30px,4vw,48px)">You're not getting another Spanish course. You're getting an 11-week DELE B2 preparation system built to take you from:</p>
     <div data-m="loop" style="position:relative;width:100%;max-width:620px;aspect-ratio:1/1;margin:0 auto clamp(30px,4vw,48px)">
-      <div style="position:absolute;inset:1%;border-radius:50%;border:1.5px solid rgba(23,17,14,.1)"></div>
-      <div style="position:absolute;inset:11%;border-radius:50%;border:2.5px dashed rgba(169,31,36,.35);animation:cde-spin 60s linear infinite"></div>
-      <div style="position:absolute;inset:22%;border-radius:50%;border:1.5px dashed rgba(43,93,99,.3);animation:cde-spin 90s linear infinite reverse">
+      <div data-m="ring" style="position:absolute;inset:1%;border-radius:50%;border:1.5px solid rgba(23,17,14,.1)"></div>
+      <div data-m="ring" style="position:absolute;inset:11%;border-radius:50%;border:2.5px dashed rgba(169,31,36,.35);animation:cde-spin 60s linear infinite"></div>
+      <div data-m="ring" style="position:absolute;inset:22%;border-radius:50%;border:1.5px dashed rgba(43,93,99,.3);animation:cde-spin 90s linear infinite reverse">
         <span style="position:absolute;left:50%;top:0;transform:translate(-50%,-50%);width:11px;height:11px;border-radius:50%;background:#2b5d63;border:2px solid #17110e"></span>
       </div>
-      <div style="position:absolute;inset:32%;border-radius:50%;border:1.5px dotted rgba(217,166,100,.55);animation:cde-spin 42s linear infinite">
+      <div data-m="ring" style="position:absolute;inset:32%;border-radius:50%;border:1.5px dotted rgba(217,166,100,.55);animation:cde-spin 42s linear infinite">
         <span style="position:absolute;left:100%;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#d9a664;border:2px solid #17110e"></span>
       </div>
-      <div style="position:absolute;inset:41%;border-radius:50%;border:1.5px solid rgba(23,17,14,.14);animation:cde-spin 28s linear infinite reverse">
+      <div data-m="ring" style="position:absolute;inset:41%;border-radius:50%;border:1.5px solid rgba(23,17,14,.14);animation:cde-spin 28s linear infinite reverse">
         <span style="position:absolute;left:50%;top:100%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:#a91f24;border:2px solid #17110e"></span>
       </div>
-      <div style="position:absolute;inset:46.5%;border-radius:50%;background:radial-gradient(circle,rgba(242,209,127,.5) 0%,rgba(242,209,127,0) 70%)"></div>
+      <div data-m="ring" style="position:absolute;inset:46.5%;border-radius:50%;background:radial-gradient(circle,rgba(242,209,127,.5) 0%,rgba(242,209,127,0) 70%)"></div>
       <img src="/dc-pages/assets/mark.png" alt="" style="position:absolute;left:50%;top:50%;width:64px;height:64px;animation:cde-spin-c 24s linear infinite;pointer-events:none">
       <div style="position:absolute;left:50%;top:11%;transform:translate(-50%,-50%);background:#fff;color:#17110e;border:2px solid #17110e;border-radius:999px;padding:11px 17px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(11px,1.1vw,13.5px);letter-spacing:.04em;white-space:nowrap;box-shadow:0 4px 0 rgba(23,17,14,.2)">UNDERSTAND</div>
       <div style="position:absolute;left:80.49%;top:25.68%;transform:translate(-50%,-50%);background:#fff;color:#17110e;border:2px solid #17110e;border-radius:999px;padding:11px 17px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(11px,1.1vw,13.5px);letter-spacing:.04em;white-space:nowrap;box-shadow:0 4px 0 rgba(23,17,14,.2)">PRACTISE</div>
@@ -558,7 +558,7 @@
     <img src="/dc-pages/assets/amrit-credibility.png" alt="Know who built this course: Amrit Goyal, Spanish educator and curriculum designer" style="display:block;width:100%;height:auto;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.18)">
     <div style="margin-top:clamp(14px,1.8vw,20px);background:#a91f24;border:2px solid #17110e;border-radius:22px;box-shadow:6px 7px 0 rgba(23,17,14,.2);padding:clamp(22px,2.8vw,34px);display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(26px,3.4vw,44px);align-items:center">
         <div style="position:relative;height:clamp(280px,32vw,420px);flex:none">
-          <video ref="{{ videoRef }}" src="/dc-pages/assets/b1-testimonial.mp4" controls="controls" playsinline="playsinline" preload="metadata" onPlay="{{ onVideoPlay }}" style="display:block;height:100%;width:auto;aspect-ratio:478/850;object-fit:cover;background:#000;border:2px solid #17110e;border-radius:16px"></video>
+          <video ref="{{ videoRef }}" src="/dc-pages/assets/b1-testimonial.mp4" poster="/dc-pages/assets/b1-testimonial-poster.png" controls="controls" playsinline="playsinline" preload="metadata" onPlay="{{ onVideoPlay }}" style="display:block;height:100%;width:auto;aspect-ratio:478/850;object-fit:cover;background:#000;border:2px solid #17110e;border-radius:16px"></video>
           <sc-if value="{{ showPlay }}" hint-placeholder-val="{{ true }}">
             <button type="button" onClick="{{ playVideo }}" aria-label="Play the testimonial" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(23,17,14,.25);border:none;border-radius:16px;cursor:pointer;transition:background .2s ease" style-hover="background:rgba(23,17,14,.1)">
               <span style="width:54px;height:54px;border-radius:50%;background:#f2d17f;border:2px solid #17110e;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 rgba(23,17,14,.35);transition:transform .22s cubic-bezier(.2,.8,.3,1)" style-hover="transform:scale(1.08)">
@@ -1228,16 +1228,17 @@ const TESTIMONIALS = [
 ];
 const FAQ_BY_LEVEL = {
   B1: [
-    { q: "Do I register for the exam separately?", a: "Yes. Casa de ELE prepares you for the exam; you register and sit it directly with Instituto Cervantes." },
-    { q: "What happens if I don't pass one skill?", a: "DELE grades in two groups — you need a passing average in each group to pass overall. We flag where you're weak well before exam day." },
-    { q: "Can I join without finishing A2?", a: "You can, if you're already comfortable with basic conversation. We'll tell you honestly in your first class if the level isn't right yet." },
-    { q: "Is the certificate recognised outside Spain?", a: "Yes. DELE is issued by Instituto Cervantes and recognised by universities, employers and immigration authorities worldwide." },
-    { q: "What if I need to miss a live class?", a: "Every class is recorded, and you can join the same unit in the next cohort if you miss one." }
+    { q: "What if I can communicate in Spanish but still make a lot of basic mistakes?", a: "That's normal at B1. The course helps you identify and fix the mistakes that could affect your performance across speaking, writing, reading and listening. Feeling insecure and making basic mistakes is common, we have a comprehensive curriculum to target these issues." },
+    { q: "Is DELE B1 difficult if I'm still building my Spanish vocabulary and grammar?", a: "B1 doesn't require perfect Spanish, but you need to communicate clearly and handle the types of situations and tasks. We'll help you focus on the Spanish you actually need for DELE B1 and guide you to perform well against the clock." },
+    { q: "What exactly do I need to be able to do in Spanish to pass DELE B1?", a: "You'll practise all four sections: reading, listening, writing and speaking, using the specific tasks, timing and evaluation criteria of the B1 exam." },
+    { q: "What if I understand Spanish but struggle when I have to speak or write on my own?", a: "You'll get regular Speaking and Writing practice with feedback, so you can move from simply understanding Spanish to actually producing it confidently under exam conditions." },
+    { q: "Not sure whether you should take DELE B1 or B2?", a: "Get in touch for a quick call and we'll assess your current Spanish level and help you decide which level and whether this course is right for you." }
   ],
   B2: [
-    { q: "What if I'm not sure I'm ready to commit to a whole exam cycle?", a: "That uncertainty is exactly why the course exists. You don't need to already feel exam-ready — you need a plan that gets you there by November, with proof along the way (your weekly bands) instead of guessing." },
-    { q: "Will I actually get personal feedback, or just an answer key?", a: "Reading and Listening are self-corrected because those are objective, right-or-wrong skills — no value added by a teacher marking a multiple choice answer. Writing and Speaking, which are subjective and where students actually get stuck, are corrected personally, every week, using the same scales the real examiners use." },
-    { q: "I've tried courses before and quit.", a: "Most self-study fails because there's no structure and no one checking your work. Here, your teacher sees your voice notes and your writing every single week — there's a person on the other end, not just a syllabus you're supposed to follow alone." }
+    { q: "What if I understand Spanish well but struggle to speak or write at B2 level?", a: "Speaking and writing needs accountability and also a place to practise, that's exactly what this course is designed to address. You'll practise speaking and writing regularly and receive feedback based on DELE evaluation criteria in our community." },
+    { q: "How do I know if I should give DELE B1 or B2?", a: "This is a common doubt students have. You can have a chat with us (free) directly to understand where you stand. B2 requires you to handle more complex texts, ideas, arguments, communication and precise vocabulary of the given context. Subjuntivo and other tenses are important but you need to learn vocabulary from different themes. Our course ensures that and helps you get apto in B2." },
+    { q: "What exactly do I need to be able to do in Spanish to pass DELE B2?", a: "You'll work across all four sections: reading, listening, writing and speaking, with the specific tasks, timing and evaluation criteria used in the B2 exam. Our course gives you a weekly intensive guide to practice thoroughly for each part." },
+    { q: "I learned Spanish myself until intermediate level and am confused if I should give DELE B1 or B2 or maybe A2? I left studying actively a long time ago and completed B2. Which level should I give?", a: "Contact us directly and we will guide you. Do not give A2 or lesser levels because you are unsure. Although rare, many students achieve a high level of Spanish by self learning, others maintain their level even after a long gap. We recommend you to rethink and choose the course for DELE prep based on your actual level instead of insecurities." }
   ]
 };
 
