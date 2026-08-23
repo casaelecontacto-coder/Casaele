@@ -1,6 +1,5 @@
 import { HomePageProvider } from "../context/HomePageContext";
 import HeroSection from "../components/Home/HeroSection";
-import VslSection from "../components/Home/VslSection";
 import WelcomeSection from "../components/Home/WelcomeSection";
 import PicksSection from "../components/Home/PicksSection";
 import HowWeHelp from "../components/Home/HowWeHelp";
@@ -12,7 +11,6 @@ function Home() {
   return (
     <HomePageProvider>
       <HeroSection />
-      <VslSection />
       <WelcomeSection />
       <PicksSection />
       <HowWeHelp />
