@@ -1048,7 +1048,7 @@
       <div>
         <div data-reveal="" style="font-size:12.5px;font-weight:700;letter-spacing:.14em;color:#a91f24;margin-bottom:6px">07 — What past students say</div>
         <img src="/dc-pages/assets/stories-eyebrow-line.png" alt="" style="display:block;width:112px;height:auto;margin:0 0 26px;pointer-events:none">
-        <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(32px,4vw,52px);line-height:1.06;letter-spacing:-.03em;margin:0;max-width:16ch">They sat the exam. Then they told us <span style="position:relative;display:inline-block;color:#a91f24">how it went.<img src="/dc-pages/assets/stories-swash.png" alt="" style="position:absolute;left:-2%;bottom:-14px;width:104%;pointer-events:none"></span></h2>
+        <h2 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(32px,4vw,52px);line-height:1.06;letter-spacing:-.03em;margin:0;max-width:16ch">Real students. Told us <span style="position:relative;display:inline-block;color:#a91f24">how it went.<img src="/dc-pages/assets/stories-swash.png" alt="" style="position:absolute;left:-2%;bottom:-14px;width:104%;pointer-events:none"></span></h2>
         <img src="/dc-pages/assets/stories-sparkle.png" alt="" style="display:block;width:66px;height:auto;margin:30px 0 0 clamp(0px,18vw,300px);animation:cde-drift 6s ease-in-out infinite;pointer-events:none">
       </div>
       <div style="display:flex;justify-content:center">
@@ -1219,11 +1219,13 @@ const SCHEDULE = [
   { label: "Sat", icon: "/dc-pages/assets/day-sat.png" },
   { label: "Sun", icon: "/dc-pages/assets/day-sun.png", tag: "Live class 7 PM IST", active: true }
 ];
-const TESTIMONIALS = [
-  { quote: "I walked in already knowing the format. That's the part nobody else prepares you for.", name: "Placeholder name", badge: "Passed DELE B1", avatar: "/dc-pages/assets/story-avatar-1.png" },
-  { quote: "The mock speaking exam gave me the exact same nerves as the real one. Good practice for that.", name: "Placeholder name", badge: "Passed DELE B2", avatar: "/dc-pages/assets/story-avatar-2.png" },
-  { quote: "A small group meant the teacher actually caught my mistakes before the exam did.", name: "Placeholder name", badge: "Passed DELE B1", avatar: "/dc-pages/assets/story-avatar-3.png" }
-];
+const STORY_AVATARS = ["/dc-pages/assets/story-avatar-1.png", "/dc-pages/assets/story-avatar-2.png", "/dc-pages/assets/story-avatar-3.png"];
+
+function truncateReview(text, max) {
+  const s = (text || "").replace(/\s+/g, " ").trim();
+  if (s.length <= max) return s;
+  return s.slice(0, max - 1).trim() + "…";
+}
 const FAQ_BY_LEVEL = {
   B1: [
     { q: "What if I can communicate in Spanish but still make a lot of basic mistakes?", a: "That's normal at B1. The course helps you identify and fix the mistakes that could affect your performance across speaking, writing, reading and listening. Feeling insecure and making basic mistakes is common, we have a comprehensive curriculum to target these issues." },
@@ -1241,7 +1243,25 @@ const FAQ_BY_LEVEL = {
 };
 
 class Component extends DCLogic {
-  state = { levelId: this.props.defaultLevel || "B1", openUnit: null, openFaq: null, videoStarted: false };
+  state = { levelId: this.props.defaultLevel || "B1", openUnit: null, openFaq: null, videoStarted: false, realReviews: [], reviewsLoaded: false };
+
+  componentDidMount() {
+    // There's no DELE-specific course in the backend yet — the only real
+    // Course document right now is "Club de Conversación" (id below). So
+    // this section shows real reviews for that course instead of fake
+    // "Passed DELE B1/B2" claims nobody actually made. Swap this id for a
+    // real DELE course's _id once one exists in the admin's Courses panel.
+    const CLUB_DE_CONVERSACION_ID = "69353ab92478e06b9bfec111";
+    fetch("https://casaele.onrender.com/api/reviews/approved/" + CLUB_DE_CONVERSACION_ID)
+      .then((r) => r.json())
+      .then((data) => {
+        this.setState({ realReviews: Array.isArray(data) ? data : [], reviewsLoaded: true });
+      })
+      .catch((err) => {
+        console.error("[dele-course] failed to load reviews:", err);
+        this.setState({ realReviews: [], reviewsLoaded: true });
+      });
+  }
 
   setVideo = (el) => { this.video = el; };
   setVideo2 = (el) => { this.video2 = el; };
@@ -1368,7 +1388,12 @@ class Component extends DCLogic {
       examSkills: EXAM_SKILLS.map((s) => Object.assign({}, s, { imgCss: cssUrl(s.img) })),
       pricingIncludes: PRICING_INCLUDES,
       schedule,
-      testimonials: TESTIMONIALS.map((t) => Object.assign({}, t, { avatarCss: cssUrl(t.avatar) })),
+      testimonials: this.state.realReviews.map((r, i) => ({
+        quote: truncateReview(r.comment, 180),
+        name: r.name,
+        badge: "Club de Conversación · " + "★".repeat(r.rating),
+        avatarCss: cssUrl(STORY_AVATARS[i % STORY_AVATARS.length])
+      })),
       faqItems,
       seatsLeft
     };
