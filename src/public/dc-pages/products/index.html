@@ -210,7 +210,10 @@
         </article>
       </sc-for>
       <sc-if value="{{ noComicsYet }}" hint-placeholder-val="{{ false }}">
-        <p style="grid-column:1/-1;font-size:14.5px;color:rgba(23,17,14,.55);margin:0">No comics uploaded yet — check back soon.</p>
+        <div style="grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:14px;background:#fffdf8;border:1.5px dashed rgba(23,17,14,.28);border-radius:4px;padding:22px 24px">
+          <p style="font-size:14.5px;color:rgba(23,17,14,.6);margin:0;flex:1;min-width:200px">No comics uploaded yet — the first one will appear here with a working download link.</p>
+          <button type="button" disabled="" style="flex:none;display:inline-flex;align-items:center;gap:8px;background:rgba(23,17,14,.08);color:rgba(23,17,14,.4);font-weight:700;font-size:13.5px;border:1.5px solid rgba(23,17,14,.18);padding:11px 20px;border-radius:999px;cursor:not-allowed">Download ↓ <span style="font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase">Coming soon</span></button>
+        </div>
       </sc-if>
     </div>
   </div>
