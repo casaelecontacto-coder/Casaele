@@ -118,7 +118,7 @@
   <div data-m="stack"  style="max-width:1320px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(30px,4vw,64px);align-items:start">
     <div style="display:flex;justify-content:center">
       <div data-reveal-card="" style="position:relative;width:100%;max-width:400px;aspect-ratio:3/4;background:{{ featured.accent }};border:2px solid #17110e;border-radius:4px;box-shadow:16px 16px 0 rgba(23,17,14,.14);transform:rotate(-1.6deg);transition:transform .4s cubic-bezier(.2,.8,.3,1),box-shadow .4s ease" style-hover="transform:rotate(0deg) translateY(-8px);box-shadow:22px 22px 0 rgba(23,17,14,.18)">
-        <image-slot id="{{ featured.coverId }}" shape="rect" placeholder="Drop this issue's cover" style="width:100%;height:100%"></image-slot>
+        <image-slot id="{{ featured.coverId }}" src="{{ featured.coverUrl }}" shape="rect" placeholder="Drop this issue's cover" style="width:100%;height:100%"></image-slot>
         <span style="position:absolute;top:14px;left:14px;background:#fbf4e9;border:2px solid #17110e;padding:5px 11px;font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:13px;letter-spacing:.06em;pointer-events:none">№{{ featured.num }}</span>
       </div>
     </div>
@@ -129,7 +129,7 @@
       <div style="display:flex;flex-wrap:wrap;gap:9px;margin-bottom:20px">
         <span style="background:#f5e6d3;border:1.5px solid rgba(23,17,14,.2);border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:700">{{ featured.level }}</span>
         <span style="background:#f5e6d3;border:1.5px solid rgba(23,17,14,.2);border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:700">{{ featured.date }}</span>
-        <span style="background:#f5e6d3;border:1.5px solid rgba(23,17,14,.2);border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:700">{{ featured.pageCount }} pages</span>
+        <span style="background:#f5e6d3;border:1.5px solid rgba(23,17,14,.2);border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:700">{{ featured.badge }}</span>
       </div>
       <p style="font-size:16px;line-height:1.62;color:rgba(23,17,14,.76);margin:0 0 28px;max-width:46ch">{{ featured.dek }}</p>
 
@@ -273,27 +273,18 @@
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const ISSUE = {
-  num: 1,
-  title: "Fronteras",
-  level: "B2",
-  date: "Octubre 2026",
-  accent: "#a91f24",
-  pages: 36,
-  dek: "Language and migration, what bilingual people carry between two tongues, and an essay written by one of our own students.",
-  contents: [
-    { kind: "Essay", title: "Migración y lengua", page: 4 },
-    { kind: "Interview", title: "Ser bilingüe", page: 15 },
-    { kind: "Student work", title: "Ensayo de un estudiante", page: 31 }
-  ]
-};
-
-const LOOSE = [
-  { kind: "Reading sheet", level: "A2", title: "Un mensaje de voz", excerpt: "A three-minute voice note from a friend, transcribed, with the fillers left in on purpose.", tilt: "rotate(-1.6deg)" },
-  { kind: "Grammar", level: "B1", title: "Ser, estar, y la duda", excerpt: "One page. Twelve sentences where both verbs feel right, and why only one is.", tilt: "rotate(1.4deg)" },
-  { kind: "Culture", level: "B2", title: "Sobremesa", excerpt: "Why the table conversation after lunch has its own name, and what happens if you leave early.", tilt: "rotate(-1deg)" },
-  { kind: "Vocabulary", level: "A2", title: "El mercado, en orden", excerpt: "One stall at a time: what to say, what to point at, and the word for the plastic bag.", tilt: "rotate(2deg)" }
-];
+// Wired to the same backend the admin panel's "Magazines" section manages
+// (GET /api/magazines, public + isActive-only). The newest issue becomes
+// the featured card; older issues fill the "loose" grid below it.
+//
+// "Comics" has no matching content type in the backend yet (there's no
+// Comic model/route), so that section is still static placeholder data —
+// ping the team if you want a real Comics collection added to the admin.
+// NOTE: the fallback URL used elsewhere in this codebase
+// ("amrit-project-lms.onrender.com") is a stale/legacy host and 404s.
+// The API this site's admin panel and production build actually talk to
+// is casaele.onrender.com (confirmed from the deployed admin bundle).
+const API_BASE = "https://casaele.onrender.com";
 
 const COMICS = [
   { level: "A2–B1", panels: 6, title: "En la tienda de la esquina", excerpt: "Six panels drawn by a Sunday student. Buying bread, and one small misunderstanding.", tilt: "rotate(-1.4deg)" },
@@ -301,26 +292,82 @@ const COMICS = [
   { level: "B1", panels: 8, title: "La llamada del banco", excerpt: "A phone call nobody wants to make, in the polite forms and then the honest ones.", tilt: "rotate(-1deg)" }
 ];
 
+const TILTS = ["rotate(-1.6deg)", "rotate(1.4deg)", "rotate(-1deg)", "rotate(2deg)", "rotate(-1.2deg)", "rotate(1.6deg)"];
+
+function formatIssueDate(iso) {
+  const d = iso ? new Date(iso) : null;
+  if (!d || isNaN(d.getTime())) return "";
+  const s = d.toLocaleDateString("es-ES", { month: "long", year: "numeric" });
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function stripHtml(html) {
+  if (!html) return "";
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  return (tmp.textContent || tmp.innerText || "").replace(/\s+/g, " ").trim();
+}
+
+function priceBadge(mag) {
+  if (mag.accessType === "free") return "Free";
+  const p = (mag.prices && mag.prices.INR && (mag.prices.INR.discountPrice || mag.prices.INR.price)) || mag.discountPrice || mag.price;
+  return p ? ("₹" + p) : "Paid";
+}
+
 class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { magazines: [], loaded: false };
+  }
+  componentDidMount() {
+    fetch(API_BASE + "/api/magazines?limit=50")
+      .then((r) => r.json())
+      .then((data) => {
+        this.setState({ magazines: Array.isArray(data.magazines) ? data.magazines : [], loaded: true });
+      })
+      .catch((err) => {
+        console.error("[el-desvelo] failed to load magazines:", err);
+        this.setState({ magazines: [], loaded: true });
+      });
+  }
   renderVals() {
-    const featured = {
-      num: ISSUE.num,
-      title: ISSUE.title,
-      level: ISSUE.level,
-      date: ISSUE.date,
-      dek: ISSUE.dek,
-      accent: ISSUE.accent,
-      pageCount: ISSUE.pages,
-      contents: ISSUE.contents,
-      coverId: "desvelo-cover-1"
+    const mags = this.state.magazines;
+    const featuredMag = mags[0];
+
+    const featured = featuredMag ? {
+      num: mags.length,
+      title: featuredMag.title,
+      level: featuredMag.category || "All levels",
+      date: formatIssueDate(featuredMag.publishedAt),
+      badge: priceBadge(featuredMag),
+      dek: stripHtml(featuredMag.description),
+      accent: "#a91f24",
+      contents: [],
+      coverId: "desvelo-cover-" + (featuredMag._id || "1"),
+      coverUrl: featuredMag.coverImageUrl || ""
+    } : {
+      num: 0,
+      title: this.state.loaded ? "No issues published yet" : "Loading…",
+      level: "", date: "", badge: "", dek: "", accent: "#a91f24",
+      contents: [], coverId: "desvelo-cover-empty", coverUrl: ""
     };
+
+    const loose = mags.slice(1).map((m, i) => ({
+      kind: "Issue",
+      level: m.category || "All levels",
+      title: m.title,
+      excerpt: stripHtml(m.description),
+      tilt: TILTS[i % TILTS.length]
+    }));
+
     const comics = COMICS.map((c, i) => ({
       ...c,
       panelA: "desvelo-comic-" + (i + 1) + "-a",
       panelB: "desvelo-comic-" + (i + 1) + "-b",
       panelC: "desvelo-comic-" + (i + 1) + "-c"
     }));
-    return { featured, loose: LOOSE, comics };
+
+    return { featured, loose, comics };
   }
 }
 </script>
