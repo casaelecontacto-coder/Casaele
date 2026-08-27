@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import React, { useEffect, Suspense, lazy } from 'react';
 import { auth } from './firebase';
 import { Elements } from '@stripe/react-stripe-js';
@@ -45,7 +45,7 @@ const UsersPage = lazy(() => import("./pages/admin/Users"));
 const Products = lazy(() => import("./pages/admin/Products"));
 const Orders = lazy(() => import("./pages/admin/Orders"));
 const Materials = lazy(() => import("./pages/admin/Materials"));
-const ReviewsManager = lazy(() => import("./pages/admin/ReviewsManager"));
+const FeedbackManager = lazy(() => import("./pages/admin/FeedbackManager"));
 const Courses = lazy(() => import("./pages/admin/Courses"));
 const Categories = lazy(() => import("./pages/admin/Categories"));
 const Banners = lazy(() => import("./pages/admin/Banners"));
@@ -58,7 +58,6 @@ const Subscribers = lazy(() => import("./pages/admin/Subscribers"));
 const Embeds = lazy(() => import("./pages/admin/Embeds"));
 const DigitalDownloads = lazy(() => import("./pages/admin/DigitalDownloads"));
 const TestimonialsManager = lazy(() => import("./pages/admin/TestimonialsManager"));
-const CommentsManager = lazy(() => import("./pages/admin/CommentsManager"));
 const Teachers = lazy(() => import("./pages/admin/Teachers"));
 const PinterestManager = lazy(() => import("./pages/admin/PinterestManager"));
 const PicksManager = lazy(() => import("./pages/admin/PicksManager"));
@@ -130,7 +129,8 @@ function AppWrapper() {
               <Route path="products" element={<Products />} />
               <Route path="orders" element={<Orders />} />
               <Route path="materials" element={<Materials />} />
-              <Route path="reviews" element={<ReviewsManager />} />
+              <Route path="feedback" element={<FeedbackManager />} />
+              <Route path="reviews" element={<Navigate to="/admin/feedback" replace />} />
               <Route path="courses" element={<Courses />} />
               <Route path="categories" element={<Categories />} />
               <Route path="banners" element={<Banners />} />
@@ -144,7 +144,7 @@ function AppWrapper() {
               <Route path="embeds" element={<Embeds />} />
               <Route path="digital-downloads" element={<DigitalDownloads />} />
               <Route path="testimonials" element={<TestimonialsManager />} />
-              <Route path="comments" element={<CommentsManager />} />
+              <Route path="comments" element={<Navigate to="/admin/feedback" replace />} />
               <Route path="teachers" element={<Teachers />} />
               <Route path="pinterest" element={<PinterestManager />} />
               <Route path="picks" element={<PicksManager />} />

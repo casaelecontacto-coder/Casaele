@@ -8,7 +8,8 @@
     "start": "node server.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "seed:how-to-use": "node scripts/seedHowToUsePage.js"
+    "seed:how-to-use": "node scripts/seedHowToUsePage.js",
+    "migrate:feedback": "node scripts/migrateCommentsAndReviewsToFeedback.js"
   },
   "keywords": [],
   "author": "",
