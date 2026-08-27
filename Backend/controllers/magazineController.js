@@ -85,6 +85,7 @@ export const createMagazine = async (req, res) => {
       coverImageUrl,
       pdfUrl,
       category,
+      contentType,
       accessType,
       price,
       discountPrice,
@@ -130,6 +131,7 @@ export const createMagazine = async (req, res) => {
       coverImageUrl,
       pdfUrl,
       category: category || '',
+      contentType: contentType || 'issue',
       accessType: accessType || 'free',
       price: price || 0,
       discountPrice: discountPrice || 0,
@@ -168,6 +170,7 @@ export const updateMagazine = async (req, res) => {
       coverImageUrl,
       pdfUrl,
       category,
+      contentType,
       accessType,
       price,
       discountPrice,
@@ -193,6 +196,7 @@ export const updateMagazine = async (req, res) => {
     if (coverImageUrl) updateData.coverImageUrl = coverImageUrl;
     if (pdfUrl) updateData.pdfUrl = pdfUrl;
     if (category !== undefined) updateData.category = category;
+    if (contentType !== undefined) updateData.contentType = contentType;
     if (accessType !== undefined) updateData.accessType = accessType;
     if (price != null) updateData.price = price;
     if (discountPrice != null) updateData.discountPrice = discountPrice;
