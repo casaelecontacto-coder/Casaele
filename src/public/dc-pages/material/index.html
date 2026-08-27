@@ -123,8 +123,8 @@
             <div style="font-size:12.5px;font-weight:600;letter-spacing:.08em;color:rgba(251,244,233,.6);margin-top:7px">chapters</div>
           </div>
           <div>
-            <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(28px,3vw,38px);line-height:1;color:#93bbc0">3</div>
-            <div style="font-size:12.5px;font-weight:600;letter-spacing:.08em;color:rgba(251,244,233,.6);margin-top:7px">levels, A1 to B2</div>
+            <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(28px,3vw,38px);line-height:1;color:#93bbc0">{{ totalLessons }}</div>
+            <div style="font-size:12.5px;font-weight:600;letter-spacing:.08em;color:rgba(251,244,233,.6);margin-top:7px">lessons inside</div>
           </div>
           <div>
             <div style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:900;font-size:clamp(28px,3vw,38px);line-height:1;color:#fff">Free</div>
@@ -139,41 +139,7 @@
 <section id="search" data-screen-label="02 Search" style="background:#f5e6d3;padding:clamp(34px,4.5vw,58px) clamp(20px,4vw,56px) clamp(6px,1.5vw,14px)">
   <div style="max-width:1040px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:clamp(18px,2.4vw,26px)">
 
-    <div style="display:flex;align-items:center;gap:4px;background:#fbf4e9;border:2px solid #17110e;border-radius:999px;padding:5px;box-shadow:0 4px 0 rgba(23,17,14,.2)">
-      <sc-for list="{{ modes }}" as="m" hint-placeholder-count="2">
-        <button type="button" onClick="{{ m.onClick }}" style="font-family:'Host Grotesk',system-ui,sans-serif;font-weight:800;font-size:15px;letter-spacing:-.01em;padding:11px 30px;border-radius:999px;border:none;cursor:pointer;background:{{ m.bg }};color:{{ m.fg }};transition:background .2s ease,color .2s ease">{{ m.label }}</button>
-      </sc-for>
-    </div>
-
-    <sc-if value="{{ isExplore }}" hint-placeholder-val="{{ true }}">
-      <div data-m="searchbar" style="width:100%;display:flex;align-items:center;background:#fff;border:2px solid #17110e;border-radius:999px;padding:8px 8px 8px 8px;box-shadow:0 5px 0 rgba(23,17,14,.2)">
-        <div data-m="segs" style="display:flex;align-items:center;flex:1;min-width:0;flex-wrap:wrap">
-          <sc-for list="{{ segments }}" as="s" hint-placeholder-count="5">
-            <div style="position:relative;display:flex;align-items:center;flex:none">
-              <button type="button" data-m="segbtn" onClick="{{ s.onToggle }}" aria-label="{{ s.label }}" style="display:flex;align-items:center;gap:8px;background:transparent;border:none;outline:none;cursor:pointer;font-family:'Host Grotesk',system-ui,sans-serif;font-size:15px;font-weight:600;color:{{ s.color }};padding:9px 15px;white-space:nowrap;border-radius:999px;transition:background .16s ease" style-hover="background:rgba(23,17,14,.05)">
-                <span>{{ s.display }}</span>
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;opacity:.6"><path d="M6 9l6 6 6-6"/></svg>
-              </button>
-              <sc-if value="{{ s.open }}" hint-placeholder-val="{{ false }}">
-                <div style="position:absolute;top:calc(100% + 10px);left:0;z-index:60;min-width:200px;background:#fbf4e9;border:2px solid #17110e;border-radius:18px;box-shadow:0 6px 0 rgba(23,17,14,.22);padding:7px;display:flex;flex-direction:column;gap:1px">
-                  <sc-for list="{{ s.options }}" as="opt" hint-placeholder-count="4">
-                    <button type="button" onClick="{{ opt.onClick }}" style="display:flex;align-items:center;gap:8px;text-align:left;background:{{ opt.bg }};color:{{ opt.fg }};border:none;cursor:pointer;font-family:'Host Grotesk',system-ui,sans-serif;font-size:14.5px;font-weight:{{ opt.weight }};padding:9px 13px;border-radius:12px;white-space:nowrap" style-hover="background:rgba(169,31,36,.1);color:#8c1a1e">{{ opt.label }}</button>
-                  </sc-for>
-                </div>
-              </sc-if>
-              <sc-if value="{{ s.divider }}" hint-placeholder-val="{{ true }}">
-                <span data-m="segdiv" style="width:1.5px;height:22px;background:rgba(23,17,14,.18);flex:none"></span>
-              </sc-if>
-            </div>
-          </sc-for>
-        </div>
-        <button type="button" data-m="searchbtn" onClick="{{ onSearch }}" aria-label="Search chapters" style="flex:none;width:46px;height:46px;border-radius:50%;background:#a91f24;border:2px solid #17110e;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 #6f1216;transition:transform .18s ease,box-shadow .18s ease" style-hover="background:#8c1a1e;transform:translateY(2px);box-shadow:0 1px 0 #6f1216">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
-        </button>
-      </div>
-    </sc-if>
-
-    <sc-if value="{{ isKeyword }}" hint-placeholder-val="{{ false }}">
+    <sc-if value="{{ isKeyword }}" hint-placeholder-val="{{ true }}">
       <div data-m="searchbar" style="width:100%;display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #17110e;border-radius:999px;padding:8px 8px 8px 22px;box-shadow:0 5px 0 rgba(23,17,14,.2)">
         <input value="{{ keywordDraft }}" onChange="{{ onKeywordChange }}" onKeyDown="{{ onKeywordKey }}" placeholder="Try “subjuntivo”, “Las Meninas”, “mercado”…" aria-label="Search by keyword" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:'Host Grotesk',system-ui,sans-serif;font-size:16px;font-weight:600;color:#17110e;padding:9px 0">
         <button type="button" data-m="searchbtn" onClick="{{ onSearch }}" aria-label="Search chapters" style="flex:none;width:46px;height:46px;border-radius:50%;background:#a91f24;border:2px solid #17110e;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 #6f1216;transition:transform .18s ease,box-shadow .18s ease" style-hover="background:#8c1a1e;transform:translateY(2px);box-shadow:0 1px 0 #6f1216">
@@ -310,66 +276,36 @@
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;defaultMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Explore&quot;,&quot;options&quot;:[&quot;Explore&quot;,&quot;Keyword&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Search&quot;},&quot;defaultLevel&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;All&quot;,&quot;options&quot;:[&quot;All&quot;,&quot;A1&quot;,&quot;A2&quot;,&quot;B2&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Search&quot;}}">
-const TINTS = { A1: "#93bbc0", A2: "#d9a664", B2: "#f2d17f" };
-const CHAPTERS = [
-  { title: "Presentaciones", level: "A1", room: "El archivo total", sub: "Vocabulario", theme: "General", country: "España", likes: 0, order: 1,
-    desc: "Introductions and everyday greetings — the vocabulary for week one.",
-    tags: ["saludos", "ser y estar", "presente", "primera clase"] },
-  { title: "En el mercado", level: "A2", room: "La sazón gramática", sub: "Vocabulario", theme: "Gastronomía", country: "España", likes: 0, order: 2,
-    desc: "Shopping, prices, and asking for what you need without freezing up.",
-    tags: ["compras", "números", "comida", "regatear"] },
-  { title: "La rutina", level: "A1", room: "El archivo total", sub: "Verbos", theme: "Vida profesional y cotidiana", country: "España", likes: 0, order: 3,
-    desc: "Daily routines, telling time, reflexive verbs without the dread.",
-    tags: ["reflexivos", "la hora", "rutina", "adverbios"] },
-  { title: "Historias de barrio", level: "A2", room: "El sueñario de Ele", sub: "Pretéritos", theme: "General", country: "Colombia", likes: 0, order: 4,
-    desc: "Neighbourhood stories that introduce the preterite gently.",
-    tags: ["pretérito", "barrio", "narrar", "porteño"] },
-  { title: "El debate", level: "B2", room: "Sala de grabación (Podcast)", sub: "Aprendizaje activo", theme: "Académico", country: "España", likes: 0, order: 5,
-    desc: "Opinions, agreement and disagreement in structured discussion.",
-    tags: ["opinar", "conectores", "debate", "creo que"] },
-  { title: "El pasado que vuelve", level: "B2", room: "La sazón gramática", sub: "pretérito perfecto", theme: "General", country: "España", likes: 0, order: 6,
-    desc: "Imperfect vs. preterite, taught through real anecdotes.",
-    tags: ["imperfecto", "pretérito", "anécdotas", "contraste"] },
-  { title: "Cartas formales", level: "B2", room: "El archivo total", sub: "Aprendizaje activo", theme: "Vida profesional y cotidiana", country: "España", likes: 0, order: 7,
-    desc: "Formal writing: emails, complaints, requests, and the register they need.",
-    tags: ["registro formal", "correos", "reclamaciones", "usted"] },
-  { title: "El subjuntivo en la calle", level: "B2", room: "La sazón gramática", sub: "Verbos", theme: "Académico", country: "Colombia", likes: 0, order: 8,
-    desc: "Subjunctive as it's actually spoken, not just drilled.",
-    tags: ["subjuntivo", "ojalá", "habla real", "matices"] },
-  { title: "Las Meninas", level: "B2", room: "El sueñario de Ele", sub: "Aprendizaje pasivo", theme: "Pinturas", country: "España", likes: 0, order: 9,
-    desc: "Velázquez in the Prado, read slowly — description, place and perspective.",
-    tags: ["pintura", "museo del prado", "describir", "historia del arte"] },
-  { title: "Coleccionando heridas", level: "B2", room: "La ducha sinfónica", sub: "Emisora ELE", theme: "Enamorarse", country: "Colombia", likes: 0, order: 10,
-    desc: "A song read as a text: idiom, diminutives and love across generations.",
-    tags: ["canción", "diminutivos", "amor", "verbos reflexivos"] }
-];
-const LIKES = [128, 214, 96, 341, 187, 402, 74, 268, 512, 455];
-const SEG_DEFS = [
-  { key: "room", label: "Room/Category", reset: "Todas las salas",
-    values: ["El archivo total", "El sueñario de Ele", "La ducha sinfónica", "La sazón gramática", "Sala de grabación (Podcast)"] },
-  { key: "sub", label: "Sub Category", reset: "Todas las subcategorías",
-    values: ["Aprendizaje activo", "Aprendizaje pasivo", "Emisora ELE", "Género", "Pretéritos", "Verbos", "Vocabulario", "pretérito perfecto"] },
-  { key: "theme", label: "Theme/Genre", reset: "Todos los temas",
-    values: ["Académico", "Enamorarse", "Gastronomía", "General", "Pinturas", "Ropa", "Viajes", "Vida profesional y cotidiana", "desenamorar"] },
-  { key: "level", label: "Level", reset: "Todos", values: ["A1", "A2", "B2"] },
-  { key: "country", label: "Country", reset: "Todos los países", values: ["Colombia", "España"] }
-];
+// Wired to the same backend the admin panel's "Materials" > Chapters section
+// manages (GET /api/chapters). The elaborate room/sub-category/theme/country
+// filter UI from the original mockup is removed here: the real Chapter model
+// (Backend/models/Chapter.js) only has name, description, order, and
+// embedCount — no taxonomy fields to filter by. If you want that filtering
+// back, it needs new fields added to Chapter + the admin's Materials editor
+// first; faking the values here would just show wrong labels on real
+// chapters. Keyword search (title + description) still works since it
+// doesn't need any of that.
+const TINT_CYCLE = ["#93bbc0", "#d9a664", "#f2d17f"];
 
 class Component extends DCLogic {
   state = {
-    mode: this.props.defaultMode === "Keyword" ? "Keyword" : "Explore",
-    filters: {
-      room: "", sub: "", theme: "", country: "",
-      level: this.props.defaultLevel && this.props.defaultLevel !== "All" ? this.props.defaultLevel : ""
-    },
+    chapters: [],
+    loaded: false,
     keywordDraft: "",
-    keyword: "",
-    openSeg: null
+    keyword: ""
   };
 
   componentDidMount() {
-    this._onDoc = () => { if (this.state.openSeg !== null) this.setState({ openSeg: null }); };
-    document.addEventListener("click", this._onDoc);
+    fetch("https://casaele.onrender.com/api/chapters")
+      .then((r) => r.json())
+      .then((data) => {
+        const list = Array.isArray(data.chapters) ? data.chapters : [];
+        this.setState({ chapters: list, loaded: true });
+      })
+      .catch((err) => {
+        console.error("[course-chapters] failed to load chapters:", err);
+        this.setState({ chapters: [], loaded: true });
+      });
   }
 
   componentWillUnmount() {
@@ -406,72 +342,30 @@ class Component extends DCLogic {
     requestAnimationFrame(tick);
   }
 
-  setFilter(key, value) {
-    this.setState((s) => ({ filters: Object.assign({}, s.filters, { [key]: value }) }));
-  }
-
   clearAll() {
-    this.setState({ filters: { room: "", sub: "", theme: "", country: "", level: "" }, keyword: "", keywordDraft: "" });
+    this.setState({ keyword: "", keywordDraft: "" });
   }
 
   renderVals() {
-    const { mode, filters, keyword, keywordDraft } = this.state;
-    const all = CHAPTERS.map((c, i) => Object.assign({}, c, {
-      likes: LIKES[i],
-      likesLabel: LIKES[i] + " liked this",
-      tint: TINTS[c.level],
-      coverId: "chapter-cover-" + (i + 1)
+    const { chapters, keyword, keywordDraft } = this.state;
+    const all = chapters.map((c, i) => ({
+      title: c.name,
+      desc: c.description || "",
+      order: c.order || i + 1,
+      level: "Cap. " + (c.order || i + 1),
+      tags: [],
+      likesLabel: c.embedCount === 1 ? "1 lesson inside" : (c.embedCount || 0) + " lessons inside",
+      tint: TINT_CYCLE[i % TINT_CYCLE.length],
+      coverId: "chapter-cover-" + (c._id || i + 1)
     }));
 
     const kw = keyword.trim().toLowerCase();
-    const matches = all.filter((c) => {
-      if (filters.room && c.room !== filters.room) return false;
-      if (filters.sub && c.sub !== filters.sub) return false;
-      if (filters.theme && c.theme !== filters.theme) return false;
-      if (filters.level && c.level !== filters.level) return false;
-      if (filters.country && c.country !== filters.country) return false;
-      if (kw) {
-        const hay = (c.title + " " + c.desc + " " + c.tags.join(" ")).toLowerCase();
-        if (hay.indexOf(kw) === -1) return false;
-      }
-      return true;
-    });
+    const matches = kw
+      ? all.filter((c) => (c.title + " " + c.desc).toLowerCase().indexOf(kw) !== -1)
+      : all;
 
-    const modes = ["Explore", "Keyword"].map((m) => ({
-      label: m,
-      bg: mode === m ? "#a91f24" : "transparent",
-      fg: mode === m ? "#fff" : "rgba(23,17,14,.7)",
-      onClick: () => this.setState({ mode: m })
-    }));
-
-    const segments = SEG_DEFS.map((def, i) => {
-      const values = def.values;
-      const active = !!filters[def.key];
-      const opts = [{ value: "", label: def.reset }].concat(values.map((v) => ({ value: v, label: v })));
-      return {
-        label: def.label,
-        display: filters[def.key] || def.label,
-        color: active ? "#a91f24" : "rgba(23,17,14,.62)",
-        divider: i < SEG_DEFS.length - 1,
-        open: this.state.openSeg === def.key,
-        onToggle: (e) => {
-          e.stopPropagation();
-          this.setState((s) => ({ openSeg: s.openSeg === def.key ? null : def.key }));
-        },
-        options: opts.map((o) => ({
-          label: o.label,
-          bg: filters[def.key] === o.value ? "rgba(169,31,36,.1)" : "transparent",
-          fg: filters[def.key] === o.value ? "#a91f24" : "#17110e",
-          weight: filters[def.key] === o.value ? 800 : 600,
-          onClick: (e) => { e.stopPropagation(); this.setFilter(def.key, o.value); this.setState({ openSeg: null }); }
-        }))
-      };
-    });
-
-    const activeCount = Object.keys(filters).filter((k) => filters[k]).length + (kw ? 1 : 0);
     const rows = [
-      { id: "latest", title: "Latest Chapters Out Now!", cards: matches.slice().sort((a, b) => b.order - a.order) },
-      { id: "liked", title: "Most Liked!", cards: matches.slice().sort((a, b) => b.likes - a.likes) }
+      { id: "latest", title: "Chapters", cards: matches.slice().sort((a, b) => b.order - a.order) }
     ].map((r) => ({
       id: r.id, title: r.title, cards: r.cards,
       trackRef: this.trackRef(r.id),
@@ -481,10 +375,10 @@ class Component extends DCLogic {
 
     return {
       rows,
-      modes,
-      isExplore: mode === "Explore",
-      isKeyword: mode === "Keyword",
-      segments,
+      modes: [],
+      isExplore: false,
+      isKeyword: true,
+      segments: [],
       keywordDraft,
       onKeywordChange: (e) => this.setState({ keywordDraft: e.target.value }),
       onKeywordKey: (e) => { if (e.key === "Enter") this.setState({ keyword: e.target.value }); },
@@ -494,12 +388,13 @@ class Component extends DCLogic {
         if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 90, behavior: "smooth" });
       },
       onClear: () => this.clearAll(),
-      hasFilters: activeCount > 0,
-      noResults: matches.length === 0,
-      resultLabel: activeCount === 0
-        ? all.length + " chapters, every level, free to read"
+      hasFilters: !!kw,
+      noResults: this.state.loaded && matches.length === 0,
+      resultLabel: !kw
+        ? all.length + (all.length === 1 ? " chapter, free to read" : " chapters, free to read")
         : matches.length + (matches.length === 1 ? " chapter matches" : " chapters match"),
-      totalChapters: all.length
+      totalChapters: all.length,
+      totalLessons: chapters.reduce((sum, c) => sum + (c.embedCount || 0), 0)
     };
   }
 }
