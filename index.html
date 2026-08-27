@@ -536,6 +536,17 @@
         <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:rgba(23,17,14,.6)">Your name
           <input value="{{ draftName }}" onChange="{{ onName }}" placeholder="Ananya S." style="font:inherit;font-size:15px;font-weight:500;letter-spacing:normal;color:#17110e;background:#fff;border:1.5px solid rgba(23,17,14,.3);border-radius:12px;padding:11px 13px;outline:none" style-focus="border-color:#a91f24;box-shadow:0 0 0 3px rgba(169,31,36,.15)">
         </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:rgba(23,17,14,.6)">Email
+          <input type="email" value="{{ draftEmail }}" onChange="{{ onEmail }}" placeholder="you@example.com" style="font:inherit;font-size:15px;font-weight:500;letter-spacing:normal;color:#17110e;background:#fff;border:1.5px solid rgba(23,17,14,.3);border-radius:12px;padding:11px 13px;outline:none" style-focus="border-color:#a91f24;box-shadow:0 0 0 3px rgba(169,31,36,.15)">
+        </label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:rgba(23,17,14,.6)">Country
+            <input value="{{ draftCountry }}" onChange="{{ onCountry }}" placeholder="India" style="font:inherit;font-size:15px;font-weight:500;letter-spacing:normal;color:#17110e;background:#fff;border:1.5px solid rgba(23,17,14,.3);border-radius:12px;padding:11px 13px;outline:none" style-focus="border-color:#a91f24;box-shadow:0 0 0 3px rgba(169,31,36,.15)">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:rgba(23,17,14,.6)">What you do
+            <input value="{{ draftProfession }}" onChange="{{ onProfession }}" placeholder="Student" style="font:inherit;font-size:15px;font-weight:500;letter-spacing:normal;color:#17110e;background:#fff;border:1.5px solid rgba(23,17,14,.3);border-radius:12px;padding:11px 13px;outline:none" style-focus="border-color:#a91f24;box-shadow:0 0 0 3px rgba(169,31,36,.15)">
+          </label>
+        </div>
         <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:rgba(23,17,14,.6)">Level
           <select value="{{ draftLevel }}" onChange="{{ onLevel }}" style="font:inherit;font-size:15px;font-weight:500;letter-spacing:normal;color:#17110e;background:#fff;border:1.5px solid rgba(23,17,14,.3);border-radius:12px;padding:11px 13px;outline:none" style-focus="border-color:#a91f24;box-shadow:0 0 0 3px rgba(169,31,36,.15)">
             <option value="A1">A1</option>
@@ -550,7 +561,7 @@
         </label>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
           <span style="font-size:12.5px;color:rgba(23,17,14,.5)">{{ draftCount }}/240</span>
-          <button type="submit" style="flex:none;background:#a91f24;color:#fff;font:inherit;font-weight:700;font-size:14.5px;border:none;padding:12px 22px;border-radius:999px;box-shadow:0 3px 0 #6f1216;cursor:pointer" style-hover="background:#8c1a1e;transform:translateY(1px);box-shadow:0 2px 0 #6f1216">Pin it up</button>
+          <button type="submit" disabled="{{ submitDisabled }}" style="flex:none;background:#a91f24;color:#fff;font:inherit;font-weight:700;font-size:14.5px;border:none;padding:12px 22px;border-radius:999px;box-shadow:0 3px 0 #6f1216;cursor:pointer;opacity:{{ submitOpacity }}" style-hover="background:#8c1a1e;transform:translateY(1px);box-shadow:0 2px 0 #6f1216">{{ submitLabel }}</button>
         </div>
         <p style="margin:0;font-size:12.5px;line-height:1.5;color:{{ noticeColor }};min-height:18px">{{ notice }}</p>
       </form>
@@ -561,7 +572,12 @@
             <span style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-size:34px;line-height:.5;color:{{ n.accent }}">"</span>
             <p style="margin:0;font-size:14.5px;line-height:1.6;color:rgba(23,17,14,.8);text-wrap:pretty">{{ n.text }}</p>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1.5px solid rgba(23,17,14,.12);padding-top:12px;margin-top:auto">
-              <div style="font-weight:700;font-size:14px;color:#17110e">{{ n.name }}</div>
+              <div>
+                <div style="font-weight:700;font-size:14px;color:#17110e">{{ n.name }}</div>
+                <sc-if value="{{ n.pending }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:11px;color:rgba(23,17,14,.5)">Pending approval</div>
+                </sc-if>
+              </div>
               <span style="background:#f2d17f;border:1.5px solid #17110e;border-radius:999px;padding:3px 10px;font-weight:800;font-size:11px;color:#17110e;flex:none">{{ n.level }}</span>
             </div>
           </article>
@@ -648,6 +664,12 @@ const LIB = [
   { title: "Cuéntame cómo pasó", kind: "Series", level: "A2", room: "El Sofá Cinemático", why: "Family drama across fifty years of Spain. Everyday vocabulary, endless episodes." }
 ];
 const TINTS = { A2: "#d9a664", B1: "#93bbc0", B2: "#799e83" };
+
+function truncateQuote(html, max) {
+  const text = (html || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  if (text.length <= max) return text;
+  return text.slice(0, max - 1).trim() + "…";
+}
 const TESTI_CARD_W = 320, TESTI_GAP = 26, TESTI_PITCH = TESTI_CARD_W + TESTI_GAP, TESTI_PAD = 32;
 const TESTI_SECONDS = ["42", "58", "35", "51", "39"];
 
@@ -685,20 +707,40 @@ const LEVELS_LADDER = [
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { filter: null, now: Date.now(), subscribed: false, playing: false, floatingVisible: false, floatingDismissed: false, testScrollX: 0, testClientWidth: 0, testScrollWidth: 0, wallAdded: [], wallName: "", wallLevel: "B1", wallText: "", wallNotice: "", wallOk: false };
+    this.state = { filter: null, now: Date.now(), subscribed: false, playing: false, floatingVisible: false, floatingDismissed: false, testScrollX: 0, testClientWidth: 0, testScrollWidth: 0, wallAdded: [], wallName: "", wallEmail: "", wallCountry: "", wallProfession: "", wallLevel: "B1", wallText: "", wallNotice: "", wallOk: false, wallSubmitting: false, realTestimonials: [], testimonialsLoaded: false };
     this.WALL_KEY = "cde-wall-notes";
-    this.WALL_SEED = [
-      { name: "Ananya S.", level: "B1", text: "I read one editorial piece before every class now. The Sunday conversation suddenly has words in it." },
-      { name: "Rohit M.", level: "A2", text: "The comics were the first thing I finished in Spanish without stopping to translate every line." },
-      { name: "Meher K.", level: "B2", text: "Course chapters between classes kept me from losing the thread over exam season." }
-    ];
+    // Real, admin-approved testimonials — fetched below, GET /api/testimonials/approved.
+    // This used to be three made-up people (Ananya S., Rohit M., Meher K.) that
+    // never came from anywhere real, and "Add yours" only wrote to localStorage —
+    // nothing ever reached the database, so nobody else ever saw what was "pinned up".
     this.submitWall = (e) => {
       e.preventDefault();
       const name = this.state.wallName.trim(), text = this.state.wallText.trim();
-      if (!name || !text) { this.setState({ wallNotice: "A name and a note, please.", wallOk: false }); return; }
-      const wallAdded = [{ name, level: this.state.wallLevel, text }, ...this.state.wallAdded];
-      try { localStorage.setItem(this.WALL_KEY, JSON.stringify(wallAdded)); } catch (err) {}
-      this.setState({ wallAdded, wallName: "", wallText: "", wallNotice: "Pinned up. Thank you!", wallOk: true });
+      const email = this.state.wallEmail.trim(), country = this.state.wallCountry.trim(), profession = this.state.wallProfession.trim();
+      if (!name || !text || !email || !country || !profession) {
+        this.setState({ wallNotice: "Name, email, country, what you do, and a note — all required.", wallOk: false });
+        return;
+      }
+      this.setState({ wallSubmitting: true, wallNotice: "" });
+      fetch("https://casaele.onrender.com/api/testimonials/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, country, profession, level: this.state.wallLevel, message: text })
+      })
+        .then((r) => { if (!r.ok) throw new Error("Request failed"); return r.json(); })
+        .then(() => {
+          // Shown locally right away, tagged as pending — it isn't live for other
+          // visitors until an admin approves it in the Feedback/Testimonials panel.
+          const wallAdded = [{ name, level: this.state.wallLevel, text, pending: true }, ...this.state.wallAdded];
+          try { localStorage.setItem(this.WALL_KEY, JSON.stringify(wallAdded)); } catch (err) {}
+          this.setState({
+            wallAdded, wallName: "", wallEmail: "", wallCountry: "", wallProfession: "", wallText: "",
+            wallNotice: "Thanks! Your note is pending approval.", wallOk: true, wallSubmitting: false
+          });
+        })
+        .catch(() => {
+          this.setState({ wallNotice: "Couldn't submit that — try again in a moment.", wallOk: false, wallSubmitting: false });
+        });
     };
     this.setBannerRef = (el) => {
       if (!el || this.bannerEl === el) return;
@@ -773,6 +815,15 @@ class Component extends DCLogic {
     };
   }
   componentDidMount() {
+    fetch("https://casaele.onrender.com/api/testimonials/approved")
+      .then((r) => r.json())
+      .then((data) => {
+        this.setState({ realTestimonials: Array.isArray(data) ? data : [], testimonialsLoaded: true });
+      })
+      .catch((err) => {
+        console.error("[home] failed to load testimonials:", err);
+        this.setState({ realTestimonials: [], testimonialsLoaded: true });
+      });
     this.timer = setInterval(() => this.setState({ now: Date.now() }), 1000);
     this.bannerTimer = setInterval(() => {
       if (this.bannerPaused || !this.bannerEl) return;
@@ -825,7 +876,12 @@ class Component extends DCLogic {
     }));
     const wallAccents = ["#a91f24", "#2b5d63", "#d9a664"];
     const wallTilts = ["rotate(-1.1deg)", "rotate(.8deg)", "rotate(-.4deg)", "rotate(1.2deg)"];
-    const notes = [...this.state.wallAdded, ...this.WALL_SEED].map((n, i) => ({
+    const wallFromApi = this.state.realTestimonials.slice(0, 9).map((t) => ({
+      name: t.name,
+      level: t.level,
+      text: truncateQuote(t.message, 220)
+    }));
+    const notes = [...this.state.wallAdded, ...wallFromApi].map((n, i) => ({
       ...n,
       accent: wallAccents[i % wallAccents.length],
       tilt: wallTilts[i % wallTilts.length]
@@ -926,12 +982,21 @@ class Component extends DCLogic {
     return {
       notes,
       draftName: this.state.wallName,
+      draftEmail: this.state.wallEmail,
+      draftCountry: this.state.wallCountry,
+      draftProfession: this.state.wallProfession,
       draftLevel: this.state.wallLevel,
       draftText: this.state.wallText,
       draftCount: this.state.wallText.length,
       notice: this.state.wallNotice,
       noticeColor: this.state.wallOk ? "#2b5d63" : "#a91f24",
+      submitLabel: this.state.wallSubmitting ? "Sending…" : "Pin it up",
+      submitDisabled: this.state.wallSubmitting,
+      submitOpacity: this.state.wallSubmitting ? "0.6" : "1",
       onName: (e) => this.setState({ wallName: e.target.value }),
+      onEmail: (e) => this.setState({ wallEmail: e.target.value }),
+      onCountry: (e) => this.setState({ wallCountry: e.target.value }),
+      onProfession: (e) => this.setState({ wallProfession: e.target.value }),
       onLevel: (e) => this.setState({ wallLevel: e.target.value }),
       onText: (e) => this.setState({ wallText: e.target.value }),
       submitTestimonial: this.submitWall,
@@ -962,11 +1027,15 @@ class Component extends DCLogic {
       onBannerMove: this.onBannerMove,
       endBannerDrag: this.endBannerDrag,
       onBannerClickCapture: this.onBannerClickCapture,
-      storyQuotes: [
-        { text: "I walked into the exam already knowing the format. That's the part nobody else prepares you for.", name: "Student name", detail: "Passed DELE B1", level: "B1", accent: "#a91f24" },
-        { text: "The mock speaking session gave me the same nerves as the real thing, so the real thing felt familiar.", name: "Student name", detail: "Passed DELE B2", level: "B2", accent: "#2b5d63" },
-        { text: "A small class meant my mistakes got caught before the examiner ever saw them.", name: "Student name", detail: "Passed DELE B1", level: "B1", accent: "#d9a664" }
-      ]
+      // Real, admin-approved testimonials from GET /api/testimonials/approved —
+      // this used to be three cards literally labeled "Student name".
+      storyQuotes: this.state.realTestimonials.slice(0, 3).map((t, i) => ({
+        text: truncateQuote(t.message, 180),
+        name: t.name,
+        detail: [t.profession, t.country].filter(Boolean).join(", "),
+        level: t.level,
+        accent: ["#a91f24", "#2b5d63", "#d9a664"][i % 3]
+      }))
     };
   }
 }
