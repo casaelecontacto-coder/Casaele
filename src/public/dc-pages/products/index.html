@@ -174,6 +174,9 @@
           <span style="display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:#a91f24;transition:transform .25s cubic-bezier(.2,.8,.3,1)" style-hover="transform:translateX(6px)">Read the sheet →</span>
         </article>
       </sc-for>
+      <sc-if value="{{ noTextsYet }}" hint-placeholder-val="{{ false }}">
+        <p style="font-size:14.5px;color:rgba(23,17,14,.55);margin:0">No standalone texts yet — check back soon.</p>
+      </sc-if>
     </div>
   </div>
 </section>
@@ -191,20 +194,24 @@
     <div data-m="stack" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(22px,2.6vw,34px)">
       <sc-for list="{{ comics }}" as="strip" hint-placeholder-count="3">
         <article data-reveal-card="" style="background:#fffdf8;border:2px solid #17110e;border-radius:4px;padding:16px;display:flex;flex-direction:column;gap:14px;box-shadow:8px 10px 0 rgba(23,17,14,.14);transform:{{ strip.tilt }};transition:transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s ease" style-hover="transform:rotate(0deg) translateY(-8px);box-shadow:14px 18px 0 rgba(23,17,14,.18)">
-          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
-            <image-slot id="{{ strip.panelA }}" shape="rect" placeholder="Panel 1" style="width:100%;aspect-ratio:3/4"></image-slot>
-            <image-slot id="{{ strip.panelB }}" shape="rect" placeholder="Panel 2" style="width:100%;aspect-ratio:3/4"></image-slot>
-            <image-slot id="{{ strip.panelC }}" shape="rect" placeholder="Panel 3" style="width:100%;aspect-ratio:3/4"></image-slot>
-          </div>
+          <image-slot id="{{ strip.coverId }}" src="{{ strip.coverUrl }}" shape="rect" placeholder="Drop this comic's cover" style="width:100%;aspect-ratio:4/3"></image-slot>
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-            <span style="font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#a91f24">{{ strip.panels }} panels</span>
+            <span style="font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#a91f24">{{ strip.badge }}</span>
             <span style="font-size:11.5px;font-weight:700;color:rgba(23,17,14,.45)">{{ strip.level }}</span>
           </div>
           <h3 style="font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:700;font-size:20px;line-height:1.2;margin:0">{{ strip.title }}</h3>
           <p style="font-size:14.5px;line-height:1.6;color:rgba(23,17,14,.72);margin:0;flex:1">{{ strip.excerpt }}</p>
-          <span style="display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:#a91f24;transition:transform .25s cubic-bezier(.2,.8,.3,1)" style-hover="transform:translateX(6px)">Read the strip →</span>
+          <sc-if value="{{ strip.downloadUrl }}" hint-placeholder-val="{{ false }}">
+            <a href="{{ strip.downloadUrl }}" target="_blank" rel="noopener" download="" style="display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:#a91f24;transition:transform .25s cubic-bezier(.2,.8,.3,1)" style-hover="transform:translateX(6px)">Download ↓</a>
+          </sc-if>
+          <sc-if value="{{ strip.needsPurchase }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:13px;font-weight:600;color:rgba(23,17,14,.5)">Available to members</span>
+          </sc-if>
         </article>
       </sc-for>
+      <sc-if value="{{ noComicsYet }}" hint-placeholder-val="{{ false }}">
+        <p style="grid-column:1/-1;font-size:14.5px;color:rgba(23,17,14,.55);margin:0">No comics uploaded yet — check back soon.</p>
+      </sc-if>
     </div>
   </div>
 </section>
@@ -274,23 +281,19 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 // Wired to the same backend the admin panel's "Magazines" section manages
-// (GET /api/magazines, public + isActive-only). The newest issue becomes
-// the featured card; older issues fill the "loose" grid below it.
+// (GET /api/magazines, public + isActive-only). Each magazine now carries a
+// contentType field ('issue' | 'text' | 'comic', added alongside this
+// change) so one collection can drive all three sections here: the newest
+// 'issue' is the featured card, 'text' entries fill the Texts grid, 'comic'
+// entries fill the Comics grid with a real Download link to the same
+// GET /api/magazines/:id/pdf route magazine issues already use (free ones
+// only — a plain <a> can't attach the auth header a paid download needs).
 //
-// "Comics" has no matching content type in the backend yet (there's no
-// Comic model/route), so that section is still static placeholder data —
-// ping the team if you want a real Comics collection added to the admin.
 // NOTE: the fallback URL used elsewhere in this codebase
 // ("amrit-project-lms.onrender.com") is a stale/legacy host and 404s.
 // The API this site's admin panel and production build actually talk to
 // is casaele.onrender.com (confirmed from the deployed admin bundle).
 const API_BASE = "https://casaele.onrender.com";
-
-const COMICS = [
-  { level: "A2–B1", panels: 6, title: "En la tienda de la esquina", excerpt: "Six panels drawn by a Sunday student. Buying bread, and one small misunderstanding.", tilt: "rotate(-1.4deg)" },
-  { level: "A1–A2", panels: 4, title: "¿Dónde está mi paraguas?", excerpt: "Rain, a lost umbrella, and every preposition of place you keep forgetting.", tilt: "rotate(1.2deg)" },
-  { level: "B1", panels: 8, title: "La llamada del banco", excerpt: "A phone call nobody wants to make, in the polite forms and then the honest ones.", tilt: "rotate(-1deg)" }
-];
 
 const TILTS = ["rotate(-1.6deg)", "rotate(1.4deg)", "rotate(-1deg)", "rotate(2deg)", "rotate(-1.2deg)", "rotate(1.6deg)"];
 
@@ -332,10 +335,13 @@ class Component extends DCLogic {
   }
   renderVals() {
     const mags = this.state.magazines;
-    const featuredMag = mags[0];
+    const issues = mags.filter((m) => (m.contentType || "issue") === "issue");
+    const texts = mags.filter((m) => m.contentType === "text");
+    const stripsData = mags.filter((m) => m.contentType === "comic");
+    const featuredMag = issues[0];
 
     const featured = featuredMag ? {
-      num: mags.length,
+      num: issues.length,
       title: featuredMag.title,
       level: featuredMag.category || "All levels",
       date: formatIssueDate(featuredMag.publishedAt),
@@ -352,22 +358,33 @@ class Component extends DCLogic {
       contents: [], coverId: "desvelo-cover-empty", coverUrl: ""
     };
 
-    const loose = mags.slice(1).map((m, i) => ({
-      kind: "Issue",
+    const loose = texts.map((m, i) => ({
+      kind: "Text",
       level: m.category || "All levels",
       title: m.title,
       excerpt: stripHtml(m.description),
       tilt: TILTS[i % TILTS.length]
     }));
 
-    const comics = COMICS.map((c, i) => ({
-      ...c,
-      panelA: "desvelo-comic-" + (i + 1) + "-a",
-      panelB: "desvelo-comic-" + (i + 1) + "-b",
-      panelC: "desvelo-comic-" + (i + 1) + "-c"
+    const comics = stripsData.map((m, i) => ({
+      title: m.title,
+      level: m.category || "All levels",
+      badge: priceBadge(m),
+      excerpt: stripHtml(m.description),
+      tilt: TILTS[i % TILTS.length],
+      coverId: "desvelo-comic-" + (m._id || i + 1),
+      coverUrl: m.coverImageUrl || "",
+      // Free comics link straight to the PDF proxy; paid ones need a
+      // logged-in, purchase-verified request that a plain <a> can't make.
+      downloadUrl: m.accessType === "free" ? (API_BASE + "/api/magazines/" + m._id + "/pdf") : "",
+      needsPurchase: m.accessType !== "free"
     }));
 
-    return { featured, loose, comics };
+    return {
+      featured, loose, comics,
+      noTextsYet: this.state.loaded && loose.length === 0,
+      noComicsYet: this.state.loaded && comics.length === 0
+    };
   }
 }
 </script>

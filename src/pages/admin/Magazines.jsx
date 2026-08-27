@@ -21,6 +21,7 @@ const Magazines = () => {
     coverImageUrl: '',
     pdfUrl: '',
     category: '',
+    contentType: 'issue',
     accessType: 'free',
     price: 0,
     discountPrice: 0,
@@ -81,6 +82,7 @@ const Magazines = () => {
       coverImageUrl: '',
       pdfUrl: '',
       category: '',
+      contentType: 'issue',
       accessType: 'free',
       price: 0,
       discountPrice: 0,
@@ -251,6 +253,7 @@ const Magazines = () => {
       coverImageUrl: magazine.coverImageUrl || '',
       pdfUrl: magazine.pdfUrl || '',
       category: magazine.category || '',
+      contentType: magazine.contentType || 'issue',
       accessType: magazine.accessType || 'free',
       price: magazine.price || 0,
       discountPrice: magazine.discountPrice || 0,
@@ -360,6 +363,13 @@ const Magazines = () => {
                     <div className="text-gray-600 text-sm mb-3 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: magazine.description }} />
                   )}
                   <div className="flex flex-wrap gap-2 mb-3">
+                    <span className={`px-2 py-0.5 text-xs rounded-full ${
+                      magazine.contentType === 'comic' ? 'bg-purple-100 text-purple-700'
+                      : magazine.contentType === 'text' ? 'bg-blue-100 text-blue-700'
+                      : 'bg-amber-100 text-amber-800'
+                    }`}>
+                      {magazine.contentType === 'comic' ? 'Comic' : magazine.contentType === 'text' ? 'Text' : 'Issue'}
+                    </span>
                     {magazine.category && (
                       <span className="px-2 py-0.5 text-xs bg-gray-200 text-gray-700 rounded-full">{magazine.category}</span>
                     )}
@@ -412,6 +422,24 @@ const Magazines = () => {
                 </button>
               </div>
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                {/* Content type */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Show as</label>
+                  <p className="text-xs text-gray-500 mb-2">Which section of the /products page this appears in.</p>
+                  <div className="flex flex-wrap gap-3">
+                    {[
+                      { value: 'issue', label: 'Editorial issue' },
+                      { value: 'text', label: 'Single text' },
+                      { value: 'comic', label: 'Comic' },
+                    ].map((opt) => (
+                      <label key={opt.value} className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${formData.contentType === opt.value ? 'bg-red-50 border-red-300 text-red-700' : 'bg-white border-gray-300 text-gray-600'}`}>
+                        <input type="radio" name="contentType" value={opt.value} checked={formData.contentType === opt.value} onChange={(e) => setFormData({ ...formData, contentType: e.target.value })} className="accent-red-600" />
+                        {opt.label}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Title + Category */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>

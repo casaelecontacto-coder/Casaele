@@ -8,6 +8,13 @@ const magazineSchema = new mongoose.Schema({
   pdfUrl: { type: String, required: true },
   category: { type: String, default: '' },
 
+  // What kind of entry this is, for pages that show more than one kind
+  // side by side (e.g. the /products page: the featured issue, loose
+  // single texts, and student comics are all Magazine documents,
+  // distinguished only by this field). Existing documents default to
+  // 'issue' so nothing already published changes categories.
+  contentType: { type: String, enum: ['issue', 'text', 'comic'], default: 'issue' },
+
   // Free or Paid
   accessType: { type: String, enum: ['free', 'paid'], default: 'free' },
   price: { type: Number, default: 0 },
@@ -48,5 +55,6 @@ const magazineSchema = new mongoose.Schema({
 // Indexes for the magazines listing (active + most recently published) and category filter.
 magazineSchema.index({ isActive: 1, publishedAt: -1 });
 magazineSchema.index({ category: 1 });
+magazineSchema.index({ contentType: 1, isActive: 1, publishedAt: -1 });
 
 export default mongoose.models.Magazine || mongoose.model('Magazine', magazineSchema);
