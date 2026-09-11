@@ -111,9 +111,16 @@ app.use((req, res, next) => {
 });
 
 // CORS Configuration
+// CORS_ORIGIN accepts a comma-separated list (e.g. the public static site's
+// domain plus the separate admin-app deployment's domain) so both can call
+// this API without needing to share an origin.
+const corsOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+    origin: corsOrigins.length <= 1 ? corsOrigins[0] : corsOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
