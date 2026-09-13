@@ -46,6 +46,7 @@ const editablePages = [
   // --- END NEW ENTRIES ---
 
   // Standalone Pages
+  { group: 'Standalone Pages', name: 'Library Page Intro', slug: 'library', description: 'The intro copy on the public site\'s /library page ("Everything to practice between Sundays.").', editorType: 'rich' },
   { group: 'Standalone Pages', name: 'About Us Page (Text/Main Image)', slug: 'about-us', description: 'The main content and mascot image for the /about page.' },
   // *** NEW ENTRIES FOR ABOUT PAGE IMAGES ***
   { group: 'Standalone Pages', name: 'About - Where Ele Is Now Image', slug: 'about-where-ele-map-image', description: 'The map image on the "Where is Ele Now?" section. Set an Image URL only.' },
