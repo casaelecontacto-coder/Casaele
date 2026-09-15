@@ -196,20 +196,20 @@ const Coupons = () => {
   };
 
   const getStatusColor = (coupon) => {
-    if (isExpired(coupon.expiryDate)) return 'bg-red-100 text-red-800';
+    if (isExpired(coupon.expiryDate)) return 'bg-red-100 text-casa-redDark';
     if (isActive(coupon)) return 'bg-green-100 text-green-800';
     return 'bg-yellow-100 text-yellow-800';
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-casa-cream/40 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Coupons Management</h1>
-              <p className="text-gray-600">Create and manage discount coupons for your customers</p>
+              <h1 className="text-3xl font-bold text-casa-ink mb-2">Coupons Management</h1>
+              <p className="text-casa-ink/65">Create and manage discount coupons for your customers</p>
             </div>
             <button
               onClick={() => {
@@ -225,7 +225,7 @@ const Coupons = () => {
                 });
                 setShowModal(true);
               }}
-              className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+              className="bg-casa-red text-white px-6 py-3 rounded-xl hover:bg-casa-redDark transition-colors flex items-center gap-2"
             >
               <FiPlus className="w-5 h-5" />
               Add Coupon
@@ -235,52 +235,52 @@ const Coupons = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Coupons</p>
-                <p className="text-2xl font-bold text-gray-900">{coupons.length}</p>
+                <p className="text-sm font-medium text-casa-ink/65">Total Coupons</p>
+                <p className="text-2xl font-bold text-casa-ink">{coupons.length}</p>
               </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
+              <div className="p-3 bg-blue-100 rounded-xl">
                 <FiTag className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Active Coupons</p>
+                <p className="text-sm font-medium text-casa-ink/65">Active Coupons</p>
                 <p className="text-2xl font-bold text-green-600">
                   {coupons.filter(c => isActive(c)).length}
                 </p>
               </div>
-              <div className="p-3 bg-green-100 rounded-lg">
+              <div className="p-3 bg-green-100 rounded-xl">
                 <FiCheckCircle className="w-6 h-6 text-green-600" />
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Expired Coupons</p>
-                <p className="text-2xl font-bold text-red-600">
+                <p className="text-sm font-medium text-casa-ink/65">Expired Coupons</p>
+                <p className="text-2xl font-bold text-casa-red">
                   {coupons.filter(c => isExpired(c.expiryDate)).length}
                 </p>
               </div>
-              <div className="p-3 bg-red-100 rounded-lg">
-                <FiXCircle className="w-6 h-6 text-red-600" />
+              <div className="p-3 bg-red-100 rounded-xl">
+                <FiXCircle className="w-6 h-6 text-casa-red" />
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Usage</p>
+                <p className="text-sm font-medium text-casa-ink/65">Total Usage</p>
                 <p className="text-2xl font-bold text-purple-600">
                   {coupons.reduce((sum, c) => sum + (c.usedCount || 0), 0)}
                 </p>
               </div>
-              <div className="p-3 bg-purple-100 rounded-lg">
+              <div className="p-3 bg-purple-100 rounded-xl">
                 <FiPercent className="w-6 h-6 text-purple-600" />
               </div>
             </div>
@@ -288,17 +288,17 @@ const Coupons = () => {
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 p-6 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-casa-ink/40 w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search coupons by code or description..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
                 />
               </div>
             </div>
@@ -306,7 +306,7 @@ const Coupons = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="px-4 py-3 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
               >
                 <option value="">All Status</option>
                 <option value="true">Active</option>
@@ -314,7 +314,7 @@ const Coupons = () => {
               </select>
               <button
                 onClick={fetchCoupons}
-                className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                className="px-6 py-3 bg-casa-red text-white rounded-xl hover:bg-casa-redDark transition-colors flex items-center gap-2"
               >
                 <FiRefreshCw className="w-4 h-4" />
                 Refresh
@@ -324,44 +324,44 @@ const Coupons = () => {
         </div>
 
         {/* Coupons Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <FiRefreshCw className="w-6 h-6 text-red-500 animate-spin mr-2" />
-              <span className="text-gray-600">Loading coupons...</span>
+              <span className="text-casa-ink/65">Loading coupons...</span>
             </div>
           ) : (
             <>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
+                  <thead className="bg-casa-cream/40 border-b border-casa-ink/12">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Validity</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usage</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Code</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Discount</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Validity</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Usage</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {coupons.map((coupon) => (
-                      <tr key={coupon._id} className="hover:bg-gray-50 transition-colors">
+                      <tr key={coupon._id} className="hover:bg-casa-cream/40 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="p-2 bg-red-100 rounded-lg mr-3">
-                              <FiTag className="w-4 h-4 text-red-600" />
+                            <div className="p-2 bg-red-100 rounded-xl mr-3">
+                              <FiTag className="w-4 h-4 text-casa-red" />
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-gray-900 font-mono">{coupon.code}</div>
+                              <div className="text-sm font-medium text-casa-ink font-mono">{coupon.code}</div>
                               {coupon.description && (
-                                <div className="text-sm text-gray-500 max-w-xs truncate">{coupon.description}</div>
+                                <div className="text-sm text-casa-ink/50 max-w-xs truncate">{coupon.description}</div>
                               )}
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
+                          <div className="text-sm text-casa-ink">
                             {coupon.discountType === 'percentage' ? (
                               <span className="flex items-center gap-1">
                                 <FiPercent className="w-4 h-4" />
@@ -375,27 +375,27 @@ const Coupons = () => {
                             )}
                           </div>
                           {coupon.minPurchase > 0 && (
-                            <div className="text-xs text-gray-500">Min: ₹{coupon.minPurchase}</div>
+                            <div className="text-xs text-casa-ink/50">Min: ₹{coupon.minPurchase}</div>
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
+                          <div className="text-sm text-casa-ink">
                             <div className="flex items-center gap-1">
                               <FiClock className="w-4 h-4" />
                               {new Date(coupon.expiryDate).toLocaleDateString()}
                             </div>
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-casa-ink/50">
                               {isExpired(coupon.expiryDate) ? 'Expired' : 'Valid'}
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">
+                          <div className="text-sm text-casa-ink">
                             {coupon.usedCount || 0} / {coupon.usageLimit}
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
                             <div 
-                              className="bg-red-600 h-2 rounded-full" 
+                              className="bg-casa-red h-2 rounded-full" 
                               style={{ width: `${((coupon.usedCount || 0) / coupon.usageLimit) * 100}%` }}
                             ></div>
                           </div>
@@ -421,14 +421,14 @@ const Coupons = () => {
                               className={`p-2 rounded ${
                                 coupon.isActive 
                                   ? 'text-green-600 hover:text-green-900 hover:bg-green-50' 
-                                  : 'text-red-600 hover:text-red-900 hover:bg-red-50'
+                                  : 'text-casa-red hover:text-red-900 hover:bg-casa-red/8'
                               }`}
                             >
                               {coupon.isActive ? <FiCheckCircle className="w-4 h-4" /> : <FiXCircle className="w-4 h-4" />}
                             </button>
                             <button
                               onClick={() => handleDelete(coupon._id)}
-                              className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50"
+                              className="text-casa-red hover:text-red-900 p-2 rounded hover:bg-casa-red/8"
                             >
                               <FiTrash2 className="w-4 h-4" />
                             </button>
@@ -442,44 +442,44 @@ const Coupons = () => {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                <div className="bg-white px-4 py-3 border-t border-casa-ink/12 sm:px-6">
                   <div className="flex items-center justify-between">
                     <div className="flex-1 flex justify-between sm:hidden">
                       <button
                         onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
-                        className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                        className="relative inline-flex items-center px-4 py-2 border border-casa-ink/20 text-sm font-medium rounded-xl text-casa-ink/75 bg-white hover:bg-casa-cream/40 disabled:opacity-50"
                       >
                         Previous
                       </button>
                       <button
                         onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                         disabled={currentPage === totalPages}
-                        className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                        className="ml-3 relative inline-flex items-center px-4 py-2 border border-casa-ink/20 text-sm font-medium rounded-xl text-casa-ink/75 bg-white hover:bg-casa-cream/40 disabled:opacity-50"
                       >
                         Next
                       </button>
                     </div>
                     <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                       <div>
-                        <p className="text-sm text-gray-700">
+                        <p className="text-sm text-casa-ink/75">
                           Page <span className="font-medium">{currentPage}</span> of{' '}
                           <span className="font-medium">{totalPages}</span>
                         </p>
                       </div>
                       <div>
-                        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                        <nav className="relative z-0 inline-flex rounded-xl shadow-sm -space-x-px">
                           <button
                             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                             disabled={currentPage === 1}
-                            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-casa-ink/20 bg-white text-sm font-medium text-casa-ink/50 hover:bg-casa-cream/40 disabled:opacity-50"
                           >
                             Previous
                           </button>
                           <button
                             onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                             disabled={currentPage === totalPages}
-                            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-casa-ink/20 bg-white text-sm font-medium text-casa-ink/50 hover:bg-casa-cream/40 disabled:opacity-50"
                           >
                             Next
                           </button>
@@ -497,14 +497,14 @@ const Coupons = () => {
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-6 border-b border-gray-200">
+              <div className="p-6 border-b border-casa-ink/12">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-casa-ink">
                     {editingCoupon ? 'Edit Coupon' : 'Add New Coupon'}
                   </h3>
                   <button
                     onClick={() => setShowModal(false)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-casa-ink/40 hover:text-gray-600"
                   >
                     <FiX className="w-6 h-6" />
                   </button>
@@ -513,23 +513,23 @@ const Coupons = () => {
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Coupon Code *</label>
+                    <label className="block text-sm font-medium text-casa-ink/75 mb-2">Coupon Code *</label>
                     <input
                       type="text"
                       value={formData.code}
                       onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent font-mono"
+                      className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent font-mono"
                       placeholder="e.g., WELCOME20"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Usage Limit *</label>
+                    <label className="block text-sm font-medium text-casa-ink/75 mb-2">Usage Limit *</label>
                     <input
                       type="number"
                       value={formData.usageLimit}
                       onChange={(e) => setFormData({ ...formData, usageLimit: parseInt(e.target.value) || 1 })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
                       min="1"
                       required
                     />
@@ -537,23 +537,23 @@ const Coupons = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-2">Description</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
                     placeholder="Brief description of this coupon..."
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Discount Type *</label>
+                    <label className="block text-sm font-medium text-casa-ink/75 mb-2">Discount Type *</label>
                     <select
                       value={formData.discountType}
                       onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
                       required
                     >
                       <option value="percentage">Percentage (%)</option>
@@ -561,14 +561,14 @@ const Coupons = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-casa-ink/75 mb-2">
                       {formData.discountType === 'percentage' ? 'Discount Percentage (%)' : 'Discount Amount (₹)'} *
                     </label>
                     <input
                       type="number"
                       value={formData.discountValue}
                       onChange={(e) => setFormData({ ...formData, discountValue: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
                       min="0"
                       max={formData.discountType === 'percentage' ? 100 : undefined}
                       required
@@ -577,39 +577,39 @@ const Coupons = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Purchase Amount (₹)</label>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-2">Minimum Purchase Amount (₹)</label>
                   <input
                     type="number"
                     value={formData.minPurchase}
                     onChange={(e) => setFormData({ ...formData, minPurchase: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
                     min="0"
                     placeholder="0 for no minimum"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Expiry Date *</label>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-2">Expiry Date *</label>
                   <input
                     type="date"
                     value={formData.expiryDate}
                     onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
                     required
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
+                <div className="flex items-center justify-end gap-4 pt-6 border-t border-casa-ink/12">
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                    className="px-6 py-2 border border-casa-ink/20 rounded-xl text-casa-ink/75 hover:bg-casa-cream/40"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2"
+                    className="px-6 py-2 bg-casa-red text-white rounded-xl hover:bg-casa-redDark flex items-center gap-2"
                   >
                     <FiSave className="w-4 h-4" />
                     {editingCoupon ? 'Update Coupon' : 'Create Coupon'}

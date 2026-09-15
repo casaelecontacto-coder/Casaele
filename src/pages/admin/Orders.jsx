@@ -155,8 +155,8 @@ const Orders = () => {
       case 'shipped': return <FiPackage className="w-4 h-4 text-blue-500" />;
       case 'pending': return <FiClock className="w-4 h-4 text-yellow-500" />;
       case 'failed': return <FiXCircle className="w-4 h-4 text-red-500" />;
-      case 'cancelled': return <FiXCircle className="w-4 h-4 text-gray-500" />;
-      default: return <FiAlertCircle className="w-4 h-4 text-gray-500" />;
+      case 'cancelled': return <FiXCircle className="w-4 h-4 text-casa-ink/50" />;
+      default: return <FiAlertCircle className="w-4 h-4 text-casa-ink/50" />;
     }
   };
 
@@ -170,7 +170,7 @@ const Orders = () => {
       case 'pending': return <FiClock className="w-4 h-4 text-yellow-500" />;
       case 'failed': return <FiXCircle className="w-4 h-4 text-red-500" />;
       case 'refunded': return <FiRefreshCw className="w-4 h-4 text-blue-500" />;
-      default: return <FiAlertCircle className="w-4 h-4 text-gray-500" />;
+      default: return <FiAlertCircle className="w-4 h-4 text-casa-ink/50" />;
     }
   };
 
@@ -184,80 +184,80 @@ const Orders = () => {
   const capitalize = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-casa-cream/40 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Orders Management</h1>
-          <p className="text-gray-600">Manage and track all customer orders</p>
+          <h1 className="text-3xl font-bold text-casa-ink mb-2">Orders Management</h1>
+          <p className="text-casa-ink/65">Manage and track all customer orders</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Orders</p>
-                <p className="text-2xl font-bold text-gray-900">{totalOrdersCount || 0}</p>
+                <p className="text-sm font-medium text-casa-ink/65">Total Orders</p>
+                <p className="text-2xl font-bold text-casa-ink">{totalOrdersCount || 0}</p>
               </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
+              <div className="p-3 bg-blue-100 rounded-xl">
                 <FiDollarSign className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Completed</p>
+                <p className="text-sm font-medium text-casa-ink/65">Completed</p>
                 <p className="text-2xl font-bold text-green-600">
                   {stats.completed}
                 </p>
               </div>
-              <div className="p-3 bg-green-100 rounded-lg">
+              <div className="p-3 bg-green-100 rounded-xl">
                 <FiCheckCircle className="w-6 h-6 text-green-600" />
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Pending</p>
+                <p className="text-sm font-medium text-casa-ink/65">Pending</p>
                 <p className="text-2xl font-bold text-yellow-600">
                   {stats.pending}
                 </p>
               </div>
-              <div className="p-3 bg-yellow-100 rounded-lg">
+              <div className="p-3 bg-yellow-100 rounded-xl">
                 <FiClock className="w-6 h-6 text-yellow-600" />
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Failed</p>
-                <p className="text-2xl font-bold text-red-600">
+                <p className="text-sm font-medium text-casa-ink/65">Failed</p>
+                <p className="text-2xl font-bold text-casa-red">
                   {stats.failed}
                 </p>
               </div>
-              <div className="p-3 bg-red-100 rounded-lg">
-                <FiXCircle className="w-6 h-6 text-red-600" />
+              <div className="p-3 bg-red-100 rounded-xl">
+                <FiXCircle className="w-6 h-6 text-casa-red" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 p-6 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-casa-ink/40 w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search orders by ID, customer name, email..."
                   value={searchTerm}
                   onChange={handleSearch}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
                 />
               </div>
             </div>
@@ -265,7 +265,7 @@ const Orders = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="px-4 py-3 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
               >
                 <option value="">All Status</option>
                 <option value="pending">Pending</option>
@@ -277,7 +277,7 @@ const Orders = () => {
               <select
                 value={paymentFilter}
                 onChange={(e) => setPaymentFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="px-4 py-3 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
               >
                 <option value="">All Payments</option>
                 <option value="pending">Pending</option>
@@ -287,7 +287,7 @@ const Orders = () => {
               </select>
               <button
                 onClick={fetchOrders}
-                className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                className="px-6 py-3 bg-casa-red text-white rounded-xl hover:bg-casa-redDark transition-colors flex items-center gap-2"
               >
                 <FiRefreshCw className="w-4 h-4" />
                 Refresh
@@ -297,32 +297,32 @@ const Orders = () => {
         </div>
 
         {/* Orders Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <FiRefreshCw className="w-6 h-6 text-red-500 animate-spin mr-2" />
-              <span className="text-gray-600">Loading orders...</span>
+              <span className="text-casa-ink/65">Loading orders...</span>
             </div>
           ) : (
             <>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
+                  <thead className="bg-casa-cream/40 border-b border-casa-ink/12">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product(s)</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Order ID</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Customer</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Product(s)</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Amount</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Payment</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Date</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {orders.length === 0 ? (
                       <tr>
-                        <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
+                        <td colSpan="8" className="px-6 py-12 text-center text-casa-ink/50">
                           No orders found.
                         </td>
                       </tr>
@@ -332,46 +332,46 @@ const Orders = () => {
                         const paymentStatus = getPaymentStatus(order);
                         
                         return (
-                          <tr key={order._id} className="hover:bg-gray-50 transition-colors">
+                          <tr key={order._id} className="hover:bg-casa-cream/40 transition-colors">
                             {/* Order ID */}
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className="text-sm font-medium text-gray-900">{order.razorpayOrderId || order._id}</span>
+                              <span className="text-sm font-medium text-casa-ink">{order.razorpayOrderId || order._id}</span>
                             </td>
                             {/* Customer */}
                             <td className="px-6 py-4 whitespace-nowJrap">
                               <div>
-                                <div className="text-sm font-medium text-gray-900">{order.shippingAddress?.fullName || 'N/A'}</div>
-                                <div className="text-sm text-gray-500">{order.shippingAddress?.email || 'N/A'}</div>
+                                <div className="text-sm font-medium text-casa-ink">{order.shippingAddress?.fullName || 'N/A'}</div>
+                                <div className="text-sm text-casa-ink/50">{order.shippingAddress?.email || 'N/A'}</div>
                               </div>
                             </td>
                             {/* Product */}
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
+                              <div className="text-sm text-casa-ink">
                                 {order.orderItems[0]?.name || 'N/A'}
                                 {order.orderItems.length > 1 && ` + ${order.orderItems.length - 1} more`}
                               </div>
-                              <div className="text-sm text-gray-500">Items: {order.orderItems?.length || 0}</div>
+                              <div className="text-sm text-casa-ink/50">Items: {order.orderItems?.length || 0}</div>
                             </td>
                             {/* Amount */}
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className="text-sm font-medium text-gray-900">₹{order.totalPrice?.toFixed(2) || '0.00'}</span>
+                              <span className="text-sm font-medium text-casa-ink">₹{order.totalPrice?.toFixed(2) || '0.00'}</span>
                             </td>
                             {/* Status */}
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center gap-2">
                                 {getStatusIcon(syntheticStatus)}
-                                <span className="text-sm text-gray-900 capitalize">{syntheticStatus}</span>
+                                <span className="text-sm text-casa-ink capitalize">{syntheticStatus}</span>
                               </div>
                             </td>
                             {/* Payment */}
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center gap-2">
                                 {getPaymentStatusIcon(paymentStatus)}
-                                <span className="text-sm text-gray-900 capitalize">{paymentStatus}</span>
+                                <span className="text-sm text-casa-ink capitalize">{paymentStatus}</span>
                               </div>
                             </td>
                             {/* Date */}
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-casa-ink/50">
                               {formatDate(order.createdAt)}
                             </td>
                             {/* Actions */}
@@ -389,7 +389,7 @@ const Orders = () => {
                                 <select
                                   value={syntheticStatus} // Show current synthetic status
                                   onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                                  className="text-xs border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-red-500"
+                                  className="text-xs border border-casa-ink/20 rounded px-2 py-1 focus:ring-1 focus:ring-casa-red"
                                 >
                                   <option value="pending">Pending</option>
                                   <option value="processing">Processing</option>
@@ -399,7 +399,7 @@ const Orders = () => {
                                 </select>
                                 <button
                                   onClick={() => handleDeleteOrder(order._id)}
-                                  className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                                  className="text-casa-red hover:text-red-900 p-1 rounded hover:bg-casa-red/8"
                                 >
                                   <FiTrash2 className="w-4 h-4" />
                                 </button>
@@ -415,44 +415,44 @@ const Orders = () => {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                <div className="bg-white px-4 py-3 border-t border-casa-ink/12 sm:px-6">
                   <div className="flex items-center justify-between">
                     <div className="flex-1 flex justify-between sm:hidden">
                       <button
                         onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
-                        className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                        className="relative inline-flex items-center px-4 py-2 border border-casa-ink/20 text-sm font-medium rounded-xl text-casa-ink/75 bg-white hover:bg-casa-cream/40 disabled:opacity-50"
                       >
                         Previous
                       </button>
                       <button
                         onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                         disabled={currentPage === totalPages}
-                        className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                        className="ml-3 relative inline-flex items-center px-4 py-2 border border-casa-ink/20 text-sm font-medium rounded-xl text-casa-ink/75 bg-white hover:bg-casa-cream/40 disabled:opacity-50"
                       >
                         Next
                       </button>
                     </div>
                     <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                       <div>
-                        <p className="text-sm text-gray-700">
+                        <p className="text-sm text-casa-ink/75">
                           Page <span className="font-medium">{currentPage}</span> of{' '}
                           <span className="font-medium">{totalPages}</span>
                         </p>
                       </div>
                       <div>
-                        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                        <nav className="relative z-0 inline-flex rounded-xl shadow-sm -space-x-px">
                           <button
                             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                             disabled={currentPage === 1}
-                            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-casa-ink/20 bg-white text-sm font-medium text-casa-ink/50 hover:bg-casa-cream/40 disabled:opacity-50"
                           >
                             Previous
                           </button>
                           <button
                             onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                             disabled={currentPage === totalPages}
-                            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-casa-ink/20 bg-white text-sm font-medium text-casa-ink/50 hover:bg-casa-cream/40 disabled:opacity-50"
                           >
                             Next
                           </button>
@@ -471,12 +471,12 @@ const Orders = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               {/* Modal Header */}
-              <div className="p-6 border-b border-gray-200">
+              <div className="p-6 border-b border-casa-ink/12">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Order Details</h3>
+                  <h3 className="text-lg font-semibold text-casa-ink">Order Details</h3>
                   <button
                     onClick={() => setShowModal(false)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-casa-ink/40 hover:text-gray-600"
                   >
                     <FiXCircle className="w-6 h-6" />
                   </button>
@@ -487,56 +487,56 @@ const Orders = () => {
                 {/* Order Info */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Order ID</label>
-                    <p className="text-sm text-gray-900">{selectedOrder.razorpayOrderId || selectedOrder._id}</p>
+                    <label className="text-sm font-medium text-casa-ink/50">Order ID</label>
+                    <p className="text-sm text-casa-ink">{selectedOrder.razorpayOrderId || selectedOrder._id}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Order Date</label>
-                    <p className="text-sm text-gray-900">{formatDate(selectedOrder.createdAt)}</p>
+                    <label className="text-sm font-medium text-casa-ink/50">Order Date</label>
+                    <p className="text-sm text-casa-ink">{formatDate(selectedOrder.createdAt)}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Order Status</label>
-                    <p className="text-sm text-gray-900 capitalize">{capitalize(getSyntheticStatus(selectedOrder))}</p>
+                    <label className="text-sm font-medium text-casa-ink/50">Order Status</label>
+                    <p className="text-sm text-casa-ink capitalize">{capitalize(getSyntheticStatus(selectedOrder))}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Payment Status</label>
-                    <p className="text-sm text-gray-900 capitalize">{capitalize(getPaymentStatus(selectedOrder))}</p>
+                    <label className="text-sm font-medium text-casa-ink/50">Payment Status</label>
+                    <p className="text-sm text-casa-ink capitalize">{capitalize(getPaymentStatus(selectedOrder))}</p>
                   </div>
                 </div>
 
                 {/* Customer Details */}
                 <div>
-                  <label className="text-sm font-medium text-gray-500 block mb-1">Customer Details</label>
-                  <div className="bg-gray-50 p-3 rounded-md border border-gray-200 space-y-1">
-                    <p className="text-sm text-gray-900">Name: {selectedOrder.shippingAddress?.fullName || 'N/A'}</p>
-                    <p className="text-sm text-gray-900">Email: {selectedOrder.shippingAddress?.email || 'N/A'}</p>
-                    <p className="text-sm text-gray-900">Phone: {selectedOrder.shippingAddress?.phone || 'N/A'}</p>
+                  <label className="text-sm font-medium text-casa-ink/50 block mb-1">Customer Details</label>
+                  <div className="bg-casa-cream/40 p-3 rounded-xl border border-casa-ink/12 space-y-1">
+                    <p className="text-sm text-casa-ink">Name: {selectedOrder.shippingAddress?.fullName || 'N/A'}</p>
+                    <p className="text-sm text-casa-ink">Email: {selectedOrder.shippingAddress?.email || 'N/A'}</p>
+                    <p className="text-sm text-casa-ink">Phone: {selectedOrder.shippingAddress?.phone || 'N/A'}</p>
                   </div>
                 </div>
 
                 {/* Shipping Address */}
                 <div>
-                  <label className="text-sm font-medium text-gray-500 block mb-1">Shipping Address</label>
-                  <div className="bg-gray-50 p-3 rounded-md border border-gray-200 space-y-1">
-                    <p className="text-sm text-gray-900">{selectedOrder.shippingAddress?.address || 'N/A'}</p>
-                    <p className="text-sm text-gray-900">
+                  <label className="text-sm font-medium text-casa-ink/50 block mb-1">Shipping Address</label>
+                  <div className="bg-casa-cream/40 p-3 rounded-xl border border-casa-ink/12 space-y-1">
+                    <p className="text-sm text-casa-ink">{selectedOrder.shippingAddress?.address || 'N/A'}</p>
+                    <p className="text-sm text-casa-ink">
                       {selectedOrder.shippingAddress?.city || ''}, {selectedOrder.shippingAddress?.state || ''} {selectedOrder.shippingAddress?.postalCode || ''}
                     </p>
-                    <p className="text-sm text-gray-900">{selectedOrder.shippingAddress?.country || ''}</p>
+                    <p className="text-sm text-casa-ink">{selectedOrder.shippingAddress?.country || ''}</p>
                   </div>
                 </div>
 
                 {/* Order Items */}
                 <div>
-                  <label className="text-sm font-medium text-gray-500 block mb-2">Order Items ({selectedOrder.orderItems?.length || 0})</label>
-                  <div className="border border-gray-200 rounded-md overflow-hidden">
+                  <label className="text-sm font-medium text-casa-ink/50 block mb-2">Order Items ({selectedOrder.orderItems?.length || 0})</label>
+                  <div className="border border-casa-ink/12 rounded-xl overflow-hidden">
                     <table className="min-w-full divide-y divide-gray-200 text-sm">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-casa-cream/40">
                         <tr>
-                          <th className="px-4 py-2 text-left font-medium text-gray-600">Item</th>
-                          <th className="px-4 py-2 text-left font-medium text-gray-600">Qty</th>
-                          <th className="px-4 py-2 text-left font-medium text-gray-600">Price</th>
-                          <th className="px-4 py-2 text-left font-medium text-gray-600">Subtotal</th>
+                          <th className="px-4 py-2 text-left font-medium text-casa-ink/65">Item</th>
+                          <th className="px-4 py-2 text-left font-medium text-casa-ink/65">Qty</th>
+                          <th className="px-4 py-2 text-left font-medium text-casa-ink/65">Price</th>
+                          <th className="px-4 py-2 text-left font-medium text-casa-ink/65">Subtotal</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
@@ -554,18 +554,18 @@ const Orders = () => {
                 </div>
 
                 {/* Totals */}
-                <div className="text-right space-y-1 pt-4 border-t border-gray-200">
-                  <p className="text-sm text-gray-600">Items Price: ₹{selectedOrder.itemsPrice?.toFixed(2) || '0.00'}</p>
-                  <p className="text-sm text-gray-600">Tax: ₹{selectedOrder.taxPrice?.toFixed(2) || '0.00'}</p>
-                  <p className="text-sm text-gray-600">Shipping: ₹{selectedOrder.shippingPrice?.toFixed(2) || '0.00'}</p>
-                  <p className="text-lg font-semibold text-gray-900">Total Amount: ₹{selectedOrder.totalPrice?.toFixed(2) || '0.00'}</p>
+                <div className="text-right space-y-1 pt-4 border-t border-casa-ink/12">
+                  <p className="text-sm text-casa-ink/65">Items Price: ₹{selectedOrder.itemsPrice?.toFixed(2) || '0.00'}</p>
+                  <p className="text-sm text-casa-ink/65">Tax: ₹{selectedOrder.taxPrice?.toFixed(2) || '0.00'}</p>
+                  <p className="text-sm text-casa-ink/65">Shipping: ₹{selectedOrder.shippingPrice?.toFixed(2) || '0.00'}</p>
+                  <p className="text-lg font-semibold text-casa-ink">Total Amount: ₹{selectedOrder.totalPrice?.toFixed(2) || '0.00'}</p>
                 </div>
 
                 {/* Close Button */}
                 <div className="flex justify-end pt-4">
                   <button
                     onClick={() => setShowModal(false)}
-                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                    className="px-4 py-2 bg-gray-200 text-casa-ink rounded-xl hover:bg-gray-300"
                   >
                     Close
                   </button>

@@ -316,10 +316,10 @@ const Courses = () => {
 
   // --- JSX ---
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-casa-cream/40 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {successMsg && (
-          <div className="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-2 text-sm text-green-800">
+          <div className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-2 text-sm text-green-800">
             {successMsg}
           </div>
         )}
@@ -327,8 +327,8 @@ const Courses = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
              <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Courses Management</h1>
-              <p className="text-gray-600">Create and manage your learning courses</p>
+              <h1 className="text-3xl font-bold text-casa-ink mb-2">Courses Management</h1>
+              <p className="text-casa-ink/65">Create and manage your learning courses</p>
             </div>
             <button
               onClick={() => {
@@ -342,7 +342,7 @@ const Courses = () => {
                 });
                 setShowModal(true);
               }}
-              className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+              className="bg-casa-red text-white px-6 py-3 rounded-xl hover:bg-casa-redDark transition-colors flex items-center gap-2"
             >
               <FiPlus className="w-5 h-5" /> Add Course
             </button>
@@ -353,23 +353,23 @@ const Courses = () => {
         {/* ... */}
 
         {/* Filters and Search (keep) */}
-         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+         <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 p-6 mb-6">
            <div className="flex flex-col md:flex-row gap-4">
              <div className="flex-1 relative">
-               <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+               <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-casa-ink/40" />
                <input
                  type="text"
                  placeholder="Search courses..."
                  value={searchTerm}
                  onChange={(e) => setSearchTerm(e.target.value)}
-                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                 className="w-full pl-10 pr-4 py-2 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-casa-red"
                />
              </div>
              <div className="w-full md:w-48">
                <select
                  value={categoryFilter}
                  onChange={(e) => setCategoryFilter(e.target.value)}
-                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white"
+                 className="w-full px-4 py-2 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-casa-red bg-white"
                >
                  <option value="">All Categories</option>
                  {categories.map(cat => (
@@ -388,13 +388,13 @@ const Courses = () => {
              </div>
           ) : courses.length === 0 ? (
             <div className="col-span-full text-center py-12">
-              <FiBookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No courses found</h3>
-              <p className="text-gray-500">Get started by creating your first course.</p>
+              <FiBookOpen className="w-12 h-12 text-casa-ink/40 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-casa-ink mb-2">No courses found</h3>
+              <p className="text-casa-ink/50">Get started by creating your first course.</p>
             </div>
           ) : (
             courses.map((course) => (
-              <div key={course._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+              <div key={course._id} className="bg-white rounded-xl shadow-sm border border-casa-ink/12 overflow-hidden hover:shadow-md transition-shadow">
                 {/* Course Card Content (Use first image or thumbnail) */}
                  {(course.images && course.images.length > 0) || course.thumbnail ? (
                   <div className="h-48 bg-gray-200">
@@ -406,32 +406,32 @@ const Courses = () => {
                   </div>
                 ) : (
                   <div className="h-48 bg-gray-200 flex items-center justify-center">
-                    <FiImage className="w-12 h-12 text-gray-400" />
+                    <FiImage className="w-12 h-12 text-casa-ink/40" />
                   </div>
                 )}
                 <div className="p-6">
                    {/* ... Card details ... */}
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{course.title}</h3>
+                        <h3 className="text-lg font-semibold text-casa-ink line-clamp-2">{course.title}</h3>
                         {course.isActive === false && <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>}
                       </div>
                       {/* Display 'main' level if needed */}
                       {course.level && <span className={`px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800`}>{course.level}</span>}
                     </div>
                      {/* Remove raw description from card if it contains HTML */}
-                     <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                     <p className="text-casa-ink/65 text-sm mb-4 line-clamp-3">
                         {course.description ? course.description.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...' : ''}
                      </p>
                     {/* Display available levels */}
                     {course.availableLevels && course.availableLevels.length > 0 && (
                         <div className="mb-4 flex flex-wrap gap-1">
                             {course.availableLevels.map(lvl => (
-                                <span key={lvl} className="px-2 py-0.5 text-xs bg-gray-200 text-gray-700 rounded-full">{lvl}</span>
+                                <span key={lvl} className="px-2 py-0.5 text-xs bg-gray-200 text-casa-ink/75 rounded-full">{lvl}</span>
                             ))}
                         </div>
                     )}
-                     <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                     <div className="flex items-center justify-between text-sm text-casa-ink/50 mb-4">
                        <span className="flex items-center gap-1"><FiBookOpen className="w-4 h-4" />{course.category}</span>
                        <span className="flex items-center gap-1"><FiDollarSign className="w-4 h-4" />₹{course.discountPrice || course.price || 0}</span>
                      </div>
@@ -440,14 +440,14 @@ const Courses = () => {
                          <button onClick={() => handleEdit(course)} className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50"><FiEdit className="w-4 h-4" /></button>
                          <button
                            onClick={() => handleToggleActive(course._id, course.isActive)}
-                           className={`p-2 rounded ${course.isActive === false ? "text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}
+                           className={`p-2 rounded ${course.isActive === false ? "text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50" : "text-casa-ink/40 hover:text-gray-600 hover:bg-casa-cream/40"}`}
                            title={course.isActive === false ? "Show to users" : "Hide from users"}
                          >
                            {course.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
                          </button>
-                         <button onClick={() => handleDelete(course._id)} className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50"><FiTrash2 className="w-4 h-4" /></button>
+                         <button onClick={() => handleDelete(course._id)} className="text-casa-red hover:text-red-900 p-2 rounded hover:bg-casa-red/8"><FiTrash2 className="w-4 h-4" /></button>
                       </div>
-                     <span className="text-xs text-gray-500">{new Date(course.createdAt).toLocaleDateString()}</span>
+                     <span className="text-xs text-casa-ink/50">{new Date(course.createdAt).toLocaleDateString()}</span>
                    </div>
                 </div>
               </div>
@@ -461,7 +461,7 @@ const Courses = () => {
              <button
                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                disabled={currentPage === 1}
-               className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50"
+               className="px-4 py-2 border border-casa-ink/20 rounded-xl disabled:opacity-50"
              >
                Previous
              </button>
@@ -469,7 +469,7 @@ const Courses = () => {
              <button
                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                disabled={currentPage === totalPages}
-               className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50"
+               className="px-4 py-2 border border-casa-ink/20 rounded-xl disabled:opacity-50"
              >
                Next
              </button>
@@ -481,9 +481,9 @@ const Courses = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               {/* Modal Header */}
-              <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                 <h3 className="text-lg font-semibold text-gray-900">{editingCourse ? 'Edit Course' : 'Add New Course'}</h3>
-                 <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600"><FiX className="w-6 h-6" /></button>
+              <div className="p-6 border-b border-casa-ink/12 flex items-center justify-between">
+                 <h3 className="text-lg font-semibold text-casa-ink">{editingCourse ? 'Edit Course' : 'Add New Course'}</h3>
+                 <button onClick={() => setShowModal(false)} className="text-casa-ink/40 hover:text-gray-600"><FiX className="w-6 h-6" /></button>
               </div>
               {/* Modal Form */}
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -491,32 +491,32 @@ const Courses = () => {
                 {/* --- ALL FORM FIELDS --- */}
                 {/* Title, Category */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Title *</label><input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" required /></div>
-                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Category *</label><select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-red-500 focus:border-red-500" required><option value="">Select Category</option>{categories.map(category => (<option key={category._id} value={category.name}>{category.name}</option>))}</select></div>
+                   <div><label className="block text-sm font-medium text-casa-ink/75 mb-1">Title *</label><input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red" required /></div>
+                   <div><label className="block text-sm font-medium text-casa-ink/75 mb-1">Category *</label><select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl bg-white focus:ring-casa-red focus:border-casa-red" required><option value="">Select Category</option>{categories.map(category => (<option key={category._id} value={category.name}>{category.name}</option>))}</select></div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">URL Slug</label>
-                  <input type="text" value={formData.slug || ''} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder={formData.title ? formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'auto-generated-from-title'} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 font-mono text-sm" />
-                  <p className="mt-1 text-xs text-gray-500">Leave blank to auto-generate from title. Used in page URL for SEO.</p>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">URL Slug</label>
+                  <input type="text" value={formData.slug || ''} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder={formData.title ? formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'auto-generated-from-title'} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red font-mono text-sm" />
+                  <p className="mt-1 text-xs text-casa-ink/50">Leave blank to auto-generate from title. Used in page URL for SEO.</p>
                 </div>
 
                 {/* Subtitle */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Subtitle (Optional)</label>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">Subtitle (Optional)</label>
                   <input 
                     type="text" 
                     value={formData.subtitle} 
                     onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })} 
                     placeholder="Enter a short subtitle or tagline for this course"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" 
+                    className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red" 
                   />
-                  <p className="text-xs text-gray-500 mt-1">This will appear below the course title on the course detail page.</p>
+                  <p className="text-xs text-casa-ink/50 mt-1">This will appear below the course title on the course detail page.</p>
                 </div>
                 
                 {/* Description - Replaced with TinyMCE Editor */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-                  <div className="rounded-lg overflow-hidden border border-gray-300 focus-within:ring-1 focus-within:ring-red-500 focus-within:border-red-500">
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">Description *</label>
+                  <div className="rounded-xl overflow-hidden border border-casa-ink/20 focus-within:ring-1 focus-within:ring-red-500 focus-within:border-red-500">
                     <LazyTinyMCE
                       apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
                       value={formData.description}
@@ -534,16 +534,16 @@ const Courses = () => {
                 
                 {/* Image Uploader */}
                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Images</label>
-                    <div className="mt-1 p-4 border-2 border-dashed border-gray-300 rounded-lg">
-                       <input type="file" multiple onChange={handleFileChange} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"/>
-                       {uploading && <div className="text-sm text-gray-500 mt-2">Uploading...</div>}
+                    <label className="block text-sm font-medium text-casa-ink/75 mb-1">Images</label>
+                    <div className="mt-1 p-4 border-2 border-dashed border-casa-ink/20 rounded-xl">
+                       <input type="file" multiple onChange={handleFileChange} className="block w-full text-sm text-casa-ink/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"/>
+                       {uploading && <div className="text-sm text-casa-ink/50 mt-2">Uploading...</div>}
                        {/* Image Previews */}
                        <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
                           {formData.images.map((image, index) => (
                             <div key={index} className="relative aspect-square">
-                              <img src={image} alt={`preview ${index}`} className="h-full w-full object-cover rounded-md border" />
-                              <button type="button" onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }))} className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs shadow">&times;</button>
+                              <img src={image} alt={`preview ${index}`} className="h-full w-full object-cover rounded-xl border" />
+                              <button type="button" onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }))} className="absolute -top-2 -right-2 bg-casa-red text-white rounded-full h-5 w-5 flex items-center justify-center text-xs shadow">&times;</button>
                             </div>
                           ))}
                        </div>
@@ -551,21 +551,21 @@ const Courses = () => {
                  </div>
 
                  {/* Thumbnail URL (Optional Fallback) */}
-                 <div><label className="block text-sm font-medium text-gray-700 mb-1">Thumbnail URL (Optional)</label><input type="url" placeholder="https://..." value={formData.thumbnail} onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" /></div>
+                 <div><label className="block text-sm font-medium text-casa-ink/75 mb-1">Thumbnail URL (Optional)</label><input type="url" placeholder="https://..." value={formData.thumbnail} onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red" /></div>
 
                 {/* Purchase Type */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Type *</label>
+                    <label className="block text-sm font-medium text-casa-ink/75 mb-1">Purchase Type *</label>
                     <select 
                         value={formData.purchaseType} 
                         onChange={(e) => setFormData({ ...formData, purchaseType: e.target.value, formUrl: e.target.value === 'price' ? '' : formData.formUrl })} 
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-red-500 focus:border-red-500"
+                        className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl bg-white focus:ring-casa-red focus:border-casa-red"
                         required
                     >
                         <option value="price">Price (Paid Course)</option>
                         <option value="form">Form (Lead Generation)</option>
                     </select>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-casa-ink/50 mt-1">
                         {formData.purchaseType === 'price' 
                             ? 'Users will purchase this course with payment' 
                             : 'Users will fill a Google Form to express interest'}
@@ -576,26 +576,26 @@ const Courses = () => {
                 {formData.purchaseType === 'price' && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
+                            <label className="block text-sm font-medium text-casa-ink/75 mb-1">Price (₹) *</label>
                             <input 
                                 type="number" 
                                 min="0" 
                                 step="0.01" 
                                 value={formData.price} 
                                 onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })} 
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" 
+                                className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red" 
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Discount Price (₹, optional)</label>
+                            <label className="block text-sm font-medium text-casa-ink/75 mb-1">Discount Price (₹, optional)</label>
                             <input 
                                 type="number" 
                                 min="0" 
                                 step="0.01" 
                                 value={formData.discountPrice} 
                                 onChange={(e) => setFormData({ ...formData, discountPrice: parseFloat(e.target.value) || 0 })} 
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" 
+                                className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red" 
                             />
                         </div>
                     </div>
@@ -604,16 +604,16 @@ const Courses = () => {
                 {/* Form URL - Only show when purchaseType is 'form' */}
                 {formData.purchaseType === 'form' && (
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Google Form URL *</label>
+                        <label className="block text-sm font-medium text-casa-ink/75 mb-1">Google Form URL *</label>
                         <input 
                             type="url" 
                             placeholder="https://docs.google.com/forms/..." 
                             value={formData.formUrl} 
                             onChange={(e) => setFormData({ ...formData, formUrl: e.target.value })} 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" 
+                            className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red" 
                             required={formData.purchaseType === 'form'}
                         />
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-casa-ink/50 mt-1">
                             Paste the full Google Form URL. Users will be redirected to this form when they click "Fill Form".
                         </p>
                     </div>
@@ -621,16 +621,16 @@ const Courses = () => {
 
                 {/* --- AVAILABLE LEVELS CHECKBOXES --- */}
                 <div className="block">
-                    <span className="text-sm font-medium text-gray-700">Available Levels *</span>
+                    <span className="text-sm font-medium text-casa-ink/75">Available Levels *</span>
                     <div className="mt-2 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                         {ALL_POSSIBLE_LEVELS.map(level => (
-                            <label key={level} className="flex items-center gap-2 p-2 border rounded-md hover:bg-gray-50 cursor-pointer has-[:checked]:bg-red-50 has-[:checked]:border-red-300">
+                            <label key={level} className="flex items-center gap-2 p-2 border rounded-xl hover:bg-casa-cream/40 cursor-pointer has-[:checked]:bg-red-50 has-[:checked]:border-red-300">
                                 <input
                                     type="checkbox"
                                     value={level}
                                     checked={formData.availableLevels.includes(level)}
                                     onChange={() => handleLevelCheckboxChange(level)}
-                                    className="rounded accent-red-600 focus:ring-red-500"
+                                    className="rounded accent-red-600 focus:ring-casa-red"
                                 />
                                 <span className="text-sm">{level}</span>
                             </label>
@@ -641,37 +641,37 @@ const Courses = () => {
 
                 {/* Product Type, Instructor, Language */}
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                     <div><label className="block text-sm font-medium text-gray-700 mb-1">Product Type</label><select value={formData.productType} onChange={(e) => setFormData({ ...formData, productType: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-red-500 focus:border-red-500"><option value="Digital">Digital</option><option value="Physical">Physical</option><option value="Both">Both</option></select></div>
-                     <div><label className="block text-sm font-medium text-gray-700 mb-1">Instructor</label><input type="text" value={formData.instructor} onChange={(e) => setFormData({ ...formData, instructor: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" /></div>
-                     <div><label className="block text-sm font-medium text-gray-700 mb-1">Language</label><input type="text" value={formData.language} onChange={(e) => setFormData({ ...formData, language: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" /></div>
+                     <div><label className="block text-sm font-medium text-casa-ink/75 mb-1">Product Type</label><select value={formData.productType} onChange={(e) => setFormData({ ...formData, productType: e.target.value })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl bg-white focus:ring-casa-red focus:border-casa-red"><option value="Digital">Digital</option><option value="Physical">Physical</option><option value="Both">Both</option></select></div>
+                     <div><label className="block text-sm font-medium text-casa-ink/75 mb-1">Instructor</label><input type="text" value={formData.instructor} onChange={(e) => setFormData({ ...formData, instructor: e.target.value })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red" /></div>
+                     <div><label className="block text-sm font-medium text-casa-ink/75 mb-1">Language</label><input type="text" value={formData.language} onChange={(e) => setFormData({ ...formData, language: e.target.value })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red" /></div>
                  </div>
 
                 {/* Embeds Section */}
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <div className="border border-casa-ink/12 rounded-xl p-4 bg-casa-cream/40">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-sm font-semibold text-gray-800">Embeds (AI/H5P Content)</h4>
-                    <button type="button" onClick={addCourseEmbed} className="px-3 py-1.5 text-xs bg-red-700 text-white rounded-md hover:bg-red-800 transition">+ Add Embed</button>
+                    <h4 className="text-sm font-semibold text-casa-ink">Embeds (AI/H5P Content)</h4>
+                    <button type="button" onClick={addCourseEmbed} className="px-3 py-1.5 text-xs bg-casa-red text-white rounded-xl hover:bg-casa-redDark transition">+ Add Embed</button>
                   </div>
                   {courseEmbeds.length === 0 ? (
-                    <div className="text-center py-6 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+                    <div className="text-center py-6 text-casa-ink/50 border-2 border-dashed border-casa-ink/20 rounded-xl">
                       <p className="text-sm">No embeds added yet.</p>
                     </div>
                   ) : (
                     <div className="space-y-3 max-h-64 overflow-y-auto">
                       {courseEmbeds.map((embed, index) => (
-                        <div key={index} className="bg-white rounded-lg p-3 border border-gray-200">
+                        <div key={index} className="bg-white rounded-xl p-3 border border-casa-ink/12">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-semibold text-gray-600">Embed #{index + 1} {embed._id && '(Existing)'}</span>
-                            <button type="button" onClick={() => removeCourseEmbed(index)} className="text-xs text-red-600 hover:text-red-800">Remove</button>
+                            <span className="text-xs font-semibold text-casa-ink/65">Embed #{index + 1} {embed._id && '(Existing)'}</span>
+                            <button type="button" onClick={() => removeCourseEmbed(index)} className="text-xs text-casa-red hover:text-casa-redDark">Remove</button>
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1">Title</label>
-                              <input value={embed.title} onChange={e => updateCourseEmbed(index, 'title', e.target.value)} placeholder="e.g., Exercise 1" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
+                              <label className="block text-xs text-casa-ink/65 mb-1">Title</label>
+                              <input value={embed.title} onChange={e => updateCourseEmbed(index, 'title', e.target.value)} placeholder="e.g., Exercise 1" className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" disabled={!!embed._id} />
                             </div>
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1">Type</label>
-                              <select value={embed.type} onChange={e => updateCourseEmbed(index, 'type', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id}>
+                              <label className="block text-xs text-casa-ink/65 mb-1">Type</label>
+                              <select value={embed.type} onChange={e => updateCourseEmbed(index, 'type', e.target.value)} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" disabled={!!embed._id}>
                                 <option value="AI">AI Content</option>
                                 <option value="H5P">H5P Content</option>
                                 <option value="HTML">HTML File</option>
@@ -681,7 +681,7 @@ const Courses = () => {
                           {/* HTML File Upload */}
                           {!embed._id && (
                             <div className="mt-2">
-                              <label className="block text-xs text-gray-600 mb-1">Upload HTML File</label>
+                              <label className="block text-xs text-casa-ink/65 mb-1">Upload HTML File</label>
                               <div className="flex items-center gap-2">
                                 <input
                                   type="file"
@@ -691,17 +691,17 @@ const Courses = () => {
                                     if (file) handleEmbedHtmlUpload(index, file);
                                     e.target.value = '';
                                   }}
-                                  className="flex-1 text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                                  className="flex-1 text-sm text-casa-ink/50 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
                                   disabled={uploadingEmbedHtml === index}
                                 />
-                                {uploadingEmbedHtml === index && <span className="text-xs text-gray-500 animate-pulse">Uploading...</span>}
+                                {uploadingEmbedHtml === index && <span className="text-xs text-casa-ink/50 animate-pulse">Uploading...</span>}
                               </div>
-                              <p className="text-xs text-gray-400 mt-1">Upload an HTML file to auto-fill the embed code field</p>
+                              <p className="text-xs text-casa-ink/40 mt-1">Upload an HTML file to auto-fill the embed code field</p>
                             </div>
                           )}
                           <div className="mt-2">
-                            <label className="block text-xs text-gray-600 mb-1">Embed Code / URL</label>
-                            <textarea value={embed.embedCode} onChange={e => updateCourseEmbed(index, 'embedCode', e.target.value)} placeholder='Paste your <iframe> or <script> code here, or upload an HTML file above' rows="3" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
+                            <label className="block text-xs text-casa-ink/65 mb-1">Embed Code / URL</label>
+                            <textarea value={embed.embedCode} onChange={e => updateCourseEmbed(index, 'embedCode', e.target.value)} placeholder='Paste your <iframe> or <script> code here, or upload an HTML file above' rows="3" className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" disabled={!!embed._id} />
                           </div>
                         </div>
                       ))}
@@ -710,9 +710,9 @@ const Courses = () => {
                 </div>
 
                 {/* Modal Footer */}
-                <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
-                  <button type="button" onClick={() => setShowModal(false)} className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
-                  <button type="submit" disabled={isSaving || uploading} className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2 disabled:opacity-60">
+                <div className="flex items-center justify-end gap-4 pt-6 border-t border-casa-ink/12">
+                  <button type="button" onClick={() => setShowModal(false)} className="px-6 py-2 border border-casa-ink/20 rounded-xl text-casa-ink/75 hover:bg-casa-cream/40">Cancel</button>
+                  <button type="submit" disabled={isSaving || uploading} className="px-6 py-2 bg-casa-red text-white rounded-xl hover:bg-casa-redDark flex items-center gap-2 disabled:opacity-60">
                     <FiSave className={`w-4 h-4 ${isSaving ? 'animate-spin' : ''}`} />
                     {isSaving ? 'Saving…' : (uploading ? 'Uploading...' : (editingCourse ? 'Update Course' : 'Create Course'))}
                   </button>

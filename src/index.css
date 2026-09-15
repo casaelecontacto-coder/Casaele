@@ -19,6 +19,208 @@ body {
   -webkit-touch-callout: none; /* iOS Safari */
 }
 
+/* ------------------------------------------------------------------
+   Casa de ELE admin theme
+   Mirrors the public site (casadeele.co): Host Grotesk body / Zen Maru
+   Gothic headings, cream backgrounds, chunky ink borders, pill buttons
+   with hard offset shadows that "press" on hover.
+   ------------------------------------------------------------------ */
+@layer components {
+  .casa-admin {
+    background-color: #fbf4e9;
+    color: #17110e;
+    font-family: 'Host Grotesk', 'Helvetica Neue', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-wrap: pretty;
+  }
+
+  .casa-admin h1,
+  .casa-admin h2,
+  .casa-admin h3,
+  .casa-heading {
+    font-family: 'Zen Maru Gothic', system-ui, sans-serif;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: #17110e;
+  }
+
+  /* Small red uppercase kicker above a heading, as used across the site */
+  .casa-eyebrow {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #a91f24;
+  }
+
+  /* Card: soft ink border + hard offset shadow */
+  .casa-card {
+    background: #fffdf8;
+    border: 1.5px solid rgba(23, 17, 14, 0.18);
+    border-radius: 18px;
+    box-shadow: 6px 7px 0 rgba(23, 17, 14, 0.1);
+  }
+
+  /* Heavier card for things that should read as "primary" */
+  .casa-card-bold {
+    background: #fff;
+    border: 2px solid #17110e;
+    border-radius: 20px;
+    box-shadow: 6px 7px 0 rgba(23, 17, 14, 0.18);
+  }
+
+  .casa-card-hover {
+    transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.3, 1), box-shadow 0.22s ease;
+  }
+  .casa-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 9px 12px 0 rgba(23, 17, 14, 0.16);
+  }
+
+  /* Primary pill button — presses down into its shadow on hover */
+  .casa-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #a91f24;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14.5px;
+    padding: 11px 22px;
+    border-radius: 999px;
+    border: 2px solid #17110e;
+    box-shadow: 0 3px 0 #6f1216;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.2s ease;
+  }
+  .casa-btn:hover:not(:disabled) {
+    background: #8c1a1e;
+    color: #fff;
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #6f1216;
+  }
+  .casa-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* Secondary / outline pill */
+  .casa-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #fffdf8;
+    color: #17110e;
+    font-weight: 700;
+    font-size: 14.5px;
+    padding: 11px 22px;
+    border-radius: 999px;
+    border: 2px solid #17110e;
+    box-shadow: 0 3px 0 rgba(23, 17, 14, 0.28);
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.2s ease;
+  }
+  .casa-btn-ghost:hover:not(:disabled) {
+    background: #f2d17f;
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 rgba(23, 17, 14, 0.28);
+  }
+  .casa-btn-ghost:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* Form controls */
+  .casa-input {
+    width: 100%;
+    background: #fff;
+    border: 1.5px solid rgba(23, 17, 14, 0.25);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 15px;
+    color: #17110e;
+    outline: none;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .casa-input::placeholder {
+    color: rgba(23, 17, 14, 0.4);
+  }
+  .casa-input:focus {
+    border-color: #a91f24;
+    box-shadow: 0 0 0 3px rgba(169, 31, 36, 0.14);
+  }
+
+  /* Level / status pills, like the tags on the public chapter cards */
+  .casa-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(169, 31, 36, 0.09);
+    color: #8c1a1e;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+}
+
+/* Any solid-red button/link in the admin picks up the site's signature pill
+   shape + hard offset shadow that presses down on hover. Scoped tightly to
+   elements that already opted into the red background, so nothing else is
+   affected. Background colour itself is left to the utility classes. */
+.casa-admin button.bg-casa-red,
+.casa-admin a.bg-casa-red,
+.casa-admin label.bg-casa-red {
+  border-radius: 999px;
+  border: 2px solid #17110e;
+  box-shadow: 0 3px 0 #6f1216;
+  font-weight: 700;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.2s ease;
+}
+
+.casa-admin button.bg-casa-red:hover:not(:disabled),
+.casa-admin a.bg-casa-red:hover,
+.casa-admin label.bg-casa-red:hover {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #6f1216;
+}
+
+.casa-admin button.bg-casa-red:disabled {
+  box-shadow: 0 3px 0 rgba(111, 18, 22, 0.4);
+}
+
+/* Focus treatment for form controls, matching .casa-input */
+.casa-admin input:focus-visible,
+.casa-admin select:focus-visible,
+.casa-admin textarea:focus-visible {
+  outline: none;
+  border-color: #a91f24;
+  box-shadow: 0 0 0 3px rgba(169, 31, 36, 0.14);
+}
+
+/* Tables inside the admin — scoped so page-level utilities still win where
+   a page deliberately styles its own table. */
+.casa-admin table thead th {
+  font-family: 'Host Grotesk', system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(23, 17, 14, 0.62);
+  background: #f5e6d3;
+}
+
+.casa-admin table tbody tr {
+  border-bottom: 1px solid rgba(23, 17, 14, 0.1);
+}
+
+.casa-admin table tbody tr:hover {
+  background: rgba(242, 209, 127, 0.14);
+}
+
 /* Apply protection specifically to all images and videos */
 img, video {
   pointer-events: none; /* Disables click, right-click, and drag */

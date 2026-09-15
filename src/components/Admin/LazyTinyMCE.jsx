@@ -5,9 +5,9 @@ const TinyMCEEditor = lazy(() => import('@tinymce/tinymce-react').then(module =>
 
 // Loading fallback component
 const EditorLoader = () => (
-  <div className="flex items-center justify-center p-8 border border-gray-300 rounded-lg bg-gray-50">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
-    <span className="ml-3 text-gray-600">Loading editor...</span>
+  <div className="flex items-center justify-center p-8 border border-casa-ink/20 rounded-xl bg-casa-cream/40">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-casa-red"></div>
+    <span className="ml-3 text-casa-ink/65">Loading editor...</span>
   </div>
 );
 

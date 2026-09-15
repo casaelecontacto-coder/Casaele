@@ -60,7 +60,7 @@ export default function FeedbackManager() {
   const statusChip = (status) => (
     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
       status === 'approved' ? 'bg-green-100 text-green-800'
-      : status === 'rejected' ? 'bg-red-100 text-red-800'
+      : status === 'rejected' ? 'bg-red-100 text-casa-redDark'
       : 'bg-yellow-100 text-yellow-800'
     }`}>{status}</span>
   )
@@ -75,10 +75,10 @@ export default function FeedbackManager() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">Feedback</h1>
-        <p className="text-sm text-gray-500 mt-1">Comments and course reviews, moderated in one place.</p>
+        <p className="text-sm text-casa-ink/50 mt-1">Comments and course reviews, moderated in one place.</p>
       </div>
 
-      {error && <div className="text-sm text-red-600">{error}</div>}
+      {error && <div className="text-sm text-casa-red">{error}</div>}
 
       <div className="flex items-center gap-2">
         {[
@@ -91,8 +91,8 @@ export default function FeedbackManager() {
             onClick={() => setFilter(f.key)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
               filter === f.key
-                ? 'bg-red-700 text-white border-red-700'
-                : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                ? 'bg-casa-red text-white border-red-700'
+                : 'bg-white text-casa-ink/65 border-casa-ink/12 hover:bg-casa-cream/40'
             }`}
           >
             {f.label}
@@ -101,15 +101,15 @@ export default function FeedbackManager() {
         <button
           onClick={load}
           disabled={loading}
-          className="ml-auto px-3 py-1.5 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 text-sm"
+          className="ml-auto px-3 py-1.5 rounded-xl bg-casa-cream/60 text-casa-ink/75 hover:bg-gray-200 disabled:opacity-50 text-sm"
         >
           {loading ? 'Refreshing…' : 'Refresh'}
         </button>
       </div>
 
-      <div className="rounded-xl bg-white shadow-sm border border-gray-200 overflow-hidden">
+      <div className="rounded-xl bg-white shadow-sm border border-casa-ink/12 overflow-hidden">
         <table className="min-w-full text-left">
-          <thead className="bg-gray-50 text-gray-600 text-sm">
+          <thead className="bg-casa-cream/40 text-casa-ink/65 text-sm">
             <tr>
               <th className="px-4 py-3">Type</th>
               <th className="px-4 py-3">Name</th>
@@ -125,15 +125,15 @@ export default function FeedbackManager() {
             {loading ? (
               <tr><td className="px-4 py-3" colSpan={8}>Loading...</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td className="px-4 py-3 text-gray-500" colSpan={8}>Nothing here.</td></tr>
+              <tr><td className="px-4 py-3 text-casa-ink/50" colSpan={8}>Nothing here.</td></tr>
             ) : filtered.map((f) => (
-              <tr key={f._id} className="hover:bg-gray-50">
+              <tr key={f._id} className="hover:bg-casa-cream/40">
                 <td className="px-4 py-3">{typeChip(f.type)}</td>
-                <td className="px-4 py-3 font-medium text-gray-800">{f.name}</td>
-                <td className="px-4 py-3 text-gray-700 max-w-sm truncate" title={f.text}>{f.text}</td>
-                <td className="px-4 py-3 text-gray-700">{f.rating ? `${f.rating} ★` : '—'}</td>
-                <td className="px-4 py-3 text-gray-700">{f.course?.title || '—'}</td>
-                <td className="px-4 py-3 text-gray-700">{new Date(f.createdAt).toLocaleDateString()}</td>
+                <td className="px-4 py-3 font-medium text-casa-ink">{f.name}</td>
+                <td className="px-4 py-3 text-casa-ink/75 max-w-sm truncate" title={f.text}>{f.text}</td>
+                <td className="px-4 py-3 text-casa-ink/75">{f.rating ? `${f.rating} ★` : '—'}</td>
+                <td className="px-4 py-3 text-casa-ink/75">{f.course?.title || '—'}</td>
+                <td className="px-4 py-3 text-casa-ink/75">{new Date(f.createdAt).toLocaleDateString()}</td>
                 <td className="px-4 py-3">{statusChip(f.status)}</td>
                 <td className="px-4 py-3 space-x-2 whitespace-nowrap">
                   {f.status !== 'approved' && (
@@ -160,7 +160,7 @@ export default function FeedbackManager() {
                     disabled={actingId === f._id}
                     onClick={() => { if (confirm('Delete this permanently?')) act(f._id, 'delete') }}
                     title="Delete"
-                    className="p-2 rounded bg-red-50 text-red-700 hover:bg-red-100 disabled:opacity-60 transition"
+                    className="p-2 rounded bg-casa-red/8 text-casa-red hover:bg-red-100 disabled:opacity-60 transition"
                   >
                     <FaTrash />
                   </button>

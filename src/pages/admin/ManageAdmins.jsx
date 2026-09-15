@@ -107,21 +107,21 @@ const ManageAdmins = () => {
 
   // ... (rest of the component's JSX is unchanged and correct)
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-casa-cream/40 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Manage Admins</h1>
-              <p className="text-gray-600">Create and manage admin accounts</p>
+              <h1 className="text-3xl font-bold text-casa-ink mb-2">Manage Admins</h1>
+              <p className="text-casa-ink/65">Create and manage admin accounts</p>
             </div>
             <button
               onClick={() => {
                 setFormData({ email: '', password: '' });
                 setShowCreateModal(true);
               }}
-              className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+              className="bg-casa-red text-white px-6 py-3 rounded-xl hover:bg-casa-redDark transition-colors flex items-center gap-2"
             >
               <FiPlus className="w-5 h-5" />
               Create Admin
@@ -131,10 +131,10 @@ const ManageAdmins = () => {
 
         {/* Message Display */}
         {message.text && (
-          <div className={`mb-6 p-4 rounded-lg ${
+          <div className={`mb-6 p-4 rounded-xl ${
             message.type === 'success' 
               ? 'bg-green-50 border border-green-200 text-green-700' 
-              : 'bg-red-50 border border-red-200 text-red-700'
+              : 'bg-casa-red/8 border border-casa-red/25 text-casa-red'
           }`}>
             <div className="flex items-center gap-2">
               {message.type === 'success' ? <FiCheckCircle className="w-5 h-5" /> : <FiAlertCircle className="w-5 h-5" />}
@@ -144,23 +144,23 @@ const ManageAdmins = () => {
         )}
         
         {/* Search */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 p-6 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-casa-ink/40 w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search admins by email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
                 />
               </div>
             </div>
             <button
               onClick={fetchAdmins}
-              className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+              className="px-6 py-3 bg-casa-red text-white rounded-xl hover:bg-casa-redDark transition-colors flex items-center gap-2"
             >
               <FiRefreshCw className="w-4 h-4" />
               Refresh
@@ -169,24 +169,24 @@ const ManageAdmins = () => {
         </div>
 
         {/* Admins Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-casa-ink/12 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-casa-cream/40 border-b border-casa-ink/12">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin Email</th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Admin Email</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Role</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Created</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-casa-ink/50 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
                     <tr><td colSpan="4" className="text-center py-10">Loading...</td></tr>
                 ) : admins.map((admin) => (
-                  <tr key={admin._id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={admin._id} className="hover:bg-casa-cream/40 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{admin.email}</div>
+                      <div className="text-sm font-medium text-casa-ink">{admin.email}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-xs font-medium ${admin.role === 'super-admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>
@@ -194,14 +194,14 @@ const ManageAdmins = () => {
                             {admin.role}
                         </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-casa-ink/50">
                       {new Date(admin.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       {admin.role !== 'super-admin' && (
                         <button
                           onClick={() => handleDeleteAdmin(admin._id)}
-                          className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50"
+                          className="text-casa-red hover:text-red-900 p-2 rounded hover:bg-casa-red/8"
                           title="Delete Admin"
                         >
                           <FiTrash2 className="w-4 h-4" />
@@ -219,28 +219,28 @@ const ManageAdmins = () => {
         {showCreateModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
-              <div className="p-6 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Create New Admin</h3>
+              <div className="p-6 border-b border-casa-ink/12">
+                <h3 className="text-lg font-semibold text-casa-ink">Create New Admin</h3>
               </div>
               <form onSubmit={handleCreateAdmin} className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-2">Email Address *</label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
                     placeholder="admin@example.com"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Password *</label>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-2">Password *</label>
                   <input
                     type="password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-2 focus:ring-casa-red focus:border-transparent"
                     placeholder="Min. 6 characters"
                     required
                   />
@@ -249,14 +249,14 @@ const ManageAdmins = () => {
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                    className="px-4 py-2 border border-casa-ink/20 rounded-xl text-casa-ink/75 hover:bg-casa-cream/40"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isCreating}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
+                    className="px-4 py-2 bg-casa-red text-white rounded-xl hover:bg-casa-redDark disabled:opacity-50 flex items-center gap-2"
                   >
                     {isCreating ? <FiRefreshCw className="w-4 h-4 animate-spin" /> : <FiPlus className="w-4 h-4" />}
                     {isCreating ? 'Creating...' : 'Create Admin'}

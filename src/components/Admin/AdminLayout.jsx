@@ -7,10 +7,10 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 flex">
+    <div className="casa-admin min-h-screen flex">
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/30 z-30 md:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-casa-ink/40 z-30 md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
       <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

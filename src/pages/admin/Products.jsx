@@ -408,10 +408,10 @@ const Products = () => {
 
   // --- JSX (with modifications) ---
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-casa-cream/40 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {successMsg && (
-          <div className="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-2 text-sm text-green-800">
+          <div className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-2 text-sm text-green-800">
             {successMsg}
           </div>
         )}
@@ -419,8 +419,8 @@ const Products = () => {
         <div className="mb-8">
            <div className="flex items-center justify-between">
              <div>
-               <h1 className="text-3xl font-bold text-gray-900 mb-2">Products Management</h1>
-               <p className="text-gray-600">Create and manage your shop products</p>
+               <h1 className="text-3xl font-bold text-casa-ink mb-2">Products Management</h1>
+               <p className="text-casa-ink/65">Create and manage your shop products</p>
              </div>
              <button
                onClick={() => {
@@ -438,7 +438,7 @@ const Products = () => {
                  setPricesINR({ price: 0, discountPrice: 0 });
                  setShowModal(true);
                }}
-               className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+               className="bg-casa-red text-white px-6 py-3 rounded-xl hover:bg-casa-redDark transition-colors flex items-center gap-2"
              >
                <FiPlus className="w-5 h-5" /> Add Product
              </button>
@@ -451,13 +451,13 @@ const Products = () => {
              <div className="col-span-full flex items-center justify-center py-12"><Spinner /> Loading products...</div>
           ) : products.length === 0 ? (
             <div className="col-span-full text-center py-12">
-              <FiImage className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-              <p className="text-gray-500">Get started by creating your first product.</p>
+              <FiImage className="w-12 h-12 text-casa-ink/40 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-casa-ink mb-2">No products found</h3>
+              <p className="text-casa-ink/50">Get started by creating your first product.</p>
             </div>
           ) : (
             products.map((product) => (
-              <div key={product._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+              <div key={product._id} className="bg-white rounded-xl shadow-sm border border-casa-ink/12 overflow-hidden hover:shadow-md transition-shadow">
                  {/* MODIFIED: Show first image or placeholder */}
                  {product.imageUrls && product.imageUrls.length > 0 ? (
                   <div className="h-48 bg-gray-200">
@@ -468,22 +468,22 @@ const Products = () => {
                     <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover"/>
                   </div>
                  ) : (
-                  <div className="h-48 bg-gray-200 flex items-center justify-center"><FiImage className="w-12 h-12 text-gray-400" /></div>
+                  <div className="h-48 bg-gray-200 flex items-center justify-center"><FiImage className="w-12 h-12 text-casa-ink/40" /></div>
                  )}
                 <div className="p-6">
                    <div className="flex items-center gap-2 mb-2">
-                     <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{product.name}</h3>
+                     <h3 className="text-lg font-semibold text-casa-ink line-clamp-2">{product.name}</h3>
                      {product.isActive === false && <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>}
                    </div>
-                   <p className="text-gray-600 text-sm mb-4 line-clamp-3">{product.description}</p>
+                   <p className="text-casa-ink/65 text-sm mb-4 line-clamp-3">{product.description}</p>
                    {product.availableLevels && product.availableLevels.length > 0 && (
                         <div className="mb-4 flex flex-wrap gap-1">
                             {product.availableLevels.map(lvl => (
-                                <span key={lvl} className="px-2 py-0.5 text-xs bg-gray-200 text-gray-700 rounded-full">{lvl}</span>
+                                <span key={lvl} className="px-2 py-0.5 text-xs bg-gray-200 text-casa-ink/75 rounded-full">{lvl}</span>
                             ))}
                         </div>
                     )}
-                   <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                   <div className="flex items-center justify-between text-sm text-casa-ink/50 mb-4">
                      {product.category && <span className="flex items-center gap-1"><FiBookOpen className="w-4 h-4" />{product.category}</span>}
                      <span className="flex items-center gap-1"><FiDollarSign className="w-4 h-4" />₹{product.discountPrice || product.price || 0}</span>
                    </div>
@@ -492,14 +492,14 @@ const Products = () => {
                        <button onClick={() => handleEdit(product)} className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50"><FiEdit className="w-4 h-4" /></button>
                        <button
                          onClick={() => handleToggleActive(product._id, product.isActive)}
-                         className={`p-2 rounded ${product.isActive === false ? "text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}
+                         className={`p-2 rounded ${product.isActive === false ? "text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50" : "text-casa-ink/40 hover:text-gray-600 hover:bg-casa-cream/40"}`}
                          title={product.isActive === false ? "Show to users" : "Hide from users"}
                        >
                          {product.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
                        </button>
-                       <button onClick={() => handleDelete(product._id)} className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50"><FiTrash2 className="w-4 h-4" /></button>
+                       <button onClick={() => handleDelete(product._id)} className="text-casa-red hover:text-red-900 p-2 rounded hover:bg-casa-red/8"><FiTrash2 className="w-4 h-4" /></button>
                      </div>
-                     <span className="text-xs text-gray-500">{new Date(product.createdAt).toLocaleDateString()}</span>
+                     <span className="text-xs text-casa-ink/50">{new Date(product.createdAt).toLocaleDateString()}</span>
                    </div>
                 </div>
               </div>
@@ -517,23 +517,23 @@ const Products = () => {
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">{editingProduct ? 'Edit Product' : 'Add New Product'}</h3>
-                <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600"><FiX className="w-6 h-6" /></button>
+              <div className="p-6 border-b border-casa-ink/12 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-casa-ink">{editingProduct ? 'Edit Product' : 'Add New Product'}</h3>
+                <button onClick={() => setShowModal(false)} className="text-casa-ink/40 hover:text-gray-600"><FiX className="w-6 h-6" /></button>
               </div>
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label><input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" required /></div>
-                  <div><label className="block text-sm font-medium text-gray-700 mb-1">Category *</label><select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-red-500 focus:border-red-500" required><option value="">Select Category</option>{categories.map(category => (<option key={category._id} value={category.name}>{category.name}</option>))}</select></div>
+                  <div><label className="block text-sm font-medium text-casa-ink/75 mb-1">Product Name *</label><input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red" required /></div>
+                  <div><label className="block text-sm font-medium text-casa-ink/75 mb-1">Category *</label><select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl bg-white focus:ring-casa-red focus:border-casa-red" required><option value="">Select Category</option>{categories.map(category => (<option key={category._id} value={category.name}>{category.name}</option>))}</select></div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">URL Slug</label>
-                  <input type="text" value={formData.slug || ''} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder={formData.name ? formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'auto-generated-from-name'} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 font-mono text-sm" />
-                  <p className="mt-1 text-xs text-gray-500">Leave blank to auto-generate from name. Used in page URL for SEO.</p>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">URL Slug</label>
+                  <input type="text" value={formData.slug || ''} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder={formData.name ? formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'auto-generated-from-name'} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red font-mono text-sm" />
+                  <p className="mt-1 text-xs text-casa-ink/50">Leave blank to auto-generate from name. Used in page URL for SEO.</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">Description *</label>
                   <LazyTinyMCE
                     apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
                     value={formData.description}
@@ -550,23 +550,23 @@ const Products = () => {
                 
                  {/* --- MODIFIED IMAGE UPLOAD SECTION --- */}
                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Images *</label>
-                    <div className="mt-1 p-4 border-2 border-dashed border-gray-300 rounded-lg">
+                    <label className="block text-sm font-medium text-casa-ink/75 mb-1">Images *</label>
+                    <div className="mt-1 p-4 border-2 border-dashed border-casa-ink/20 rounded-xl">
                        <input 
                          type="file" 
                          accept="image/*" 
                          onChange={handleFileChange} 
-                         className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                         className="block w-full text-sm text-casa-ink/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
                          multiple // Allow multiple files
                        />
-                       {uploading && <div className="text-sm text-gray-500 mt-2">Uploading...</div>}
+                       {uploading && <div className="text-sm text-casa-ink/50 mt-2">Uploading...</div>}
                        
                        {/* Gallery Preview */}
                        {!uploading && formData.imageUrls.length > 0 && (
                          <div className="mt-4 flex flex-wrap gap-4">
                             {formData.imageUrls.map((url, index) => (
                               <div key={index} className="relative w-32 h-32">
-                                <img src={url} alt={`preview ${index + 1}`} className="h-full w-full object-cover rounded-md border" />
+                                <img src={url} alt={`preview ${index + 1}`} className="h-full w-full object-cover rounded-xl border" />
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -575,7 +575,7 @@ const Products = () => {
                                       imageUrls: prev.imageUrls.filter((_, i) => i !== index)
                                     }));
                                   }}
-                                  className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs shadow"
+                                  className="absolute -top-2 -right-2 bg-casa-red text-white rounded-full h-5 w-5 flex items-center justify-center text-xs shadow"
                                 >
                                   &times;
                                 </button>
@@ -588,8 +588,8 @@ const Products = () => {
                  {/* --- END OF MODIFICATION --- */}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label><input type="number" min="0" step="0.01" value={formData.price} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" required/></div>
-                    <div><label className="block text-sm font-medium text-gray-700 mb-1">Discount Price (₹, optional)</label><input type="number" min="0" step="0.01" value={formData.discountPrice} onChange={(e) => setFormData({ ...formData, discountPrice: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" /></div>
+                    <div><label className="block text-sm font-medium text-casa-ink/75 mb-1">Price (₹) *</label><input type="number" min="0" step="0.01" value={formData.price} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red" required/></div>
+                    <div><label className="block text-sm font-medium text-casa-ink/75 mb-1">Discount Price (₹, optional)</label><input type="number" min="0" step="0.01" value={formData.discountPrice} onChange={(e) => setFormData({ ...formData, discountPrice: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red" /></div>
                 </div>
 
                 {/* Multi-Currency Pricing */}
@@ -661,74 +661,74 @@ const Products = () => {
                 </div>
                 
                 <div className="block">
-                    <span className="text-sm font-medium text-gray-700">Available Levels *</span>
+                    <span className="text-sm font-medium text-casa-ink/75">Available Levels *</span>
                     <div className="mt-2 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                         {ALL_POSSIBLE_LEVELS.map(level => (
-                            <label key={level} className="flex items-center gap-2 p-2 border rounded-md hover:bg-gray-50 cursor-pointer has-[:checked]:bg-red-50 has-[:checked]:border-red-300">
+                            <label key={level} className="flex items-center gap-2 p-2 border rounded-xl hover:bg-casa-cream/40 cursor-pointer has-[:checked]:bg-red-50 has-[:checked]:border-red-300">
                                 <input
                                     type="checkbox"
                                     value={level}
                                     checked={formData.availableLevels.includes(level)}
                                     onChange={() => handleLevelCheckboxChange(level)}
-                                    className="rounded accent-red-600 focus:ring-red-500"
+                                    className="rounded accent-red-600 focus:ring-casa-red"
                                 />
                                 <span className="text-sm">{level}</span>
                             </label>
                         ))}
                     </div>
-                    {formData.availableLevels.length === 0 && <p className="text-xs text-red-600 mt-1">Please select at least one level.</p>}
+                    {formData.availableLevels.length === 0 && <p className="text-xs text-casa-red mt-1">Please select at least one level.</p>}
                 </div>
 
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Product Type</label><select value={formData.productType} onChange={(e) => setFormData({ ...formData, productType: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-red-500 focus:border-red-500"><option value="Digital">Digital</option><option value="Physical">Physical</option><option value="Both">Both</option></select></div>
+                <div><label className="block text-sm font-medium text-casa-ink/75 mb-1">Product Type</label><select value={formData.productType} onChange={(e) => setFormData({ ...formData, productType: e.target.value })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl bg-white focus:ring-casa-red focus:border-casa-red"><option value="Digital">Digital</option><option value="Physical">Physical</option><option value="Both">Both</option></select></div>
 
                 {/* --- NEW: Digital Files Upload Section --- */}
                 {(formData.productType === 'Digital' || formData.productType === 'Both') && (
-                  <div className="border-2 border-gray-200 rounded-lg p-6 bg-gray-50">
-                    <h4 className="text-md font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <FiFile className="w-5 h-5 text-red-600" />
+                  <div className="border-2 border-casa-ink/12 rounded-xl p-6 bg-casa-cream/40">
+                    <h4 className="text-md font-semibold text-casa-ink mb-4 flex items-center gap-2">
+                      <FiFile className="w-5 h-5 text-casa-red" />
                       Digital Product Files
                     </h4>
 
                     {/* File Upload Input */}
                     <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-casa-ink/75 mb-2">
                         Upload Files (PDF, DOC, DOCX, HTML, MP3, WAV, MP4, ZIP)
                       </label>
                       <input
                         type="file"
                         accept=".pdf,.doc,.docx,.html,.mp3,.wav,.mp4,.zip"
                         onChange={handleDigitalFileChange}
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                        className="block w-full text-sm text-casa-ink/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
                         multiple
                         disabled={uploadingDigitalFiles}
                       />
                       {uploadingDigitalFiles && (
-                        <div className="mt-2 text-sm text-red-600 flex items-center gap-2">
+                        <div className="mt-2 text-sm text-casa-red flex items-center gap-2">
                           <FiRefreshCw className="animate-spin" />
                           Uploading files...
                         </div>
                       )}
-                      <p className="text-xs text-gray-500 mt-1">Max file size: 100MB per file</p>
+                      <p className="text-xs text-casa-ink/50 mt-1">Max file size: 100MB per file</p>
                     </div>
 
                     {/* Uploaded Files List */}
                     {formData.digitalFiles.length > 0 && (
                       <div className="space-y-2">
-                        <p className="text-sm font-medium text-gray-700 mb-2">
+                        <p className="text-sm font-medium text-casa-ink/75 mb-2">
                           Uploaded Files ({formData.digitalFiles.length})
                         </p>
                         {formData.digitalFiles.map((file, index) => (
                           <div
                             key={index}
-                            className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:border-red-300 transition-colors"
+                            className="flex items-center justify-between p-3 bg-white border border-casa-ink/12 rounded-xl hover:border-red-300 transition-colors"
                           >
                             <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <FiFile className="w-5 h-5 text-red-600 flex-shrink-0" />
+                              <FiFile className="w-5 h-5 text-casa-red flex-shrink-0" />
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 truncate">
+                                <p className="text-sm font-medium text-casa-ink truncate">
                                   {file.fileName}
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-casa-ink/50">
                                   {file.fileType.toUpperCase()} • {(file.fileSize / 1024 / 1024).toFixed(2)} MB
                                 </p>
                               </div>
@@ -741,7 +741,7 @@ const Products = () => {
                                   digitalFiles: prev.digitalFiles.filter((_, i) => i !== index)
                                 }));
                               }}
-                              className="ml-2 text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50 flex-shrink-0"
+                              className="ml-2 text-casa-red hover:text-red-900 p-2 rounded hover:bg-casa-red/8 flex-shrink-0"
                               title="Remove file"
                             >
                               <FiTrash2 className="w-4 h-4" />
@@ -754,7 +754,7 @@ const Products = () => {
                     {/* Download Settings */}
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-casa-ink/75 mb-1">
                           Max Downloads per Customer
                         </label>
                         <input
@@ -769,12 +769,12 @@ const Products = () => {
                               maxDownloads: parseInt(e.target.value) || 3
                             }
                           })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                          className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Default: 3 downloads</p>
+                        <p className="text-xs text-casa-ink/50 mt-1">Default: 3 downloads</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-casa-ink/75 mb-1">
                           Link Expiry (Days)
                         </label>
                         <input
@@ -789,9 +789,9 @@ const Products = () => {
                               linkExpiryDays: parseInt(e.target.value) || 30
                             }
                           })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                          className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Default: 30 days</p>
+                        <p className="text-xs text-casa-ink/50 mt-1">Default: 30 days</p>
                       </div>
                     </div>
                   </div>
@@ -799,47 +799,47 @@ const Products = () => {
                 {/* --- END NEW --- */}
 
                 {/* Subscription Button (Optional) */}
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                  <h4 className="text-sm font-semibold text-gray-800 mb-3">Subscription Button (Optional)</h4>
+                <div className="border border-casa-ink/12 rounded-xl p-4 bg-casa-cream/40">
+                  <h4 className="text-sm font-semibold text-casa-ink mb-3">Subscription Button (Optional)</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Subscription URL</label>
-                      <input type="url" value={formData.subscriptionUrl} onChange={(e) => setFormData({ ...formData, subscriptionUrl: e.target.value })} placeholder="https://example.com/subscribe" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" />
+                      <label className="block text-xs font-medium text-casa-ink/65 mb-1">Subscription URL</label>
+                      <input type="url" value={formData.subscriptionUrl} onChange={(e) => setFormData({ ...formData, subscriptionUrl: e.target.value })} placeholder="https://example.com/subscribe" className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Button Label</label>
-                      <input type="text" value={formData.subscriptionLabel} onChange={(e) => setFormData({ ...formData, subscriptionLabel: e.target.value })} placeholder="Subscribe" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" />
+                      <label className="block text-xs font-medium text-casa-ink/65 mb-1">Button Label</label>
+                      <input type="text" value={formData.subscriptionLabel} onChange={(e) => setFormData({ ...formData, subscriptionLabel: e.target.value })} placeholder="Subscribe" className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" />
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">Add a URL to show a subscription button on the product page. Leave blank to hide.</p>
+                  <p className="text-xs text-casa-ink/50 mt-2">Add a URL to show a subscription button on the product page. Leave blank to hide.</p>
                 </div>
 
                 {/* Embeds Section */}
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <div className="border border-casa-ink/12 rounded-xl p-4 bg-casa-cream/40">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-sm font-semibold text-gray-800">Embeds (AI/H5P Content)</h4>
-                    <button type="button" onClick={addProductEmbed} className="px-3 py-1.5 text-xs bg-red-700 text-white rounded-md hover:bg-red-800 transition">+ Add Embed</button>
+                    <h4 className="text-sm font-semibold text-casa-ink">Embeds (AI/H5P Content)</h4>
+                    <button type="button" onClick={addProductEmbed} className="px-3 py-1.5 text-xs bg-casa-red text-white rounded-xl hover:bg-casa-redDark transition">+ Add Embed</button>
                   </div>
                   {productEmbeds.length === 0 ? (
-                    <div className="text-center py-6 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+                    <div className="text-center py-6 text-casa-ink/50 border-2 border-dashed border-casa-ink/20 rounded-xl">
                       <p className="text-sm">No embeds added yet.</p>
                     </div>
                   ) : (
                     <div className="space-y-3 max-h-64 overflow-y-auto">
                       {productEmbeds.map((embed, index) => (
-                        <div key={index} className="bg-white rounded-lg p-3 border border-gray-200">
+                        <div key={index} className="bg-white rounded-xl p-3 border border-casa-ink/12">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-semibold text-gray-600">Embed #{index + 1} {embed._id && '(Existing)'}</span>
-                            <button type="button" onClick={() => removeProductEmbed(index)} className="text-xs text-red-600 hover:text-red-800">Remove</button>
+                            <span className="text-xs font-semibold text-casa-ink/65">Embed #{index + 1} {embed._id && '(Existing)'}</span>
+                            <button type="button" onClick={() => removeProductEmbed(index)} className="text-xs text-casa-red hover:text-casa-redDark">Remove</button>
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1">Title</label>
-                              <input value={embed.title} onChange={e => updateProductEmbed(index, 'title', e.target.value)} placeholder="e.g., Exercise 1" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
+                              <label className="block text-xs text-casa-ink/65 mb-1">Title</label>
+                              <input value={embed.title} onChange={e => updateProductEmbed(index, 'title', e.target.value)} placeholder="e.g., Exercise 1" className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" disabled={!!embed._id} />
                             </div>
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1">Type</label>
-                              <select value={embed.type} onChange={e => updateProductEmbed(index, 'type', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id}>
+                              <label className="block text-xs text-casa-ink/65 mb-1">Type</label>
+                              <select value={embed.type} onChange={e => updateProductEmbed(index, 'type', e.target.value)} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" disabled={!!embed._id}>
                                 <option value="AI">AI Content</option>
                                 <option value="H5P">H5P Content</option>
                                 <option value="HTML">HTML File</option>
@@ -849,7 +849,7 @@ const Products = () => {
                           {/* HTML File Upload */}
                           {!embed._id && (
                             <div className="mt-2">
-                              <label className="block text-xs text-gray-600 mb-1">Upload HTML File</label>
+                              <label className="block text-xs text-casa-ink/65 mb-1">Upload HTML File</label>
                               <div className="flex items-center gap-2">
                                 <input
                                   type="file"
@@ -859,17 +859,17 @@ const Products = () => {
                                     if (file) handleEmbedHtmlUpload(index, file);
                                     e.target.value = '';
                                   }}
-                                  className="flex-1 text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                                  className="flex-1 text-sm text-casa-ink/50 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
                                   disabled={uploadingEmbedHtml === index}
                                 />
-                                {uploadingEmbedHtml === index && <span className="text-xs text-gray-500 animate-pulse">Uploading...</span>}
+                                {uploadingEmbedHtml === index && <span className="text-xs text-casa-ink/50 animate-pulse">Uploading...</span>}
                               </div>
-                              <p className="text-xs text-gray-400 mt-1">Upload an HTML file to auto-fill the embed code field</p>
+                              <p className="text-xs text-casa-ink/40 mt-1">Upload an HTML file to auto-fill the embed code field</p>
                             </div>
                           )}
                           <div className="mt-2">
-                            <label className="block text-xs text-gray-600 mb-1">Embed Code / URL</label>
-                            <textarea value={embed.embedCode} onChange={e => updateProductEmbed(index, 'embedCode', e.target.value)} placeholder='Paste your <iframe> or <script> code here, or upload an HTML file above' rows="3" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
+                            <label className="block text-xs text-casa-ink/65 mb-1">Embed Code / URL</label>
+                            <textarea value={embed.embedCode} onChange={e => updateProductEmbed(index, 'embedCode', e.target.value)} placeholder='Paste your <iframe> or <script> code here, or upload an HTML file above' rows="3" className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" disabled={!!embed._id} />
                           </div>
                         </div>
                       ))}
@@ -877,9 +877,9 @@ const Products = () => {
                   )}
                 </div>
 
-                <div className="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
-                  <button type="button" onClick={() => setShowModal(false)} className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
-                  <button type="submit" disabled={isSaving || uploading || uploadingDigitalFiles} className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2 disabled:opacity-60">
+                <div className="flex items-center justify-end gap-4 pt-6 border-t border-casa-ink/12">
+                  <button type="button" onClick={() => setShowModal(false)} className="px-6 py-2 border border-casa-ink/20 rounded-xl text-casa-ink/75 hover:bg-casa-cream/40">Cancel</button>
+                  <button type="submit" disabled={isSaving || uploading || uploadingDigitalFiles} className="px-6 py-2 bg-casa-red text-white rounded-xl hover:bg-casa-redDark flex items-center gap-2 disabled:opacity-60">
                     <FiSave className={`w-4 h-4 ${isSaving ? 'animate-spin' : ''}`} />
                     {isSaving ? 'Saving…' : (uploading || uploadingDigitalFiles ? 'Uploading...' : (editingProduct ? 'Update Product' : 'Create Product'))}
                   </button>

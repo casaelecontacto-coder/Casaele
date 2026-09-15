@@ -278,10 +278,10 @@ export default function Materials() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Materials</h1>
-      <div className="rounded-xl bg-white shadow-sm border border-gray-200 overflow-hidden">
+      <div className="rounded-xl bg-white shadow-sm border border-casa-ink/12 overflow-hidden">
         {/* ... (Header and Error handling unchanged) ... */}
         <div className="p-3 border-b flex justify-between items-center">
-          <div className="text-sm text-gray-600">Manage learning materials</div>
+          <div className="text-sm text-casa-ink/65">Manage learning materials</div>
           <button
             onClick={() => { 
               setEditing(null); 
@@ -308,15 +308,15 @@ export default function Materials() {
               setMaterialEmbeds([]);
               setModalOpen(true);
             }}
-            className="px-3 py-1.5 rounded-md bg-red-700 text-white hover:bg-red-800"
+            className="px-3 py-1.5 rounded-xl bg-casa-red text-white hover:bg-casa-redDark"
           >
             Add Material
           </button>
         </div>
 
         {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-red-600">Error: {error}</p>
+          <div className="mb-4 p-4 bg-casa-red/8 border border-casa-red/25 rounded-xl">
+            <p className="text-casa-red">Error: {error}</p>
             <button
               onClick={() => {
                 setError(null);
@@ -337,7 +337,7 @@ export default function Materials() {
                   setChapters([])
                 }).finally(() => setLoading(false))
               }}
-              className="mt-2 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+              className="mt-2 px-3 py-1 bg-casa-red text-white rounded hover:bg-casa-redDark"
             >
               Retry
             </button>
@@ -345,7 +345,7 @@ export default function Materials() {
         )}
 
         <table className="min-w-full text-left">
-          <thead className="bg-gray-50 text-gray-600 text-sm">
+          <thead className="bg-casa-cream/40 text-casa-ink/65 text-sm">
             <tr>
               <th className="px-4 py-3">Title</th>
               <th className="px-4 py-3">Author</th>
@@ -362,47 +362,47 @@ export default function Materials() {
             {loading ? (
               Array.from({ length: 4 }).map((_, i) => (
                 <tr key={i}>
-                  <td className="px-4 py-3"><div className="h-4 w-56 bg-gray-100 animate-pulse rounded" /></td>
-                  <td className="px-4 py-3"><div className="h-4 w-24 bg-gray-100 animate-pulse rounded" /></td>
-                  <td className="px-4 py-3"><div className="h-4 w-20 bg-gray-100 animate-pulse rounded" /></td>
-                  <td className="px-4 py-3"><div className="h-4 w-20 bg-gray-100 animate-pulse rounded" /></td>
-                  <td className="px-4 py-3"><div className="h-4 w-16 bg-gray-100 animate-pulse rounded" /></td>
-                  <td className="px-4 py-3"><div className="h-4 w-20 bg-gray-100 animate-pulse rounded" /></td>
-                  <td className="px-4 py-3"><div className="h-4 w-16 bg-gray-100 animate-pulse rounded" /></td>
-                  <td className="px-4 py-3"><div className="h-8 w-24 bg-gray-100 animate-pulse rounded" /></td>
+                  <td className="px-4 py-3"><div className="h-4 w-56 bg-casa-cream/60 animate-pulse rounded" /></td>
+                  <td className="px-4 py-3"><div className="h-4 w-24 bg-casa-cream/60 animate-pulse rounded" /></td>
+                  <td className="px-4 py-3"><div className="h-4 w-20 bg-casa-cream/60 animate-pulse rounded" /></td>
+                  <td className="px-4 py-3"><div className="h-4 w-20 bg-casa-cream/60 animate-pulse rounded" /></td>
+                  <td className="px-4 py-3"><div className="h-4 w-16 bg-casa-cream/60 animate-pulse rounded" /></td>
+                  <td className="px-4 py-3"><div className="h-4 w-20 bg-casa-cream/60 animate-pulse rounded" /></td>
+                  <td className="px-4 py-3"><div className="h-4 w-16 bg-casa-cream/60 animate-pulse rounded" /></td>
+                  <td className="px-4 py-3"><div className="h-8 w-24 bg-casa-cream/60 animate-pulse rounded" /></td>
                 </tr>
               ))
             ) : (Array.isArray(items) ? items : []).map((m) => (
-              <tr key={m._id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 font-medium text-gray-800">
+              <tr key={m._id} className="hover:bg-casa-cream/40">
+                <td className="px-4 py-3 font-medium text-casa-ink">
                   <div className="flex items-center gap-2">
                     {m.title}
                     {m.isActive === false && <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-gray-700">{m.author || '-'}</td>
-                <td className="px-4 py-3 text-gray-700">{m.category || '-'}</td>
-                <td className="px-4 py-3 text-gray-700">{m.subCategory || '-'}</td>
-                <td className="px-4 py-3 text-gray-700">{m.theme || '-'}</td>
-                <td className="px-4 py-3 text-gray-700">{m.level || '-'}</td>
-                <td className="px-4 py-3 text-gray-700">{m.country || '-'}</td>
-                <td className="px-4 py-3 text-gray-700">
+                <td className="px-4 py-3 text-casa-ink/75">{m.author || '-'}</td>
+                <td className="px-4 py-3 text-casa-ink/75">{m.category || '-'}</td>
+                <td className="px-4 py-3 text-casa-ink/75">{m.subCategory || '-'}</td>
+                <td className="px-4 py-3 text-casa-ink/75">{m.theme || '-'}</td>
+                <td className="px-4 py-3 text-casa-ink/75">{m.level || '-'}</td>
+                <td className="px-4 py-3 text-casa-ink/75">{m.country || '-'}</td>
+                <td className="px-4 py-3 text-casa-ink/75">
                   <div className="flex items-center gap-1">
                     <span className="text-sm font-medium">{m.embedIds?.length || 0}</span>
-                    <span className="text-xs text-gray-500">embeds</span>
+                    <span className="text-xs text-casa-ink/50">embeds</span>
                   </div>
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <button onClick={() => openEditModal(m)} className="px-3 py-1 rounded bg-red-50 text-red-700 hover:bg-red-100 transition">Edit</button>
+                    <button onClick={() => openEditModal(m)} className="px-3 py-1 rounded bg-casa-red/8 text-casa-red hover:bg-red-100 transition">Edit</button>
                     <button
                       onClick={() => handleToggleActive(m._id, m.isActive)}
-                      className={m.isActive === false ? "text-yellow-600 hover:text-yellow-800" : "text-gray-400 hover:text-gray-600"}
+                      className={m.isActive === false ? "text-yellow-600 hover:text-yellow-800" : "text-casa-ink/40 hover:text-gray-600"}
                       title={m.isActive === false ? "Show to users" : "Hide from users"}
                     >
                       {m.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
                     </button>
-                    <button onClick={async () => { if (window.confirm('This will permanently delete. Are you sure?')) { await apiSend(`/api/materials/${m._id}`, 'DELETE'); setItems(items.filter(x => x._id !== m._id)) } }} className="text-red-600 hover:text-red-900">
+                    <button onClick={async () => { if (window.confirm('This will permanently delete. Are you sure?')) { await apiSend(`/api/materials/${m._id}`, 'DELETE'); setItems(items.filter(x => x._id !== m._id)) } }} className="text-casa-red hover:text-red-900">
                       <FiTrash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -417,7 +417,7 @@ export default function Materials() {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-2xl bg-white rounded-xl shadow p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="text-lg font-semibold">{editing ? 'Edit material' : 'Add material'}</div>
-            {errorMsg ? <div className="text-sm text-red-600">{errorMsg}</div> : null}
+            {errorMsg ? <div className="text-sm text-casa-red">{errorMsg}</div> : null}
 
             <div className="grid grid-cols-1 gap-3">
               {[
@@ -433,12 +433,12 @@ export default function Materials() {
                 { label: 'Tags (comma-separated)', key: 'tags', placeholder: 'e.g., A2, Listening, Culture' }
               ].map(f => (
                 <label key={f.key} className="block">
-                  <span className="text-sm text-gray-700">{f.label}</span>
+                  <span className="text-sm text-casa-ink/75">{f.label}</span>
                   <input
                     value={form[f.key]}
                     onChange={e => setForm({ ...form, [f.key]: e.target.value })}
                     placeholder={f.placeholder || ''}
-                    className="mt-1 w-full rounded-lg border border-gray-300 bg-gray-50 focus:border-red-500 focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400 hover:border-gray-400"
+                    className="mt-1 w-full rounded-xl border border-casa-ink/20 bg-casa-cream/40 focus:border-casa-red focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400 hover:border-gray-400"
                   />
                 </label>
               ))}
@@ -447,46 +447,46 @@ export default function Materials() {
               {/* Multiple Embeds Section */}
               <div className="block">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-700">Add Multiple Embeds (AI/H5P Content)</span>
-                  <button type="button" onClick={addMaterialEmbed} className="px-3 py-1.5 text-xs bg-red-700 text-white rounded-md hover:bg-red-800 transition">
+                  <span className="text-sm text-casa-ink/75">Add Multiple Embeds (AI/H5P Content)</span>
+                  <button type="button" onClick={addMaterialEmbed} className="px-3 py-1.5 text-xs bg-casa-red text-white rounded-xl hover:bg-casa-redDark transition">
                     + Add Another Embed
                   </button>
                 </div>
                 {materialEmbeds.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+                  <div className="text-center py-8 text-casa-ink/50 border-2 border-dashed border-casa-ink/20 rounded-xl">
                     <p className="text-sm">No embeds added yet.</p>
                   </div>
                 ) : (
-                  <div className="space-y-3 max-h-64 overflow-y-auto border rounded-lg p-3">
+                  <div className="space-y-3 max-h-64 overflow-y-auto border rounded-xl p-3">
                     {materialEmbeds.map((embed, index) => (
-                      <div key={index} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                      <div key={index} className="bg-casa-cream/40 rounded-xl p-3 border border-casa-ink/12">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-semibold text-gray-600">Embed #{index + 1} {embed._id && '(Existing)'}</span>
+                            <span className="text-xs font-semibold text-casa-ink/65">Embed #{index + 1} {embed._id && '(Existing)'}</span>
                             <button
                             type="button"
                             onClick={() => removeMaterialEmbed(index)}
-                            className="text-xs text-red-600 hover:text-red-800"
+                            className="text-xs text-casa-red hover:text-casa-redDark"
                             >
                             Remove
                             </button>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <label className="block">
-                            <span className="text-sm text-gray-700">Title</span>
+                            <span className="text-sm text-casa-ink/75">Title</span>
                             <input
                                 value={embed.title}
                                 onChange={e => updateMaterialEmbed(index, 'title', e.target.value)}
                                 placeholder="e.g., Exercise 1"
-                                className="mt-1 w-full rounded-lg border border-gray-300 bg-white focus:border-red-500 focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400"
+                                className="mt-1 w-full rounded-xl border border-casa-ink/20 bg-white focus:border-casa-red focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400"
                                 disabled={!!embed._id}
                             />
                             </label>
                             <label className="block">
-                            <span className="text-sm text-gray-700">Type</span>
+                            <span className="text-sm text-casa-ink/75">Type</span>
                             <select
                                 value={embed.type}
                                 onChange={e => updateMaterialEmbed(index, 'type', e.target.value)}
-                                className="mt-1 w-full rounded-lg border border-gray-300 bg-white focus:border-red-500 focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm"
+                                className="mt-1 w-full rounded-xl border border-casa-ink/20 bg-white focus:border-casa-red focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm"
                                 disabled={!!embed._id}
                             >
                                 <option value="AI">AI Content</option>
@@ -498,7 +498,7 @@ export default function Materials() {
                         {/* HTML File Upload */}
                         {!embed._id && (
                           <div className="mt-3">
-                            <span className="text-sm text-gray-700">Upload HTML File</span>
+                            <span className="text-sm text-casa-ink/75">Upload HTML File</span>
                             <div className="flex items-center gap-2 mt-1">
                               <input
                                 type="file"
@@ -508,22 +508,22 @@ export default function Materials() {
                                   if (file) handleEmbedHtmlUpload(index, file);
                                   e.target.value = '';
                                 }}
-                                className="flex-1 text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                                className="flex-1 text-sm text-casa-ink/50 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
                                 disabled={uploadingEmbedHtml === index}
                               />
-                              {uploadingEmbedHtml === index && <span className="text-xs text-gray-500 animate-pulse">Uploading...</span>}
+                              {uploadingEmbedHtml === index && <span className="text-xs text-casa-ink/50 animate-pulse">Uploading...</span>}
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">Upload an HTML file to auto-fill the embed code field</p>
+                            <p className="text-xs text-casa-ink/40 mt-1">Upload an HTML file to auto-fill the embed code field</p>
                           </div>
                         )}
                         <label className="block mt-3">
-                            <span className="text-sm text-gray-700">Embed Code / URL</span>
+                            <span className="text-sm text-casa-ink/75">Embed Code / URL</span>
                             <textarea
                             value={embed.embedCode}
                             onChange={e => updateMaterialEmbed(index, 'embedCode', e.target.value)}
                             placeholder="Paste your <iframe> or <script> code here, or upload an HTML file above"
                             rows="4"
-                            className="mt-1 w-full rounded-lg border border-gray-300 bg-white focus:border-red-500 focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400"
+                            className="mt-1 w-full rounded-xl border border-casa-ink/20 bg-white focus:border-casa-red focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400"
                             disabled={!!embed._id}
                             />
                         </label>
@@ -537,15 +537,15 @@ export default function Materials() {
               {/* Embed Selection with Chapter Filter */}
               <div className="block">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-700 font-medium">Select Embeds from Library</span>
-                  <span className="text-xs text-gray-500">{form.embedIds.length} selected</span>
+                  <span className="text-sm text-casa-ink/75 font-medium">Select Embeds from Library</span>
+                  <span className="text-xs text-casa-ink/50">{form.embedIds.length} selected</span>
                 </div>
 
                 {/* Search and Filter Controls */}
                 <div className="flex flex-col sm:flex-row gap-2 mb-3">
                   {/* Search Input */}
                   <div className="relative flex-1">
-                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-casa-ink/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <input
@@ -553,7 +553,7 @@ export default function Materials() {
                       placeholder="Search embeds..."
                       value={embedSearchTerm}
                       onChange={(e) => setEmbedSearchTerm(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 text-sm focus:border-red-500 focus:ring-2 focus:ring-red-400/50 outline-none"
+                      className="w-full pl-9 pr-3 py-2 rounded-xl border border-casa-ink/20 text-sm focus:border-casa-red focus:ring-2 focus:ring-red-400/50 outline-none"
                     />
                   </div>
 
@@ -561,7 +561,7 @@ export default function Materials() {
                   <select
                     value={selectedChapterFilter}
                     onChange={(e) => setSelectedChapterFilter(e.target.value)}
-                    className="px-3 py-2 rounded-lg border border-gray-300 text-sm focus:border-red-500 focus:ring-2 focus:ring-red-400/50 outline-none bg-white min-w-[150px]"
+                    className="px-3 py-2 rounded-xl border border-casa-ink/20 text-sm focus:border-casa-red focus:ring-2 focus:ring-red-400/50 outline-none bg-white min-w-[150px]"
                   >
                     <option value="all">All Chapters</option>
                     <option value="uncategorized">Uncategorized</option>
@@ -572,7 +572,7 @@ export default function Materials() {
                 </div>
 
                 {/* Embed List */}
-                <div className="border rounded-lg max-h-60 overflow-y-auto">
+                <div className="border rounded-xl max-h-60 overflow-y-auto">
                   {(() => {
                     // Filter embeds based on search and chapter
                     let filteredEmbeds = embeds.filter(embed => {
@@ -594,7 +594,7 @@ export default function Materials() {
 
                     if (filteredEmbeds.length === 0) {
                       return (
-                        <div className="p-4 text-center text-gray-500 text-sm">
+                        <div className="p-4 text-center text-casa-ink/50 text-sm">
                           {embedSearchTerm || selectedChapterFilter !== 'all'
                             ? 'No embeds match your filters'
                             : 'No embeds available'}
@@ -614,26 +614,26 @@ export default function Materials() {
 
                     return Object.entries(groupedEmbeds).map(([chapterName, chapterEmbeds]) => (
                       <div key={chapterName}>
-                        <div className="px-3 py-2 bg-gray-50 text-xs font-semibold text-gray-600 sticky top-0 border-b">
+                        <div className="px-3 py-2 bg-casa-cream/40 text-xs font-semibold text-casa-ink/65 sticky top-0 border-b">
                           {chapterName} ({chapterEmbeds.length})
                         </div>
                         <div className="divide-y divide-gray-100">
                           {chapterEmbeds.map(embed => (
                             <label
                               key={embed._id}
-                              className={`flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50 transition ${
-                                form.embedIds.includes(embed._id) ? 'bg-red-50' : ''
+                              className={`flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-casa-cream/40 transition ${
+                                form.embedIds.includes(embed._id) ? 'bg-casa-red/8' : ''
                               }`}
                             >
                               <input
                                 type="checkbox"
                                 checked={form.embedIds.includes(embed._id)}
                                 onChange={() => handleEmbedSelection(embed._id)}
-                                className="rounded text-red-600 focus:ring-red-500"
+                                className="rounded text-casa-red focus:ring-casa-red"
                               />
                               <div className="flex-1 min-w-0">
-                                <div className="text-sm text-gray-800 truncate">{embed.title}</div>
-                                <div className="text-xs text-gray-500">{embed.type}</div>
+                                <div className="text-sm text-casa-ink truncate">{embed.title}</div>
+                                <div className="text-xs text-casa-ink/50">{embed.type}</div>
                               </div>
                             </label>
                           ))}
@@ -649,7 +649,7 @@ export default function Materials() {
                     <button
                       type="button"
                       onClick={() => setForm({ ...form, embedIds: [] })}
-                      className="text-xs text-red-600 hover:text-red-800"
+                      className="text-xs text-casa-red hover:text-casa-redDark"
                     >
                       Clear all selections
                     </button>
@@ -659,26 +659,26 @@ export default function Materials() {
 
               {/* Dropdown Title Input */}
               <label className="block">
-                <span className="text-sm text-gray-700">Dropdown Title</span>
+                <span className="text-sm text-casa-ink/75">Dropdown Title</span>
                 <input
                   value={form.dropdownTitle}
                   onChange={e => setForm({ ...form, dropdownTitle: e.target.value })}
                   placeholder="e.g., Ejercicios, Activities"
-                  className="mt-1 w-full rounded-lg border border-gray-300 bg-gray-50 focus:border-red-500 focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400 hover:border-gray-400"
+                  className="mt-1 w-full rounded-xl border border-casa-ink/20 bg-casa-cream/40 focus:border-casa-red focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400 hover:border-gray-400"
                 />
-                <p className="text-xs text-gray-500 mt-1">Title for the exercises dropdown on the detail page. Defaults to 'Ejercicios' if left empty.</p>
+                <p className="text-xs text-casa-ink/50 mt-1">Title for the exercises dropdown on the detail page. Defaults to 'Ejercicios' if left empty.</p>
               </label>
 
               {/* Card Image Section */}
               <div className="block">
-                <span className="text-sm text-gray-700">Card Image Source</span>
+                <span className="text-sm text-casa-ink/75">Card Image Source</span>
                 <div className="mt-2 flex gap-4">
                   <label className="flex items-center gap-2">
-                    <input type="radio" name="imgMode" value="local" checked={imgMode === 'local'} onChange={() => setImgMode('local')} className="text-red-600"/>
+                    <input type="radio" name="imgMode" value="local" checked={imgMode === 'local'} onChange={() => setImgMode('local')} className="text-casa-red"/>
                     <span className="text-sm">Upload</span>
                   </label>
                   <label className="flex items-center gap-2">
-                    <input type="radio" name="imgMode" value="pinterest" checked={imgMode === 'pinterest'} onChange={() => setImgMode('pinterest')} className="text-red-600"/>
+                    <input type="radio" name="imgMode" value="pinterest" checked={imgMode === 'pinterest'} onChange={() => setImgMode('pinterest')} className="text-casa-red"/>
                     <span className="text-sm">Pinterest URL</span>
                   </label>
                 </div>
@@ -686,65 +686,65 @@ export default function Materials() {
 
               {imgMode === 'local' ? (
                 <label className="block">
-                  <span className="text-sm text-gray-700">Card Image Upload (for material list)</span>
+                  <span className="text-sm text-casa-ink/75">Card Image Upload (for material list)</span>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleFileChange}
-                    className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 cursor-pointer transition"
+                    className="mt-1 block w-full text-sm text-casa-ink/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 cursor-pointer transition"
                   />
-                  {uploading && <div className="text-sm text-gray-500 mt-1">Uploading Card Image...</div>}
+                  {uploading && <div className="text-sm text-casa-ink/50 mt-1">Uploading Card Image...</div>}
                   {form.fileUrl && !uploading && (<div className="text-sm text-green-600 mt-1">Card image upload complete.</div>)}
                 </label>
               ) : (
                 <div className="grid gap-2">
                   <label className="block">
-                    <span className="text-sm text-gray-700">Pinterest URL</span>
+                    <span className="text-sm text-casa-ink/75">Pinterest URL</span>
                     <input
                       value={pinUrl}
                       onChange={e => setPinUrl(e.target.value)}
                       placeholder="https://www.pinterest.com/pin/..."
-                      className="mt-1 w-full rounded-lg border border-gray-300 bg-gray-50 focus:border-red-500 focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400 hover:border-gray-400"
+                      className="mt-1 w-full rounded-xl border border-casa-ink/20 bg-casa-cream/40 focus:border-casa-red focus:ring-2 focus:ring-red-400/50 transition duration-150 px-3 py-2 text-sm placeholder-gray-400 hover:border-gray-400"
                     />
                   </label>
                 </div>
               )}
 
               {(form.fileUrl || pinPreview) && (
-                <div className="mt-2 border rounded-lg p-2">
-                  <div className="text-xs text-gray-500 mb-1">Card Image Preview</div>
-                  <img src={form.fileUrl || pinPreview?.image} alt="preview" className="max-h-40 object-contain rounded-md border border-gray-200" />
+                <div className="mt-2 border rounded-xl p-2">
+                  <div className="text-xs text-casa-ink/50 mb-1">Card Image Preview</div>
+                  <img src={form.fileUrl || pinPreview?.image} alt="preview" className="max-h-40 object-contain rounded-xl border border-casa-ink/12" />
                 </div>
               )}
 
               {/* Banner Image Uploader */}
               <label className="block">
-                <span className="text-sm text-gray-700">Banner Image Upload (for detail page)</span>
+                <span className="text-sm text-casa-ink/75">Banner Image Upload (for detail page)</span>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleBannerFileChange}
-                  className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition"
+                  className="mt-1 block w-full text-sm text-casa-ink/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer transition"
                 />
-                {uploadingBanner && <div className="text-sm text-gray-500 mt-1">Uploading Banner Image...</div>}
+                {uploadingBanner && <div className="text-sm text-casa-ink/50 mt-1">Uploading Banner Image...</div>}
                 {form.bannerImageUrl && !uploadingBanner && (<div className="text-sm text-green-600 mt-1">Banner image upload complete.</div>)}
               </label>
               
               {form.bannerImageUrl && (
-                <div className="mt-2 border rounded-lg p-2">
-                  <div className="text-xs text-gray-500 mb-1">Banner Image Preview</div>
-                  <img src={form.bannerImageUrl} alt="banner preview" className="max-h-40 object-contain rounded-md border border-gray-200" />
+                <div className="mt-2 border rounded-xl p-2">
+                  <div className="text-xs text-casa-ink/50 mb-1">Banner Image Preview</div>
+                  <img src={form.bannerImageUrl} alt="banner preview" className="max-h-40 object-contain rounded-xl border border-casa-ink/12" />
                 </div>
               )}
 
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setModalOpen(false)} className="px-3 py-1.5 rounded-md bg-gray-100 hover:bg-gray-200">Cancel</button>
+              <button onClick={() => setModalOpen(false)} className="px-3 py-1.5 rounded-xl bg-casa-cream/60 hover:bg-gray-200">Cancel</button>
               <button 
                 onClick={handleSave} 
                 disabled={uploading || uploadingBanner || saving} 
-                className="px-3 py-1.5 rounded-md bg-red-700 text-white hover:bg-red-800 disabled:opacity-60"
+                className="px-3 py-1.5 rounded-xl bg-casa-red text-white hover:bg-casa-redDark disabled:opacity-60"
               >
                 {saving ? 'Saving…' : (uploading || uploadingBanner ? 'Uploading...' : 'Save')}
               </button>

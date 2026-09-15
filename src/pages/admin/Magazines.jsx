@@ -306,10 +306,10 @@ const Magazines = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-casa-cream/40 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {successMsg && (
-          <div className="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-2 text-sm text-green-800">
+          <div className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-2 text-sm text-green-800">
             {successMsg}
           </div>
         )}
@@ -318,12 +318,12 @@ const Magazines = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Magazines</h1>
-              <p className="text-gray-600">Upload and manage your flipbook magazines</p>
+              <h1 className="text-3xl font-bold text-casa-ink mb-2">Magazines</h1>
+              <p className="text-casa-ink/65">Upload and manage your flipbook magazines</p>
             </div>
             <button
               onClick={() => { resetForm(); setShowModal(true); }}
-              className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+              className="bg-casa-red text-white px-6 py-3 rounded-xl hover:bg-casa-redDark transition-colors flex items-center gap-2"
             >
               <FiPlus className="w-5 h-5" /> Add Magazine
             </button>
@@ -336,31 +336,31 @@ const Magazines = () => {
             <div className="col-span-full flex items-center justify-center py-12"><Spinner /> Loading magazines...</div>
           ) : magazines.length === 0 ? (
             <div className="col-span-full text-center py-12">
-              <FiFile className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No magazines found</h3>
-              <p className="text-gray-500">Get started by uploading your first magazine.</p>
+              <FiFile className="w-12 h-12 text-casa-ink/40 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-casa-ink mb-2">No magazines found</h3>
+              <p className="text-casa-ink/50">Get started by uploading your first magazine.</p>
             </div>
           ) : (
             magazines.map((magazine) => (
-              <div key={magazine._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+              <div key={magazine._id} className="bg-white rounded-xl shadow-sm border border-casa-ink/12 overflow-hidden hover:shadow-md transition-shadow">
                 {magazine.coverImageUrl ? (
                   <div className="h-48 bg-gray-200">
                     <img src={magazine.coverImageUrl} alt={magazine.title} className="w-full h-full object-cover" />
                   </div>
                 ) : (
                   <div className="h-48 bg-gray-200 flex items-center justify-center">
-                    <FiImage className="w-12 h-12 text-gray-400" />
+                    <FiImage className="w-12 h-12 text-casa-ink/40" />
                   </div>
                 )}
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1">{magazine.title}</h3>
+                    <h3 className="text-lg font-semibold text-casa-ink line-clamp-2 flex-1">{magazine.title}</h3>
                     {magazine.isActive === false && (
                       <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 rounded-full">Hidden</span>
                     )}
                   </div>
                   {magazine.description && (
-                    <div className="text-gray-600 text-sm mb-3 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: magazine.description }} />
+                    <div className="text-casa-ink/65 text-sm mb-3 line-clamp-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: magazine.description }} />
                   )}
                   <div className="flex flex-wrap gap-2 mb-3">
                     <span className={`px-2 py-0.5 text-xs rounded-full ${
@@ -371,13 +371,13 @@ const Magazines = () => {
                       {magazine.contentType === 'comic' ? 'Comic' : magazine.contentType === 'text' ? 'Text' : 'Issue'}
                     </span>
                     {magazine.category && (
-                      <span className="px-2 py-0.5 text-xs bg-gray-200 text-gray-700 rounded-full">{magazine.category}</span>
+                      <span className="px-2 py-0.5 text-xs bg-gray-200 text-casa-ink/75 rounded-full">{magazine.category}</span>
                     )}
-                    <span className={`px-2 py-0.5 text-xs rounded-full ${magazine.accessType === 'paid' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                    <span className={`px-2 py-0.5 text-xs rounded-full ${magazine.accessType === 'paid' ? 'bg-red-100 text-casa-red' : 'bg-green-100 text-green-700'}`}>
                       {magazine.accessType === 'paid' ? 'Paid' : 'Free'}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                  <div className="flex items-center justify-between text-sm text-casa-ink/50 mb-4">
                     <span>{new Date(magazine.publishedAt || magazine.createdAt).toLocaleDateString()}</span>
                     {magazine.accessType === 'paid' && (
                       <span className="flex items-center gap-1"><FiDollarSign className="w-4 h-4" />{magazine.discountPrice || magazine.price || 0}</span>
@@ -390,17 +390,17 @@ const Magazines = () => {
                       </button>
                       <button
                         onClick={() => handleToggleActive(magazine._id, magazine.isActive)}
-                        className={magazine.isActive === false ? "text-yellow-600 hover:text-yellow-800 p-2 rounded hover:bg-yellow-50" : "text-gray-400 hover:text-gray-600 p-2 rounded hover:bg-gray-50"}
+                        className={magazine.isActive === false ? "text-yellow-600 hover:text-yellow-800 p-2 rounded hover:bg-yellow-50" : "text-casa-ink/40 hover:text-gray-600 p-2 rounded hover:bg-casa-cream/40"}
                         title={magazine.isActive === false ? "Show to users" : "Hide from users"}
                       >
                         {magazine.isActive === false ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
                       </button>
-                      <button onClick={() => handleDelete(magazine._id)} className="text-red-600 hover:text-red-900 p-2 rounded hover:bg-red-50">
+                      <button onClick={() => handleDelete(magazine._id)} className="text-casa-red hover:text-red-900 p-2 rounded hover:bg-casa-red/8">
                         <FiTrash2 className="w-4 h-4" />
                       </button>
                     </div>
                     {magazine.pdfUrl && (
-                      <a href={magazine.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-red-600 hover:text-red-800 text-xs font-medium">
+                      <a href={magazine.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-casa-red hover:text-casa-redDark text-xs font-medium">
                         View PDF
                       </a>
                     )}
@@ -415,24 +415,24 @@ const Magazines = () => {
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">{editingMagazine ? 'Edit Magazine' : 'Add New Magazine'}</h3>
-                <button onClick={() => { setShowModal(false); resetForm(); }} className="text-gray-400 hover:text-gray-600">
+              <div className="p-6 border-b border-casa-ink/12 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-casa-ink">{editingMagazine ? 'Edit Magazine' : 'Add New Magazine'}</h3>
+                <button onClick={() => { setShowModal(false); resetForm(); }} className="text-casa-ink/40 hover:text-gray-600">
                   <FiX className="w-6 h-6" />
                 </button>
               </div>
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
                 {/* Content type */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Show as</label>
-                  <p className="text-xs text-gray-500 mb-2">Which section of the /products page this appears in.</p>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">Show as</label>
+                  <p className="text-xs text-casa-ink/50 mb-2">Which section of the /products page this appears in.</p>
                   <div className="flex flex-wrap gap-3">
                     {[
                       { value: 'issue', label: 'Editorial issue' },
                       { value: 'text', label: 'Single text' },
                       { value: 'comic', label: 'Comic' },
                     ].map((opt) => (
-                      <label key={opt.value} className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${formData.contentType === opt.value ? 'bg-red-50 border-red-300 text-red-700' : 'bg-white border-gray-300 text-gray-600'}`}>
+                      <label key={opt.value} className={`flex items-center gap-2 px-4 py-2 rounded-xl border cursor-pointer transition-colors ${formData.contentType === opt.value ? 'bg-casa-red/8 border-red-300 text-casa-red' : 'bg-white border-casa-ink/20 text-casa-ink/65'}`}>
                         <input type="radio" name="contentType" value={opt.value} checked={formData.contentType === opt.value} onChange={(e) => setFormData({ ...formData, contentType: e.target.value })} className="accent-red-600" />
                         {opt.label}
                       </label>
@@ -443,26 +443,26 @@ const Magazines = () => {
                 {/* Title + Category */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
-                    <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" required />
+                    <label className="block text-sm font-medium text-casa-ink/75 mb-1">Title *</label>
+                    <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red" required />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <input type="text" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" placeholder="e.g., Monthly Issue, Special Edition..." />
+                    <label className="block text-sm font-medium text-casa-ink/75 mb-1">Category</label>
+                    <input type="text" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red" placeholder="e.g., Monthly Issue, Special Edition..." />
                   </div>
                 </div>
 
                 {/* Slug */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">URL Slug</label>
-                  <input type="text" value={formData.slug || ''} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder={formData.title ? formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'auto-generated-from-title'} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 font-mono text-sm" />
-                  <p className="mt-1 text-xs text-gray-500">Leave blank to auto-generate from title.</p>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">URL Slug</label>
+                  <input type="text" value={formData.slug || ''} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder={formData.title ? formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'auto-generated-from-title'} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl focus:ring-casa-red focus:border-casa-red font-mono text-sm" />
+                  <p className="mt-1 text-xs text-casa-ink/50">Leave blank to auto-generate from title.</p>
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                  <div className="mt-1 rounded-lg overflow-hidden border border-gray-200 focus-within:border-red-600 focus-within:ring-2 focus-within:ring-red-100 transition-all duration-200">
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">Description</label>
+                  <div className="mt-1 rounded-xl overflow-hidden border border-casa-ink/12 focus-within:border-red-600 focus-within:ring-2 focus-within:ring-red-100 transition-all duration-200">
                     <LazyTinyMCE
                       apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
                       value={formData.description}
@@ -483,44 +483,44 @@ const Magazines = () => {
 
                 {/* Cover Image Upload */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Cover Image *</label>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">Cover Image *</label>
                   {formData.coverImageUrl ? (
                     <div className="relative inline-block mb-2">
-                      <img src={formData.coverImageUrl} alt="Cover" className="h-40 rounded-lg object-cover border border-gray-200" />
-                      <button type="button" onClick={() => setFormData(prev => ({ ...prev, coverImageUrl: '' }))} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600">
+                      <img src={formData.coverImageUrl} alt="Cover" className="h-40 rounded-xl object-cover border border-casa-ink/12" />
+                      <button type="button" onClick={() => setFormData(prev => ({ ...prev, coverImageUrl: '' }))} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-casa-redDark">
                         <FiX className="w-3 h-3" />
                       </button>
                     </div>
                   ) : null}
-                  <input type="file" accept="image/*" onChange={handleCoverUpload} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
-                  {uploadingCover && <p className="text-sm text-gray-500 mt-1 animate-pulse">Uploading cover image...</p>}
+                  <input type="file" accept="image/*" onChange={handleCoverUpload} className="w-full text-sm text-casa-ink/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
+                  {uploadingCover && <p className="text-sm text-casa-ink/50 mt-1 animate-pulse">Uploading cover image...</p>}
                 </div>
 
                 {/* PDF Upload */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Magazine PDF *</label>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">Magazine PDF *</label>
                   {formData.pdfUrl ? (
-                    <div className="flex items-center gap-3 mb-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-center gap-3 mb-2 p-3 bg-green-50 border border-green-200 rounded-xl">
                       <FiFile className="w-5 h-5 text-green-600" />
                       <span className="text-sm text-green-800 flex-1 truncate">PDF uploaded</span>
                       <a href={formData.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-green-700 underline">Preview</a>
-                      <button type="button" onClick={() => setFormData(prev => ({ ...prev, pdfUrl: '' }))} className="text-red-500 hover:text-red-700">
+                      <button type="button" onClick={() => setFormData(prev => ({ ...prev, pdfUrl: '' }))} className="text-red-500 hover:text-casa-redDark">
                         <FiX className="w-4 h-4" />
                       </button>
                     </div>
                   ) : null}
-                  <input type="file" accept="application/pdf" onChange={handlePdfUpload} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
-                  {uploadingPdf && <p className="text-sm text-gray-500 mt-1 animate-pulse">Uploading PDF...</p>}
+                  <input type="file" accept="application/pdf" onChange={handlePdfUpload} className="w-full text-sm text-casa-ink/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
+                  {uploadingPdf && <p className="text-sm text-casa-ink/50 mt-1 animate-pulse">Uploading PDF...</p>}
                 </div>
 
                 {/* Complementary Material Upload */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Complementary Material (ZIP)</label>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">Complementary Material (ZIP)</label>
                   {formData.complementaryMaterialUrl ? (
-                    <div className="flex items-center gap-3 mb-2 p-3 bg-teal-50 border border-teal-200 rounded-lg">
+                    <div className="flex items-center gap-3 mb-2 p-3 bg-teal-50 border border-teal-200 rounded-xl">
                       <FiFile className="w-5 h-5 text-teal-600" />
                       <span className="text-sm text-teal-800 flex-1 truncate">{formData.complementaryMaterialName || 'Material uploaded'}</span>
-                      <button type="button" onClick={() => setFormData(prev => ({ ...prev, complementaryMaterialUrl: '', complementaryMaterialName: '' }))} className="text-red-500 hover:text-red-700">
+                      <button type="button" onClick={() => setFormData(prev => ({ ...prev, complementaryMaterialUrl: '', complementaryMaterialName: '' }))} className="text-red-500 hover:text-casa-redDark">
                         <FiX className="w-4 h-4" />
                       </button>
                     </div>
@@ -553,54 +553,54 @@ const Magazines = () => {
                         e.target.value = '';
                       }
                     }}
-                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+                    className="w-full text-sm text-casa-ink/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
                   />
-                  {uploadingMaterial && <p className="text-sm text-gray-500 mt-1 animate-pulse">Uploading material...</p>}
+                  {uploadingMaterial && <p className="text-sm text-casa-ink/50 mt-1 animate-pulse">Uploading material...</p>}
                 </div>
 
                 {/* Action Button Links */}
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-3">
-                  <h4 className="text-sm font-semibold text-gray-800">Action Button Links</h4>
+                <div className="border border-casa-ink/12 rounded-xl p-4 bg-casa-cream/40 space-y-3">
+                  <h4 className="text-sm font-semibold text-casa-ink">Action Button Links</h4>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Donate Link</label>
-                    <input type="url" value={formData.donateLink} onChange={(e) => setFormData({ ...formData, donateLink: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" />
+                    <label className="block text-xs font-medium text-casa-ink/65 mb-1">Donate Link</label>
+                    <input type="url" value={formData.donateLink} onChange={(e) => setFormData({ ...formData, donateLink: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Subscribe Link</label>
-                    <input type="url" value={formData.subscribeLink} onChange={(e) => setFormData({ ...formData, subscribeLink: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" />
+                    <label className="block text-xs font-medium text-casa-ink/65 mb-1">Subscribe Link</label>
+                    <input type="url" value={formData.subscribeLink} onChange={(e) => setFormData({ ...formData, subscribeLink: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Pre-order Physical Copies Link</label>
-                    <input type="url" value={formData.preorderLink} onChange={(e) => setFormData({ ...formData, preorderLink: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" />
+                    <label className="block text-xs font-medium text-casa-ink/65 mb-1">Pre-order Physical Copies Link</label>
+                    <input type="url" value={formData.preorderLink} onChange={(e) => setFormData({ ...formData, preorderLink: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" />
                   </div>
                 </div>
 
                 {/* Embeds Section */}
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <div className="border border-casa-ink/12 rounded-xl p-4 bg-casa-cream/40">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-sm font-semibold text-gray-800">Embeds (AI/H5P/HTML Content)</h4>
-                    <button type="button" onClick={addMagazineEmbed} className="px-3 py-1.5 text-xs bg-red-700 text-white rounded-md hover:bg-red-800 transition">+ Add Embed</button>
+                    <h4 className="text-sm font-semibold text-casa-ink">Embeds (AI/H5P/HTML Content)</h4>
+                    <button type="button" onClick={addMagazineEmbed} className="px-3 py-1.5 text-xs bg-casa-red text-white rounded-xl hover:bg-casa-redDark transition">+ Add Embed</button>
                   </div>
                   {magazineEmbeds.length === 0 ? (
-                    <div className="text-center py-6 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+                    <div className="text-center py-6 text-casa-ink/50 border-2 border-dashed border-casa-ink/20 rounded-xl">
                       <p className="text-sm">No embeds added yet.</p>
                     </div>
                   ) : (
                     <div className="space-y-3 max-h-64 overflow-y-auto">
                       {magazineEmbeds.map((embed, index) => (
-                        <div key={index} className="bg-white rounded-lg p-3 border border-gray-200">
+                        <div key={index} className="bg-white rounded-xl p-3 border border-casa-ink/12">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-semibold text-gray-600">Embed #{index + 1} {embed._id && '(Existing)'}</span>
-                            <button type="button" onClick={() => removeMagazineEmbed(index)} className="text-xs text-red-600 hover:text-red-800">Remove</button>
+                            <span className="text-xs font-semibold text-casa-ink/65">Embed #{index + 1} {embed._id && '(Existing)'}</span>
+                            <button type="button" onClick={() => removeMagazineEmbed(index)} className="text-xs text-casa-red hover:text-casa-redDark">Remove</button>
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1">Title</label>
-                              <input value={embed.title} onChange={e => updateMagazineEmbed(index, 'title', e.target.value)} placeholder="e.g., Exercise 1" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
+                              <label className="block text-xs text-casa-ink/65 mb-1">Title</label>
+                              <input value={embed.title} onChange={e => updateMagazineEmbed(index, 'title', e.target.value)} placeholder="e.g., Exercise 1" className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" disabled={!!embed._id} />
                             </div>
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1">Type</label>
-                              <select value={embed.type} onChange={e => updateMagazineEmbed(index, 'type', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id}>
+                              <label className="block text-xs text-casa-ink/65 mb-1">Type</label>
+                              <select value={embed.type} onChange={e => updateMagazineEmbed(index, 'type', e.target.value)} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" disabled={!!embed._id}>
                                 <option value="AI">AI Content</option>
                                 <option value="H5P">H5P Content</option>
                                 <option value="HTML">HTML File</option>
@@ -610,7 +610,7 @@ const Magazines = () => {
                           {/* HTML File Upload */}
                           {!embed._id && (
                             <div className="mt-2">
-                              <label className="block text-xs text-gray-600 mb-1">Upload HTML File</label>
+                              <label className="block text-xs text-casa-ink/65 mb-1">Upload HTML File</label>
                               <div className="flex items-center gap-2">
                                 <input
                                   type="file"
@@ -620,17 +620,17 @@ const Magazines = () => {
                                     if (file) handleEmbedHtmlUpload(index, file);
                                     e.target.value = '';
                                   }}
-                                  className="flex-1 text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                                  className="flex-1 text-sm text-casa-ink/50 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
                                   disabled={uploadingEmbedHtml === index}
                                 />
-                                {uploadingEmbedHtml === index && <span className="text-xs text-gray-500 animate-pulse">Uploading...</span>}
+                                {uploadingEmbedHtml === index && <span className="text-xs text-casa-ink/50 animate-pulse">Uploading...</span>}
                               </div>
-                              <p className="text-xs text-gray-400 mt-1">Upload an HTML file to auto-fill the embed code field</p>
+                              <p className="text-xs text-casa-ink/40 mt-1">Upload an HTML file to auto-fill the embed code field</p>
                             </div>
                           )}
                           <div className="mt-2">
-                            <label className="block text-xs text-gray-600 mb-1">Embed Code / URL</label>
-                            <textarea value={embed.embedCode} onChange={e => updateMagazineEmbed(index, 'embedCode', e.target.value)} placeholder='Paste your <iframe> or <script> code here, or upload an HTML file above' rows="3" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" disabled={!!embed._id} />
+                            <label className="block text-xs text-casa-ink/65 mb-1">Embed Code / URL</label>
+                            <textarea value={embed.embedCode} onChange={e => updateMagazineEmbed(index, 'embedCode', e.target.value)} placeholder='Paste your <iframe> or <script> code here, or upload an HTML file above' rows="3" className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" disabled={!!embed._id} />
                           </div>
                         </div>
                       ))}
@@ -639,14 +639,14 @@ const Magazines = () => {
                 </div>
 
                 {/* Access Type Toggle */}
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                  <h4 className="text-sm font-semibold text-gray-800 mb-3">Access Type</h4>
+                <div className="border border-casa-ink/12 rounded-xl p-4 bg-casa-cream/40">
+                  <h4 className="text-sm font-semibold text-casa-ink mb-3">Access Type</h4>
                   <div className="flex items-center gap-4">
-                    <label className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${formData.accessType === 'free' ? 'bg-green-50 border-green-300 text-green-700' : 'bg-white border-gray-300 text-gray-600'}`}>
+                    <label className={`flex items-center gap-2 px-4 py-2 rounded-xl border cursor-pointer transition-colors ${formData.accessType === 'free' ? 'bg-green-50 border-green-300 text-green-700' : 'bg-white border-casa-ink/20 text-casa-ink/65'}`}>
                       <input type="radio" name="accessType" value="free" checked={formData.accessType === 'free'} onChange={(e) => setFormData({ ...formData, accessType: e.target.value })} className="accent-green-600" />
                       <span className="font-medium text-sm">Free</span>
                     </label>
-                    <label className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${formData.accessType === 'paid' ? 'bg-red-50 border-red-300 text-red-700' : 'bg-white border-gray-300 text-gray-600'}`}>
+                    <label className={`flex items-center gap-2 px-4 py-2 rounded-xl border cursor-pointer transition-colors ${formData.accessType === 'paid' ? 'bg-casa-red/8 border-red-300 text-casa-red' : 'bg-white border-casa-ink/20 text-casa-ink/65'}`}>
                       <input type="radio" name="accessType" value="paid" checked={formData.accessType === 'paid'} onChange={(e) => setFormData({ ...formData, accessType: e.target.value })} className="accent-red-600" />
                       <span className="font-medium text-sm">Paid</span>
                     </label>
@@ -655,33 +655,33 @@ const Magazines = () => {
 
                 {/* Pricing Section - Only show when paid */}
                 {formData.accessType === 'paid' && (
-                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-4">
-                    <h4 className="text-sm font-semibold text-gray-800">Pricing</h4>
+                  <div className="border border-casa-ink/12 rounded-xl p-4 bg-casa-cream/40 space-y-4">
+                    <h4 className="text-sm font-semibold text-casa-ink">Pricing</h4>
 
                     {/* Default Price */}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Default Price *</label>
-                        <input type="number" min="0" step="0.01" value={formData.price} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" />
+                        <label className="block text-xs font-medium text-casa-ink/65 mb-1">Default Price *</label>
+                        <input type="number" min="0" step="0.01" value={formData.price} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Discount Price</label>
-                        <input type="number" min="0" step="0.01" value={formData.discountPrice} onChange={(e) => setFormData({ ...formData, discountPrice: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-red-500 focus:border-red-500" />
+                        <label className="block text-xs font-medium text-casa-ink/65 mb-1">Discount Price</label>
+                        <input type="number" min="0" step="0.01" value={formData.discountPrice} onChange={(e) => setFormData({ ...formData, discountPrice: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red" />
                       </div>
                     </div>
 
                     {/* Multi-currency Prices */}
                     <div className="space-y-3">
-                      <p className="text-xs text-gray-500 font-medium">Multi-Currency Pricing (Optional)</p>
+                      <p className="text-xs text-casa-ink/50 font-medium">Multi-Currency Pricing (Optional)</p>
                       {[
                         { label: 'USD ($)', state: pricesUSD, setter: setPricesUSD },
                         { label: 'EUR (\u20AC)', state: pricesEUR, setter: setPricesEUR },
                         { label: 'INR (\u20B9)', state: pricesINR, setter: setPricesINR },
                       ].map(({ label, state, setter }) => (
                         <div key={label} className="grid grid-cols-3 gap-3 items-center">
-                          <span className="text-xs font-medium text-gray-600">{label}</span>
-                          <input type="number" min="0" step="0.01" value={state.price} onChange={(e) => setter({ ...state, price: parseFloat(e.target.value) || 0 })} placeholder="Price" className="px-2 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-red-500 focus:border-red-500" />
-                          <input type="number" min="0" step="0.01" value={state.discountPrice} onChange={(e) => setter({ ...state, discountPrice: parseFloat(e.target.value) || 0 })} placeholder="Sale" className="px-2 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-red-500 focus:border-red-500" />
+                          <span className="text-xs font-medium text-casa-ink/65">{label}</span>
+                          <input type="number" min="0" step="0.01" value={state.price} onChange={(e) => setter({ ...state, price: parseFloat(e.target.value) || 0 })} placeholder="Price" className="px-2 py-1.5 border border-casa-ink/20 rounded-xl text-xs focus:ring-casa-red focus:border-casa-red" />
+                          <input type="number" min="0" step="0.01" value={state.discountPrice} onChange={(e) => setter({ ...state, discountPrice: parseFloat(e.target.value) || 0 })} placeholder="Sale" className="px-2 py-1.5 border border-casa-ink/20 rounded-xl text-xs focus:ring-casa-red focus:border-casa-red" />
                         </div>
                       ))}
                     </div>
@@ -694,17 +694,17 @@ const Magazines = () => {
                     <input type="checkbox" checked={formData.isActive} onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })} className="sr-only peer" />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
                   </label>
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-casa-ink/75">
                     {formData.isActive ? 'Published' : 'Draft'}
                   </span>
                 </div>
 
                 {/* Submit */}
-                <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-                  <button type="button" onClick={() => { setShowModal(false); resetForm(); }} className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                <div className="flex justify-end gap-3 pt-4 border-t border-casa-ink/12">
+                  <button type="button" onClick={() => { setShowModal(false); resetForm(); }} className="px-4 py-2 text-casa-ink/75 bg-casa-cream/60 rounded-xl hover:bg-gray-200 transition-colors">
                     Cancel
                   </button>
-                  <button type="submit" disabled={isSaving || uploadingCover || uploadingPdf} className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center gap-2">
+                  <button type="submit" disabled={isSaving || uploadingCover || uploadingPdf} className="px-6 py-2 bg-casa-red text-white rounded-xl hover:bg-casa-redDark disabled:opacity-50 transition-colors flex items-center gap-2">
                     {isSaving ? 'Saving...' : (editingMagazine ? 'Update Magazine' : 'Create Magazine')}
                   </button>
                 </div>

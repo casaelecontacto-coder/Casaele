@@ -29,11 +29,11 @@ export default function Forms() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Forms</h1>
-        <button onClick={exportExcel} className="px-3 py-1.5 rounded-md bg-red-700 text-white hover:bg-red-800">Export to Excel</button>
+        <button onClick={exportExcel} className="px-3 py-1.5 rounded-xl bg-casa-red text-white hover:bg-casa-redDark">Export to Excel</button>
       </div>
-      <div className="rounded-xl bg-white shadow-sm border border-gray-200 overflow-hidden">
+      <div className="rounded-xl bg-white shadow-sm border border-casa-ink/12 overflow-hidden">
         <table className="min-w-full text-left">
-          <thead className="bg-gray-50 text-gray-600 text-sm">
+          <thead className="bg-casa-cream/40 text-casa-ink/65 text-sm">
             <tr>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Email</th>
@@ -43,13 +43,13 @@ export default function Forms() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {loading ? Array.from({ length: 5 }).map((_, i) => (
-              <tr key={i}><td className="px-4 py-3"><div className="h-4 w-40 bg-gray-100 animate-pulse rounded" /></td><td /><td /><td /></tr>
+              <tr key={i}><td className="px-4 py-3"><div className="h-4 w-40 bg-casa-cream/60 animate-pulse rounded" /></td><td /><td /><td /></tr>
             )) : rows.map((r, i) => (
-              <tr key={i} className="hover:bg-gray-50">
-                <td className="px-4 py-3 font-medium text-gray-800">{r.name}</td>
-                <td className="px-4 py-3 text-gray-700">{r.email}</td>
-                <td className="px-4 py-3 text-gray-700 truncate max-w-md">{r.message}</td>
-                <td className="px-4 py-3 text-gray-700">{new Date(r.createdAt).toLocaleString()}</td>
+              <tr key={i} className="hover:bg-casa-cream/40">
+                <td className="px-4 py-3 font-medium text-casa-ink">{r.name}</td>
+                <td className="px-4 py-3 text-casa-ink/75">{r.email}</td>
+                <td className="px-4 py-3 text-casa-ink/75 truncate max-w-md">{r.message}</td>
+                <td className="px-4 py-3 text-casa-ink/75">{new Date(r.createdAt).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>

@@ -37,7 +37,7 @@ export default function RequireAuth() {
   if (authStatus === 'loading') {
     return (
       <div className="flex items-center justify-center h-screen">
-        <Spinner className="text-red-700" />
+        <Spinner className="text-casa-red" />
       </div>
     );
   }

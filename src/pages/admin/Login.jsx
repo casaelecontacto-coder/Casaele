@@ -67,43 +67,51 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-        <div className="flex items-center gap-2 justify-center mb-6">
+    <div className="casa-admin min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Soft blurred blobs + dashed ring, same decorative language as the site's hero sections */}
+      <div className="absolute -top-28 -right-24 w-[400px] h-[400px] rounded-full bg-[#93bbc0] opacity-25 blur-[4px] pointer-events-none" />
+      <div className="absolute -bottom-24 -left-24 w-[320px] h-[320px] rounded-full bg-casa-gold opacity-40 blur-[4px] pointer-events-none" />
+      <div className="absolute top-[-120px] left-1/2 w-[360px] h-[360px] rounded-full border-[2.5px] border-dashed border-casa-red/20 pointer-events-none" />
+
+      <div className="relative w-full max-w-md casa-card-bold p-8">
+        <div className="flex items-center gap-2 justify-center mb-7">
           <img src="/Horizontal_1.svg" alt="Casa De ELE" className="h-8 w-auto" />
-          <span className="text-sm text-gray-500">| Admin Panel</span>
+          <span className="text-[12px] font-semibold tracking-[0.14em] uppercase text-casa-ink/50">Admin</span>
         </div>
-        <h1 className="text-xl font-semibold text-center mb-4">Super Admin Sign In</h1>
-        {error && <div className="mb-3 text-sm text-red-600 text-center">{error}</div>}
+
+        <div className="casa-eyebrow text-center mb-2.5">Staff only</div>
+        <h1 className="font-heading text-3xl font-black tracking-tight text-center mb-6">Super Admin Sign In</h1>
+
+        {error && (
+          <div className="mb-4 rounded-2xl bg-casa-red/8 border-2 border-casa-red/30 px-4 py-3 text-[14px] font-semibold text-casa-redDark text-center">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleAdminSignIn} className="space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Super Admin Email</label>
-            <input 
-              value={email} 
-              onChange={e => setEmail(e.target.value)} 
-              type="email" 
-              required 
-              className="mt-1 w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm shadow-sm focus:border-red-600 focus:ring-2 focus:ring-red-600/30 focus:bg-white transition-all duration-200 placeholder-gray-400"
-              placeholder="super.admin@example.com" 
+            <label className="block text-[12.5px] font-bold tracking-[0.08em] uppercase text-casa-ink/60 mb-2">Super Admin Email</label>
+            <input
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              type="email"
+              required
+              className="casa-input"
+              placeholder="super.admin@example.com"
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
-            <input 
-              value={password} 
-              onChange={e => setPassword(e.target.value)} 
-              type="password" 
-              required 
-              className="mt-1 w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm shadow-sm focus:border-red-600 focus:ring-2 focus:ring-red-600/30 focus:bg-white transition-all duration-200 placeholder-gray-400"
-              placeholder="••••••••" 
+            <label className="block text-[12.5px] font-bold tracking-[0.08em] uppercase text-casa-ink/60 mb-2">Password</label>
+            <input
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              type="password"
+              required
+              className="casa-input"
+              placeholder="••••••••"
             />
           </div>
-          <button 
-            type="submit" 
-            disabled={loading} 
-            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-red-700 text-white hover:bg-red-800 disabled:opacity-60 transition"
-          >
+          <button type="submit" disabled={loading} className="casa-btn w-full !py-3 mt-2">
             {loading ? <Spinner className="text-white" /> : null}Sign in
           </button>
         </form>
