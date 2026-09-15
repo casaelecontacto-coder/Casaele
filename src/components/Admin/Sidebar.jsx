@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { FiHome, FiUsers, FiUpload, FiBox, FiShoppingCart, FiSettings, FiFileText, FiTag, FiMail, FiGlobe, FiImage, FiLayers, FiCpu, FiShare2, FiStar, FiGitBranch, FiDownload, FiBookOpen } from 'react-icons/fi'
+import { FiHome, FiUsers, FiUpload, FiBox, FiShoppingCart, FiSettings, FiFileText, FiTag, FiMail, FiGlobe, FiLayers, FiCpu, FiShare2, FiStar, FiDownload, FiBookOpen } from 'react-icons/fi'
 
 const links = [
   { to: '/admin', label: 'Dashboard', icon: FiHome },
@@ -10,11 +10,7 @@ const links = [
   { to: '/admin/feedback', label: 'Feedback', icon: FiStar },
   { to: '/admin/courses', label: 'Courses', icon: FiFileText },
   { to: '/admin/categories', label: 'Categories', icon: FiTag },
-  { to: '/admin/banners', label: 'Banners', icon: FiImage },
-  { to: '/admin/cms', label: 'CMS Pages', icon: FiFileText },
   { to: '/admin/forms', label: 'Forms', icon: FiMail },
-  { to: '/admin/garden-suggestions', label: 'Garden Suggestions', icon: FiMail }, 
-  { to: '/admin/garden-posts', label: 'Garden Posts', icon: FiGitBranch },
   { to: '/admin/coupons', label: 'Coupons', icon: FiTag },
   { to: '/admin/manage-admins', label: 'Manage Admins', icon: FiUsers },
   { to: '/admin/subscribers', label: 'Subscribers', icon: FiMail },
@@ -23,8 +19,6 @@ const links = [
   { to: '/admin/pinterest', label: 'Pinterest Manager', icon: FiShare2 },
   { to: '/admin/testimonials', label: 'Testimonials', icon: FiMail },
   { to: '/admin/teachers', label: 'Teachers', icon: FiUsers },
-  { to: '/admin/picks', label: "Ele's Picks", icon: FiStar },
-  { to: '/admin/home-slides', label: 'Home Slideshow', icon: FiImage },
   { to: '/admin/magazines', label: 'Magazines', icon: FiBookOpen },
 ]
 

@@ -48,9 +48,6 @@ const Materials = lazy(() => import("./pages/admin/Materials"));
 const FeedbackManager = lazy(() => import("./pages/admin/FeedbackManager"));
 const Courses = lazy(() => import("./pages/admin/Courses"));
 const Categories = lazy(() => import("./pages/admin/Categories"));
-const Banners = lazy(() => import("./pages/admin/Banners"));
-const CMSList = lazy(() => import("./pages/admin/CMSList"));
-const CMSEdit = lazy(() => import("./pages/admin/CMSEdit"));
 const Forms = lazy(() => import("./pages/admin/Forms"));
 const Coupons = lazy(() => import("./pages/admin/Coupons"));
 const ManageAdmins = lazy(() => import("./pages/admin/ManageAdmins"));
@@ -60,11 +57,6 @@ const DigitalDownloads = lazy(() => import("./pages/admin/DigitalDownloads"));
 const TestimonialsManager = lazy(() => import("./pages/admin/TestimonialsManager"));
 const Teachers = lazy(() => import("./pages/admin/Teachers"));
 const PinterestManager = lazy(() => import("./pages/admin/PinterestManager"));
-const PicksManager = lazy(() => import("./pages/admin/PicksManager"));
-const HomeSlidesManager = lazy(() => import("./pages/admin/HomeSlidesManager"));
-const GardenContent = lazy(() => import("./pages/admin/GardenContent"));
-const GardenPostsList = lazy(() => import("./pages/admin/GardenPostsList"));
-const ContentUpload = lazy(() => import("./pages/admin/ContentUpload"));
 const Magazines = lazy(() => import("./pages/admin/Magazines"));
 const AdminNotFound = lazy(() => import("./pages/admin/NotFound"));
 
@@ -133,10 +125,6 @@ function AppWrapper() {
               <Route path="reviews" element={<Navigate to="/admin/feedback" replace />} />
               <Route path="courses" element={<Courses />} />
               <Route path="categories" element={<Categories />} />
-              <Route path="banners" element={<Banners />} />
-              <Route path="cms" element={<CMSList />} />
-              <Route path="cms/new" element={<CMSEdit />} />
-              <Route path="cms/edit/:id" element={<CMSEdit />} />
               <Route path="forms" element={<Forms />} />
               <Route path="coupons" element={<Coupons />} />
               <Route path="manage-admins" element={<ManageAdmins />} />
@@ -147,14 +135,8 @@ function AppWrapper() {
               <Route path="comments" element={<Navigate to="/admin/feedback" replace />} />
               <Route path="teachers" element={<Teachers />} />
               <Route path="pinterest" element={<PinterestManager />} />
-              <Route path="picks" element={<PicksManager />} />
-              <Route path="home-slides" element={<HomeSlidesManager />} />
               <Route path="magazines" element={<Magazines />} />
               <Route path="*" element={<AdminNotFound />} />
-              <Route path="garden-suggestions" element={<GardenContent />} />
-              <Route path="garden-posts" element={<GardenPostsList />} />  
-              <Route path="garden-upload" element={<ContentUpload />} />    
-              <Route path="garden-edit/:id" element={<ContentUpload />} />
             </Route>
           </Route>
         </Routes>
