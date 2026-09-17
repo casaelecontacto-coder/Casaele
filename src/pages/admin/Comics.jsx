@@ -62,58 +62,6 @@ const Comics = () => {
     fetchComics();
   }, []);
 
-  // TEMP: one-off migration of the 4 real comics that used to live in the
-  // shop's Products catalog (category "Rincón de cuentos" / "Aprender de
-  // cuentos") into this collection, reusing their real Cloudinary covers and
-  // Drive-hosted PDFs. Remove this block after running it once.
-  const [migrating, setMigrating] = useState(false);
-  const runMigration = async () => {
-    const items = [
-      {
-        title: 'Hissss | A comic',
-        category: 'A1',
-        coverImageUrl: 'https://res.cloudinary.com/do15wnnhu/image/upload/v1777704135/d5fo6oppnti8s9ce3pn8.jpg',
-        pdfUrl: 'gdrive://1PGmmIT3YfhEsEE9KLdIcbhbdEDxv_AIi',
-        description: '<p><strong>HISSSS: A Comic Doodle</strong> Written by Ritika | Illustrated by Deepika</p><p>Ishaan, a hardworking university student, has a single unexpected moment shatter the silence of his home. A tense, nail-biting night for the whole family, told entirely in Spanish with a vocabulary guide included.</p>',
-      },
-      {
-        title: 'Fritz',
-        category: 'A1-A2',
-        coverImageUrl: 'https://res.cloudinary.com/do15wnnhu/image/upload/v1776773621/zhhb58vlmbdkkuqxx0wt.jpg',
-        pdfUrl: 'gdrive://1SKee8IcUIymQO0VWsBKHwz3MhuxMl0mM',
-        description: '<p><strong>FRITZ</strong> — A horror story in español based on Satyajit Ray</p><p>A childhood toy. A buried secret. A chilling Spanish-language comic adapted from the Bengali writer and filmmaker Satyajit Ray, written by university students Anshul Singh and Vaishnvi Rawat for beginner learners.</p>',
-      },
-      {
-        title: 'Su boda',
-        category: 'A2-B1',
-        coverImageUrl: 'https://res.cloudinary.com/do15wnnhu/image/upload/v1771985323/yxg2kxzfliphosj1bcpf.jpg',
-        pdfUrl: 'gdrive://1optJzhCJCqiNtvsQgPCXLqEISv5HH3Ag',
-        description: '<p>Fresh from London\'s buzz, she\'s back in India for a homecoming twist — reunited with family, but slammed by the ultimate single-girl dilemma: parents on a groom-hunting frenzy. Created by Aarchi Agarwal, illustrated by Arsalan Khan.</p>',
-      },
-      {
-        title: 'Solo vine a hablar por teléfono',
-        category: 'B2-C1',
-        coverImageUrl: 'https://res.cloudinary.com/do15wnnhu/image/upload/v1771727066/joixzad9mde4duhelag1.jpg',
-        pdfUrl: 'gdrive://1Bk9OEbNaoInvDLdryJK5vNi8ZsApgfc5',
-        description: '<p>Uno de los cuentos de "Doce cuentos peregrinos" de Gabriel García Márquez, parte de la serie "Aprender de cuentos" — didactizado con actividades de comprensión de lectura.</p>',
-      },
-    ];
-    setMigrating(true);
-    try {
-      for (const item of items) {
-        const saved = await apiSend('/api/magazines', 'POST', { ...item, contentType: 'comic', accessType: 'free', isActive: true });
-        setComics(prev => [saved, ...prev]);
-      }
-      setSuccessMsg('Migrated 4 comics from Products!');
-      setTimeout(() => setSuccessMsg(''), 4000);
-    } catch (error) {
-      console.error('Migration failed:', error);
-      alert('Migration failed. Check console.');
-    } finally {
-      setMigrating(false);
-    }
-  };
-
   const handleCoverUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -282,21 +230,12 @@ const Comics = () => {
               <h1 className="text-3xl font-bold text-casa-ink mb-2">Comics</h1>
               <p className="text-casa-ink/65">Short strips drawn by students and teachers — shown in the "Comics" section of the editorial page.</p>
             </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={runMigration}
-                disabled={migrating}
-                className="bg-casa-ink text-white px-4 py-3 rounded-xl hover:opacity-90 transition-colors disabled:opacity-50"
-              >
-                {migrating ? 'Migrating…' : 'TEMP: Migrate 4 from Products'}
-              </button>
-              <button
-                onClick={() => { resetForm(); setShowModal(true); }}
-                className="bg-casa-red text-white px-6 py-3 rounded-xl hover:bg-casa-redDark transition-colors flex items-center gap-2"
-              >
-                <FiPlus className="w-5 h-5" /> Add Comic
-              </button>
-            </div>
+            <button
+              onClick={() => { resetForm(); setShowModal(true); }}
+              className="bg-casa-red text-white px-6 py-3 rounded-xl hover:bg-casa-redDark transition-colors flex items-center gap-2"
+            >
+              <FiPlus className="w-5 h-5" /> Add Comic
+            </button>
           </div>
         </div>
 
