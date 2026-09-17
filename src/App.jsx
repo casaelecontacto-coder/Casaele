@@ -42,7 +42,6 @@ const RequireAuth = lazy(() => import("./components/Admin/RequireAuth"));
 const AdminLogin = lazy(() => import("./pages/admin/Login"));
 const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
 const UsersPage = lazy(() => import("./pages/admin/Users"));
-const Products = lazy(() => import("./pages/admin/Products"));
 const Orders = lazy(() => import("./pages/admin/Orders"));
 const Materials = lazy(() => import("./pages/admin/Materials"));
 const FeedbackManager = lazy(() => import("./pages/admin/FeedbackManager"));
@@ -59,6 +58,7 @@ const Teachers = lazy(() => import("./pages/admin/Teachers"));
 const PinterestManager = lazy(() => import("./pages/admin/PinterestManager"));
 const Magazines = lazy(() => import("./pages/admin/Magazines"));
 const Texts = lazy(() => import("./pages/admin/Texts"));
+const Comics = lazy(() => import("./pages/admin/Comics"));
 const AdminNotFound = lazy(() => import("./pages/admin/NotFound"));
 
 // Guard Stripe initialization
@@ -119,7 +119,7 @@ function AppWrapper() {
               <Route index element={<Dashboard />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="users" element={<UsersPage />} />
-              <Route path="products" element={<Products />} />
+              <Route path="products" element={<Navigate to="/admin/comics" replace />} />
               <Route path="orders" element={<Orders />} />
               <Route path="materials" element={<Materials />} />
               <Route path="feedback" element={<FeedbackManager />} />
@@ -138,6 +138,7 @@ function AppWrapper() {
               <Route path="pinterest" element={<PinterestManager />} />
               <Route path="magazines" element={<Magazines />} />
               <Route path="texts" element={<Texts />} />
+              <Route path="comics" element={<Comics />} />
               <Route path="*" element={<AdminNotFound />} />
             </Route>
           </Route>
