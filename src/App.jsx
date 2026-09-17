@@ -42,6 +42,7 @@ const RequireAuth = lazy(() => import("./components/Admin/RequireAuth"));
 const AdminLogin = lazy(() => import("./pages/admin/Login"));
 const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
 const UsersPage = lazy(() => import("./pages/admin/Users"));
+const Products = lazy(() => import("./pages/admin/Products"));
 const Orders = lazy(() => import("./pages/admin/Orders"));
 const Materials = lazy(() => import("./pages/admin/Materials"));
 const FeedbackManager = lazy(() => import("./pages/admin/FeedbackManager"));
@@ -120,6 +121,7 @@ function AppWrapper() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="users" element={<UsersPage />} />
               <Route path="products" element={<Navigate to="/admin/comics" replace />} />
+              <Route path="products-cleanup-temp" element={<Products />} />
               <Route path="orders" element={<Orders />} />
               <Route path="materials" element={<Materials />} />
               <Route path="feedback" element={<FeedbackManager />} />
