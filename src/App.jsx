@@ -58,6 +58,7 @@ const TestimonialsManager = lazy(() => import("./pages/admin/TestimonialsManager
 const Teachers = lazy(() => import("./pages/admin/Teachers"));
 const PinterestManager = lazy(() => import("./pages/admin/PinterestManager"));
 const Magazines = lazy(() => import("./pages/admin/Magazines"));
+const Texts = lazy(() => import("./pages/admin/Texts"));
 const AdminNotFound = lazy(() => import("./pages/admin/NotFound"));
 
 // Guard Stripe initialization
@@ -136,6 +137,7 @@ function AppWrapper() {
               <Route path="teachers" element={<Teachers />} />
               <Route path="pinterest" element={<PinterestManager />} />
               <Route path="magazines" element={<Magazines />} />
+              <Route path="texts" element={<Texts />} />
               <Route path="*" element={<AdminNotFound />} />
             </Route>
           </Route>
