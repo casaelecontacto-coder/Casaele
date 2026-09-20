@@ -269,7 +269,8 @@ export const deleteMagazine = async (req, res) => {
 
 // @desc    Serve magazine PDF (proxy from Google Drive)
 // @route   GET /api/magazines/:id/pdf
-// @access  Free magazines: requires email param; Paid: requires auth + purchase
+// @access  Requires a logged-in user for any magazine; paid ones additionally
+// require a verified purchase.
 export const serveMagazinePdf = async (req, res) => {
   try {
     let magazine;
@@ -320,49 +321,51 @@ export const serveMagazinePdf = async (req, res) => {
       return res.status(404).json({ message: 'Magazine not found' });
     }
 
-    // For paid magazines, verify the user has purchased it
+    // Every magazine — free or paid — requires a logged-in user.
+    const header = req.headers.authorization || '';
+    const [scheme, token] = header.split(' ');
+    if (scheme !== 'Bearer' || !token) {
+      return res.status(401).json({ message: 'Login required to access this content.' });
+    }
+
+    let decoded;
+    try {
+      const { auth: firebaseAuth } = await import('../config/firebaseAdmin.js');
+      decoded = await firebaseAuth.verifyIdToken(token);
+    } catch (authErr) {
+      console.error('Auth verification error in PDF serve:', authErr?.message);
+      return res.status(401).json({ message: 'Authentication failed.' });
+    }
+
+    // Paid magazines additionally require a verified purchase.
     if (magazine.accessType === 'paid') {
-      // Check for auth token
-      const header = req.headers.authorization || '';
-      const [scheme, token] = header.split(' ');
-      if (scheme !== 'Bearer' || !token) {
-        return res.status(401).json({ message: 'Login required to access paid magazines.' });
+      const userEmail = decoded.email;
+      const userUid = decoded.uid;
+
+      if (!userEmail && !userUid) {
+        return res.status(401).json({ message: 'Could not verify your identity.' });
       }
 
-      try {
-        const { auth: firebaseAuth } = await import('../config/firebaseAdmin.js');
-        const decoded = await firebaseAuth.verifyIdToken(token);
-        const userEmail = decoded.email;
-        const userUid = decoded.uid;
+      // Check if user has a paid order containing this magazine
+      const pdfOrConditions = [];
+      if (userEmail) {
+        const emailRegex = new RegExp(`^${userEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+        pdfOrConditions.push({ 'shippingAddress.email': emailRegex });
+        pdfOrConditions.push({ userEmail: emailRegex });
+        pdfOrConditions.push({ 'paymentResult.email_address': emailRegex });
+      }
+      if (userUid) {
+        pdfOrConditions.push({ firebaseUid: userUid });
+      }
 
-        if (!userEmail && !userUid) {
-          return res.status(401).json({ message: 'Could not verify your identity.' });
-        }
+      const hasPurchased = await Order.findOne({
+        $or: pdfOrConditions,
+        isPaid: true,
+        'orderItems.product': magazine._id
+      });
 
-        // Check if user has a paid order containing this magazine
-        const pdfOrConditions = [];
-        if (userEmail) {
-          const emailRegex = new RegExp(`^${userEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
-          pdfOrConditions.push({ 'shippingAddress.email': emailRegex });
-          pdfOrConditions.push({ userEmail: emailRegex });
-          pdfOrConditions.push({ 'paymentResult.email_address': emailRegex });
-        }
-        if (userUid) {
-          pdfOrConditions.push({ firebaseUid: userUid });
-        }
-
-        const hasPurchased = await Order.findOne({
-          $or: pdfOrConditions,
-          isPaid: true,
-          'orderItems.product': magazine._id
-        });
-
-        if (!hasPurchased) {
-          return res.status(403).json({ message: 'Please purchase this magazine to access it.' });
-        }
-      } catch (authErr) {
-        console.error('Auth verification error in PDF serve:', authErr?.message);
-        return res.status(401).json({ message: 'Authentication failed.' });
+      if (!hasPurchased) {
+        return res.status(403).json({ message: 'Please purchase this magazine to access it.' });
       }
     }
 

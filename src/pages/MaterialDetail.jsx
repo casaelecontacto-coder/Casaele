@@ -8,9 +8,13 @@ import CommentForm from '../components/Material/MaterialDetail/CommentForm';
 import material from '../components/Material/MaterialDetail/material';
 import commentsData from '../components/Material/MaterialDetail/commentsData'; //
 import { apiGet } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
+import AuthForm from './LogIn';
 
 function MaterialDetail() {
     const { id } = useParams();
+    const { currentUser } = useAuth();
+    const [showAuth, setShowAuth] = useState(false);
     const [material, setMaterial] = useState(null);
     const [comments, setComments] = useState([]);
     const [relatedMaterials, setRelatedMaterials] = useState([]);
@@ -65,6 +69,22 @@ function MaterialDetail() {
 
     if (!material) {
         return <div className="text-center p-20">Material not found.</div>;
+    }
+
+    if (!currentUser) {
+        return (
+            <div className="text-center py-24 px-4">
+                <h2 className="text-2xl font-bold mb-3">Log in to read this chapter</h2>
+                <p className="text-gray-600 mb-6">"{material.title}" is free, but you'll need an account to view it.</p>
+                <button
+                    onClick={() => setShowAuth(true)}
+                    className="bg-casa-red text-white px-6 py-3 rounded-full font-semibold hover:bg-casa-redDark transition-colors"
+                >
+                    Log in / Sign up
+                </button>
+                {showAuth && <AuthForm onClose={() => setShowAuth(false)} />}
+            </div>
+        );
     }
 
     return (
