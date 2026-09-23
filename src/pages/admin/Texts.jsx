@@ -19,6 +19,7 @@ const Texts = () => {
   const [successMsg, setSuccessMsg] = useState('');
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [uploadingEmbedHtml, setUploadingEmbedHtml] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -28,6 +29,11 @@ const Texts = () => {
     pdfUrl: '',
     category: '',
     isActive: true,
+    // Exactly one of pdfUrl/readLinkUrl/readEmbedUrl is actually used,
+    // picked by readSourceType — see Backend/models/Magazine.js.
+    readSourceType: 'pdf',
+    readLinkUrl: '',
+    readEmbedUrl: '',
   });
 
   const resetForm = () => {
@@ -39,8 +45,23 @@ const Texts = () => {
       pdfUrl: '',
       category: '',
       isActive: true,
+      readSourceType: 'pdf',
+      readLinkUrl: '',
+      readEmbedUrl: '',
     });
     setEditingText(null);
+  };
+
+  // Switching source type clears the other two so stale values from a
+  // previous choice can't linger and get saved alongside the new one.
+  const setSourceType = (type) => {
+    setFormData(prev => ({
+      ...prev,
+      readSourceType: type,
+      pdfUrl: type === 'pdf' ? prev.pdfUrl : '',
+      readLinkUrl: type === 'link' ? prev.readLinkUrl : '',
+      readEmbedUrl: type === 'embed' ? prev.readEmbedUrl : '',
+    }));
   };
 
   const fetchTexts = async () => {
@@ -133,6 +154,41 @@ const Texts = () => {
     }
   };
 
+  const handleEmbedHtmlUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.html')) {
+      alert('Please select a valid HTML file');
+      return;
+    }
+
+    setUploadingEmbedHtml(true);
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append('htmlFile', file);
+
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${apiBaseUrl}/api/uploads/html-file`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: uploadFormData,
+      });
+
+      const result = await response.json();
+      if (!result.success) throw new Error(result.message || 'Upload failed');
+      setFormData(prev => ({ ...prev, readEmbedUrl: result.url }));
+    } catch (error) {
+      console.error('HTML embed upload error:', error);
+      alert(`HTML embed upload failed: ${error.message}`);
+    } finally {
+      setUploadingEmbedHtml(false);
+      e.target.value = '';
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -143,8 +199,18 @@ const Texts = () => {
         setIsSaving(false);
         return;
       }
-      if (!formData.pdfUrl) {
+      if (formData.readSourceType === 'pdf' && !formData.pdfUrl) {
         alert('Please upload a PDF file.');
+        setIsSaving(false);
+        return;
+      }
+      if (formData.readSourceType === 'link' && !formData.readLinkUrl.trim()) {
+        alert('Please enter a link.');
+        setIsSaving(false);
+        return;
+      }
+      if (formData.readSourceType === 'embed' && !formData.readEmbedUrl) {
+        alert('Please upload an HTML embed file.');
         setIsSaving(false);
         return;
       }
@@ -183,6 +249,9 @@ const Texts = () => {
       pdfUrl: text.pdfUrl || '',
       category: text.category || '',
       isActive: text.isActive !== false,
+      readSourceType: text.readSourceType || 'pdf',
+      readLinkUrl: text.readLinkUrl || '',
+      readEmbedUrl: text.readEmbedUrl || '',
     });
     setShowModal(true);
   };
@@ -294,7 +363,17 @@ const Texts = () => {
                         <FiTrash2 className="w-4 h-4" />
                       </button>
                     </div>
-                    {text.pdfUrl && (
+                    {text.readSourceType === 'link' && text.readLinkUrl && (
+                      <a href={text.readLinkUrl} target="_blank" rel="noopener noreferrer" className="text-casa-red hover:text-casa-redDark text-xs font-medium">
+                        View Link
+                      </a>
+                    )}
+                    {text.readSourceType === 'embed' && text.readEmbedUrl && (
+                      <a href={text.readEmbedUrl} target="_blank" rel="noopener noreferrer" className="text-casa-red hover:text-casa-redDark text-xs font-medium">
+                        Preview Embed
+                      </a>
+                    )}
+                    {(!text.readSourceType || text.readSourceType === 'pdf') && text.pdfUrl && (
                       <a href={text.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-casa-red hover:text-casa-redDark text-xs font-medium">
                         View PDF
                       </a>
@@ -373,21 +452,70 @@ const Texts = () => {
                   {uploadingCover && <p className="text-sm text-casa-ink/50 mt-1 animate-pulse">Uploading cover image...</p>}
                 </div>
 
-                {/* PDF Upload */}
+                {/* Content Source */}
                 <div>
-                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">Text PDF *</label>
-                  {formData.pdfUrl ? (
-                    <div className="flex items-center gap-3 mb-2 p-3 bg-green-50 border border-green-200 rounded-xl">
-                      <FiFile className="w-5 h-5 text-green-600" />
-                      <span className="text-sm text-green-800 flex-1 truncate">PDF uploaded</span>
-                      <a href={formData.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-green-700 underline">Preview</a>
-                      <button type="button" onClick={() => setFormData(prev => ({ ...prev, pdfUrl: '' }))} className="text-red-500 hover:text-casa-redDark">
-                        <FiX className="w-4 h-4" />
-                      </button>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">Content Source *</label>
+                  <p className="text-xs text-casa-ink/50 mb-2">How readers access this text — pick exactly one.</p>
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    {[
+                      { value: 'pdf', label: 'PDF file' },
+                      { value: 'link', label: 'Link' },
+                      { value: 'embed', label: 'HTML embed' },
+                    ].map((opt) => (
+                      <label key={opt.value} className={`flex items-center gap-2 px-4 py-2 rounded-xl border cursor-pointer transition-colors ${formData.readSourceType === opt.value ? 'bg-casa-red/8 border-red-300 text-casa-red' : 'bg-white border-casa-ink/20 text-casa-ink/65'}`}>
+                        <input type="radio" name="readSourceType" value={opt.value} checked={formData.readSourceType === opt.value} onChange={() => setSourceType(opt.value)} className="accent-red-600" />
+                        {opt.label}
+                      </label>
+                    ))}
+                  </div>
+
+                  {formData.readSourceType === 'pdf' && (
+                    <div>
+                      {formData.pdfUrl ? (
+                        <div className="flex items-center gap-3 mb-2 p-3 bg-green-50 border border-green-200 rounded-xl">
+                          <FiFile className="w-5 h-5 text-green-600" />
+                          <span className="text-sm text-green-800 flex-1 truncate">PDF uploaded</span>
+                          <a href={formData.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-green-700 underline">Preview</a>
+                          <button type="button" onClick={() => setFormData(prev => ({ ...prev, pdfUrl: '' }))} className="text-red-500 hover:text-casa-redDark">
+                            <FiX className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : null}
+                      <input type="file" accept="application/pdf" onChange={handlePdfUpload} className="w-full text-sm text-casa-ink/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
+                      {uploadingPdf && <p className="text-sm text-casa-ink/50 mt-1 animate-pulse">Uploading PDF...</p>}
                     </div>
-                  ) : null}
-                  <input type="file" accept="application/pdf" onChange={handlePdfUpload} className="w-full text-sm text-casa-ink/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
-                  {uploadingPdf && <p className="text-sm text-casa-ink/50 mt-1 animate-pulse">Uploading PDF...</p>}
+                  )}
+
+                  {formData.readSourceType === 'link' && (
+                    <div>
+                      <input
+                        type="url"
+                        value={formData.readLinkUrl}
+                        onChange={(e) => setFormData({ ...formData, readLinkUrl: e.target.value })}
+                        placeholder="https://..."
+                        className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red"
+                      />
+                      <p className="mt-1 text-xs text-casa-ink/50">Opens in a new tab. Readers still need to be logged in.</p>
+                    </div>
+                  )}
+
+                  {formData.readSourceType === 'embed' && (
+                    <div>
+                      {formData.readEmbedUrl ? (
+                        <div className="flex items-center gap-3 mb-2 p-3 bg-teal-50 border border-teal-200 rounded-xl">
+                          <FiFile className="w-5 h-5 text-teal-600" />
+                          <span className="text-sm text-teal-800 flex-1 truncate">HTML embed uploaded</span>
+                          <a href={formData.readEmbedUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-teal-700 underline">Preview</a>
+                          <button type="button" onClick={() => setFormData(prev => ({ ...prev, readEmbedUrl: '' }))} className="text-red-500 hover:text-casa-redDark">
+                            <FiX className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : null}
+                      <input type="file" accept=".html" onChange={handleEmbedHtmlUpload} className="w-full text-sm text-casa-ink/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
+                      {uploadingEmbedHtml && <p className="text-sm text-casa-ink/50 mt-1 animate-pulse">Uploading HTML file...</p>}
+                      <p className="mt-1 text-xs text-casa-ink/50">Renders inline on the page when readers click "Read the text".</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Active Toggle */}

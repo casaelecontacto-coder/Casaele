@@ -5,8 +5,21 @@ const magazineSchema = new mongoose.Schema({
   slug: { type: String, unique: true, sparse: true },
   description: { type: String, default: '' },
   coverImageUrl: { type: String, required: true },
-  pdfUrl: { type: String, required: true },
+  // Not `required: true` any more: a 'text' document may instead read from
+  // readLinkUrl or readEmbedUrl (see readSourceType below). Issues and
+  // comics still always need a PDF — enforced in the controller, where
+  // contentType is known, rather than here.
+  pdfUrl: { type: String, default: '' },
   category: { type: String, default: '' },
+
+  // For contentType 'text' only: which of pdfUrl / readLinkUrl / readEmbedUrl
+  // actually holds this text's content — mutually exclusive by construction,
+  // so "Read the text" on the public site knows whether to auth-download a
+  // PDF, open an external link in a new tab, or render an embed inline on
+  // the page. Issues/comics ignore this and always use pdfUrl.
+  readSourceType: { type: String, enum: ['pdf', 'link', 'embed'], default: 'pdf' },
+  readLinkUrl: { type: String, default: '' },
+  readEmbedUrl: { type: String, default: '' },
 
   // What kind of entry this is, for pages that show more than one kind
   // side by side (e.g. the /products page: the featured issue, loose
