@@ -19,6 +19,17 @@ async function ensureUniqueSlug(Model, slug, excludeId = null) {
   }
 }
 
+// Only one magazine per contentType should be the featured one (e.g. the
+// El Desvelo hero picks whichever issue has isFeatured: true). Called after
+// setting isFeatured on `keepId`, this clears the flag on every other
+// document sharing that contentType.
+async function clearOtherFeatured(contentType, keepId) {
+  await Magazine.updateMany(
+    { contentType, _id: { $ne: keepId }, isFeatured: true },
+    { $set: { isFeatured: false } }
+  );
+}
+
 // @desc    Get all magazines (public: only active, admin: all)
 // @route   GET /api/magazines
 // @access  Public
@@ -96,6 +107,7 @@ export const createMagazine = async (req, res) => {
       subscribeLink,
       preorderLink,
       isActive,
+      isFeatured,
       publishedAt,
       embedIds,
       embeds,
@@ -143,10 +155,12 @@ export const createMagazine = async (req, res) => {
       preorderLink: preorderLink || '',
       embedIds: finalEmbedIds,
       isActive: typeof isActive === 'boolean' ? isActive : true,
+      isFeatured: isFeatured === true,
       publishedAt: publishedAt || Date.now(),
     });
 
     const saved = await newMagazine.save();
+    if (saved.isFeatured) await clearOtherFeatured(saved.contentType, saved._id);
     res.status(201).json(saved);
   } catch (error) {
     console.error('Error creating magazine:', error);
@@ -181,6 +195,7 @@ export const updateMagazine = async (req, res) => {
       subscribeLink,
       preorderLink,
       isActive,
+      isFeatured,
       publishedAt,
       embedIds,
       embeds,
@@ -207,6 +222,7 @@ export const updateMagazine = async (req, res) => {
     if (subscribeLink !== undefined) updateData.subscribeLink = subscribeLink;
     if (preorderLink !== undefined) updateData.preorderLink = preorderLink;
     if (typeof isActive === 'boolean') updateData.isActive = isActive;
+    if (typeof isFeatured === 'boolean') updateData.isFeatured = isFeatured;
     if (publishedAt) updateData.publishedAt = publishedAt;
 
     // Handle embeds
@@ -237,6 +253,7 @@ export const updateMagazine = async (req, res) => {
     );
 
     if (updated) {
+      if (updated.isFeatured) await clearOtherFeatured(updated.contentType, updated._id);
       res.json(updated);
     } else {
       res.status(404).json({ message: 'Magazine not found' });

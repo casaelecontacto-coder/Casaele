@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiPlus, FiEdit, FiTrash2, FiImage, FiX, FiFile, FiDollarSign, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiPlus, FiEdit, FiTrash2, FiImage, FiX, FiFile, FiDollarSign, FiEye, FiEyeOff, FiStar } from 'react-icons/fi';
 import { apiGet, apiSend } from '../../utils/api';
 import LazyTinyMCE from '../../components/Admin/LazyTinyMCE';
 import Spinner from '../../components/Common/Spinner';
@@ -31,6 +31,7 @@ const Magazines = () => {
     subscribeLink: '',
     preorderLink: '',
     isActive: true,
+    isFeatured: false,
   });
   const [uploadingMaterial, setUploadingMaterial] = useState(false);
 
@@ -92,6 +93,7 @@ const Magazines = () => {
       subscribeLink: '',
       preorderLink: '',
       isActive: true,
+      isFeatured: false,
     });
     setPricesUSD({ price: 0, discountPrice: 0 });
     setPricesEUR({ price: 0, discountPrice: 0 });
@@ -263,6 +265,7 @@ const Magazines = () => {
       subscribeLink: magazine.subscribeLink || '',
       preorderLink: magazine.preorderLink || '',
       isActive: magazine.isActive !== false,
+      isFeatured: magazine.isFeatured === true,
     });
     setPricesUSD(magazine.prices?.USD || { price: 0, discountPrice: 0 });
     setPricesEUR(magazine.prices?.EUR || { price: 0, discountPrice: 0 });
@@ -305,6 +308,20 @@ const Magazines = () => {
     }
   };
 
+  // Only one magazine per contentType can be featured, so setting this one
+  // clears the flag on its siblings server-side — refetch to pick that up
+  // instead of only patching the one card locally.
+  const handleToggleFeatured = async (id, currentIsFeatured) => {
+    try {
+      const newFeatured = !currentIsFeatured;
+      await apiSend(`/api/magazines/${id}/toggle-featured`, 'PATCH', { isFeatured: newFeatured });
+      await fetchMagazines();
+    } catch (error) {
+      console.error('Error toggling featured status:', error);
+      alert('Failed to toggle featured status');
+    }
+  };
+
   return (
     <div className="p-6 bg-casa-cream/40 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -342,14 +359,24 @@ const Magazines = () => {
             </div>
           ) : (
             magazines.map((magazine) => (
-              <div key={magazine._id} className="bg-white rounded-xl shadow-sm border border-casa-ink/12 overflow-hidden hover:shadow-md transition-shadow">
+              <div key={magazine._id} className={`bg-white rounded-xl shadow-sm border overflow-hidden hover:shadow-md transition-shadow ${magazine.isFeatured ? 'border-amber-400 ring-1 ring-amber-300' : 'border-casa-ink/12'}`}>
                 {magazine.coverImageUrl ? (
-                  <div className="h-48 bg-gray-200">
+                  <div className="h-48 bg-gray-200 relative">
                     <img src={magazine.coverImageUrl} alt={magazine.title} className="w-full h-full object-cover" />
+                    {magazine.isFeatured && (
+                      <span className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-amber-400 text-casa-ink rounded-full shadow">
+                        <FiStar className="w-3 h-3 fill-current" /> Featured
+                      </span>
+                    )}
                   </div>
                 ) : (
-                  <div className="h-48 bg-gray-200 flex items-center justify-center">
+                  <div className="h-48 bg-gray-200 flex items-center justify-center relative">
                     <FiImage className="w-12 h-12 text-casa-ink/40" />
+                    {magazine.isFeatured && (
+                      <span className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 text-xs font-semibold bg-amber-400 text-casa-ink rounded-full shadow">
+                        <FiStar className="w-3 h-3 fill-current" /> Featured
+                      </span>
+                    )}
                   </div>
                 )}
                 <div className="p-6">
@@ -387,6 +414,13 @@ const Magazines = () => {
                     <div className="flex items-center gap-2">
                       <button onClick={() => handleEdit(magazine)} className="text-blue-600 hover:text-blue-900 p-2 rounded hover:bg-blue-50">
                         <FiEdit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleToggleFeatured(magazine._id, magazine.isFeatured)}
+                        className={magazine.isFeatured ? "text-amber-500 hover:text-amber-600 p-2 rounded hover:bg-amber-50" : "text-casa-ink/40 hover:text-gray-600 p-2 rounded hover:bg-casa-cream/40"}
+                        title={magazine.isFeatured ? `Unfeature (currently the featured ${magazine.contentType})` : `Show as the featured ${magazine.contentType}`}
+                      >
+                        <FiStar className={`w-4 h-4 ${magazine.isFeatured ? 'fill-current' : ''}`} />
                       </button>
                       <button
                         onClick={() => handleToggleActive(magazine._id, magazine.isActive)}
@@ -697,6 +731,18 @@ const Magazines = () => {
                   <span className="text-sm font-medium text-casa-ink/75">
                     {formData.isActive ? 'Published' : 'Draft'}
                   </span>
+                </div>
+
+                {/* Featured Toggle */}
+                <div className="flex items-center gap-3">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked={formData.isFeatured} onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })} className="sr-only peer" />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                  </label>
+                  <span className="text-sm font-medium text-casa-ink/75">
+                    {formData.isFeatured ? `Featured ${formData.contentType}` : `Show as featured ${formData.contentType}`}
+                  </span>
+                  <span className="text-xs text-casa-ink/45">(only one {formData.contentType} can be featured at a time)</span>
                 </div>
 
                 {/* Submit */}

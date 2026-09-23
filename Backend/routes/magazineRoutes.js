@@ -71,6 +71,29 @@ router.patch('/:id/toggle-active', verifyVerifiedAdmin, async (req, res) => {
   }
 });
 
+// Sets this magazine as the featured one for its contentType (e.g. the
+// El Desvelo hero), clearing the flag on every other document of the same
+// type so only one is ever featured at once. Passing isFeatured: false just
+// un-features this one without picking a replacement.
+router.patch('/:id/toggle-featured', verifyVerifiedAdmin, async (req, res) => {
+  try {
+    const { default: Mag } = await import('../models/Magazine.js');
+    const newFeatured = req.body.isFeatured;
+    if (typeof newFeatured !== 'boolean') return res.status(400).json({ message: 'isFeatured boolean is required' });
+    const updated = await Mag.findByIdAndUpdate(req.params.id, { $set: { isFeatured: newFeatured } }, { new: true });
+    if (!updated) return res.status(404).json({ message: 'Magazine not found' });
+    if (newFeatured) {
+      await Mag.updateMany(
+        { contentType: updated.contentType, _id: { $ne: updated._id }, isFeatured: true },
+        { $set: { isFeatured: false } }
+      );
+    }
+    res.json({ _id: updated._id, isFeatured: updated.isFeatured });
+  } catch (error) {
+    res.status(500).json({ message: 'Error toggling featured status' });
+  }
+});
+
 router.route('/:id')
   .get(getMagazineById)
   .put(verifyVerifiedAdmin, updateMagazine)

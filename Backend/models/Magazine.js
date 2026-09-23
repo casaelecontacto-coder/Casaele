@@ -50,11 +50,19 @@ const magazineSchema = new mongoose.Schema({
 
   isActive: { type: Boolean, default: true },
   publishedAt: { type: Date, default: Date.now },
+
+  // Manually picks which document is shown in the "featured" slot for its
+  // contentType (e.g. the El Desvelo hero), overriding the default of
+  // "newest publishedAt wins". At most one per contentType should be true
+  // at a time — enforced in the controller, not here, since Mongoose
+  // schema validators can't see sibling documents.
+  isFeatured: { type: Boolean, default: false },
 }, { timestamps: true });
 
 // Indexes for the magazines listing (active + most recently published) and category filter.
 magazineSchema.index({ isActive: 1, publishedAt: -1 });
 magazineSchema.index({ category: 1 });
 magazineSchema.index({ contentType: 1, isActive: 1, publishedAt: -1 });
+magazineSchema.index({ contentType: 1, isFeatured: 1 });
 
 export default mongoose.models.Magazine || mongoose.model('Magazine', magazineSchema);
