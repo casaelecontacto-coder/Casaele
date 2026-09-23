@@ -25,7 +25,8 @@
     "react-pageflip": "^2.0.3",
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^7.9.1",
-    "recharts": "^2.10.3"
+    "recharts": "^2.10.3",
+    "tinymce": "^8.9.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
