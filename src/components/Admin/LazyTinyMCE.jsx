@@ -7,31 +7,13 @@ import React, { Suspense, lazy } from 'react';
 // own dashboard — any domain not on that list (a new Vercel deployment URL,
 // a preview branch, casaele-admin.vercel.app before someone remembers to
 // register it, etc.) gets a "domain not registered" banner and a disabled
-// editor. Importing tinymce's core/theme/icons/skins/plugins here makes
-// `window.tinymce` exist before the Editor component from
-// @tinymce/tinymce-react ever mounts; the wrapper detects that and uses it
-// directly, skipping its cloud script loader (and any apiKey prop) entirely.
-const TinyMCEEditor = lazy(async () => {
-  const [{ Editor }] = await Promise.all([
-    import('@tinymce/tinymce-react'),
-    import('tinymce/tinymce'),
-    import('tinymce/models/dom/model'),
-    import('tinymce/themes/silver'),
-    import('tinymce/icons/default'),
-    import('tinymce/skins/ui/oxide/skin.js'),
-    import('tinymce/skins/ui/oxide/content.js'),
-    import('tinymce/skins/content/default/content.js'),
-    // Union of every plugin any admin page's `init.plugins` string references.
-    import('tinymce/plugins/link'),
-    import('tinymce/plugins/lists'),
-    import('tinymce/plugins/table'),
-    import('tinymce/plugins/code'),
-    import('tinymce/plugins/fullscreen'),
-    import('tinymce/plugins/image'),
-    import('tinymce/plugins/media'),
-  ]);
-  return { default: Editor };
-});
+// editor.
+//
+// The actual setup (tinymce core + models/themes/icons/skins/plugins) lives
+// in ./tinymceSetup.js as plain static imports, in a specific required
+// order — see the comment there. That whole module is loaded here as one
+// dynamic import so it still code-splits into its own on-demand chunk.
+const TinyMCEEditor = lazy(() => import('./tinymceSetup').then((m) => ({ default: m.Editor })));
 
 // Loading fallback component
 const EditorLoader = () => (
@@ -43,15 +25,25 @@ const EditorLoader = () => (
 
 /**
  * Lazy-loaded TinyMCE Editor wrapper
- * All props are passed through to the Editor component. `skin`/`content_css`
- * in `init` are forced to false so TinyMCE doesn't also try to fetch a skin
- * stylesheet from a CDN path — the skin/content CSS is already bundled in
- * via the imports above.
+ * All props are passed through to the Editor component.
+ * - `license_key: 'gpl'` declares self-hosted open-source usage. Since
+ *   TinyMCE 6, the editor renders a "license key has not been provided"
+ *   error instead of initializing at all without this — it's not the same
+ *   thing as the cloud apiKey, and every admin page needs it.
+ * - `skin`/`content_css` are left at their defaults ('oxide' / 'default')
+ *   on purpose: tinymceSetup.js pre-populates TinyMCE's resource cache
+ *   (via `tinymce.Resource.add(...)`, imported as skin.js/content.js) with
+ *   those exact CSS payloads, so TinyMCE's normal skin-loading flow finds
+ *   them already cached instead of fetching over the network. Forcing
+ *   `skin: false` skips that flow entirely — including the step that
+ *   clears the `visibility: hidden` TinyMCE applies to the editor container
+ *   while skin loading is in progress, leaving the editor permanently
+ *   invisible even though it had otherwise initialized correctly.
  */
 export default function LazyTinyMCE({ init, ...rest }) {
   return (
     <Suspense fallback={<EditorLoader />}>
-      <TinyMCEEditor init={{ ...init, skin: false, content_css: false }} {...rest} />
+      <TinyMCEEditor init={{ ...init, license_key: 'gpl' }} {...rest} />
     </Suspense>
   );
 }
