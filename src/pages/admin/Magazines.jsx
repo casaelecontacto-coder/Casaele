@@ -106,7 +106,9 @@ const Magazines = () => {
     setLoading(true);
     try {
       const data = await apiGet('/api/magazines?all=true&limit=100');
-      setMagazines(data.magazines || []);
+      // Texts and comics live in the same collection but have their own admin
+      // pages (Texts, Comics) — this page is only for the editorial issues.
+      setMagazines((data.magazines || []).filter((m) => (m.contentType || 'issue') === 'issue'));
     } catch (error) {
       console.error('Error fetching magazines:', error);
       setMagazines([]);
@@ -336,7 +338,7 @@ const Magazines = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-casa-ink mb-2">Magazines</h1>
-              <p className="text-casa-ink/65">Upload and manage your flipbook magazines</p>
+              <p className="text-casa-ink/65">Upload and manage the editorial issues. Texts and comics have their own pages.</p>
             </div>
             <button
               onClick={() => { resetForm(); setShowModal(true); }}
@@ -456,24 +458,6 @@ const Magazines = () => {
                 </button>
               </div>
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                {/* Content type */}
-                <div>
-                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">Show as</label>
-                  <p className="text-xs text-casa-ink/50 mb-2">Which section of the /products page this appears in.</p>
-                  <div className="flex flex-wrap gap-3">
-                    {[
-                      { value: 'issue', label: 'Editorial issue' },
-                      { value: 'text', label: 'Single text' },
-                      { value: 'comic', label: 'Comic' },
-                    ].map((opt) => (
-                      <label key={opt.value} className={`flex items-center gap-2 px-4 py-2 rounded-xl border cursor-pointer transition-colors ${formData.contentType === opt.value ? 'bg-casa-red/8 border-red-300 text-casa-red' : 'bg-white border-casa-ink/20 text-casa-ink/65'}`}>
-                        <input type="radio" name="contentType" value={opt.value} checked={formData.contentType === opt.value} onChange={(e) => setFormData({ ...formData, contentType: e.target.value })} className="accent-red-600" />
-                        {opt.label}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
                 {/* Title + Category */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
