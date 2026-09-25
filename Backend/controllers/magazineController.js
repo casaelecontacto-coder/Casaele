@@ -367,51 +367,57 @@ export const serveMagazinePdf = async (req, res) => {
       return res.status(404).json({ message: 'Magazine not found' });
     }
 
-    // Every magazine — free or paid — requires a logged-in user.
-    const header = req.headers.authorization || '';
-    const [scheme, token] = header.split(' ');
-    if (scheme !== 'Bearer' || !token) {
-      return res.status(401).json({ message: 'Login required to access this content.' });
-    }
+    // Free standalone texts are public reading material: anyone can open one
+    // without an account. Everything else — issues, comics, and any paid
+    // entry — needs a logged-in user, and paid ones a verified purchase.
+    const isOpenText = magazine.contentType === 'text' && magazine.accessType !== 'paid';
 
-    let decoded;
-    try {
-      const { auth: firebaseAuth } = await import('../config/firebaseAdmin.js');
-      decoded = await firebaseAuth.verifyIdToken(token);
-    } catch (authErr) {
-      console.error('Auth verification error in PDF serve:', authErr?.message);
-      return res.status(401).json({ message: 'Authentication failed.' });
-    }
-
-    // Paid magazines additionally require a verified purchase.
-    if (magazine.accessType === 'paid') {
-      const userEmail = decoded.email;
-      const userUid = decoded.uid;
-
-      if (!userEmail && !userUid) {
-        return res.status(401).json({ message: 'Could not verify your identity.' });
+    if (!isOpenText) {
+      const header = req.headers.authorization || '';
+      const [scheme, token] = header.split(' ');
+      if (scheme !== 'Bearer' || !token) {
+        return res.status(401).json({ message: 'Login required to access this content.' });
       }
 
-      // Check if user has a paid order containing this magazine
-      const pdfOrConditions = [];
-      if (userEmail) {
-        const emailRegex = new RegExp(`^${userEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
-        pdfOrConditions.push({ 'shippingAddress.email': emailRegex });
-        pdfOrConditions.push({ userEmail: emailRegex });
-        pdfOrConditions.push({ 'paymentResult.email_address': emailRegex });
-      }
-      if (userUid) {
-        pdfOrConditions.push({ firebaseUid: userUid });
+      let decoded;
+      try {
+        const { auth: firebaseAuth } = await import('../config/firebaseAdmin.js');
+        decoded = await firebaseAuth.verifyIdToken(token);
+      } catch (authErr) {
+        console.error('Auth verification error in PDF serve:', authErr?.message);
+        return res.status(401).json({ message: 'Authentication failed.' });
       }
 
-      const hasPurchased = await Order.findOne({
-        $or: pdfOrConditions,
-        isPaid: true,
-        'orderItems.product': magazine._id
-      });
+      // Paid magazines additionally require a verified purchase.
+      if (magazine.accessType === 'paid') {
+        const userEmail = decoded.email;
+        const userUid = decoded.uid;
 
-      if (!hasPurchased) {
-        return res.status(403).json({ message: 'Please purchase this magazine to access it.' });
+        if (!userEmail && !userUid) {
+          return res.status(401).json({ message: 'Could not verify your identity.' });
+        }
+
+        // Check if user has a paid order containing this magazine
+        const pdfOrConditions = [];
+        if (userEmail) {
+          const emailRegex = new RegExp(`^${userEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+          pdfOrConditions.push({ 'shippingAddress.email': emailRegex });
+          pdfOrConditions.push({ userEmail: emailRegex });
+          pdfOrConditions.push({ 'paymentResult.email_address': emailRegex });
+        }
+        if (userUid) {
+          pdfOrConditions.push({ firebaseUid: userUid });
+        }
+
+        const hasPurchased = await Order.findOne({
+          $or: pdfOrConditions,
+          isPaid: true,
+          'orderItems.product': magazine._id
+        });
+
+        if (!hasPurchased) {
+          return res.status(403).json({ message: 'Please purchase this magazine to access it.' });
+        }
       }
     }
 
