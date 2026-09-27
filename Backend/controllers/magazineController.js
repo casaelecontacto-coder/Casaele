@@ -44,10 +44,20 @@ export const getMagazines = async (req, res) => {
 
     const totalMagazines = await Magazine.countDocuments(filter);
     const totalPages = Math.ceil(totalMagazines / limit);
+    // The admin panel's Magazines/Comics edit forms read embedIds straight off
+    // this list response (they don't re-fetch a single populated document
+    // before opening the edit modal) — without populating here, an existing
+    // embed's title/embedCode show up blank in the form even though the
+    // embed itself saved fine, which is also why it still renders correctly
+    // on the public site (that path goes through getMagazineById, which does
+    // populate). Public list requests don't render embeds at all, so only
+    // pull the full embed doc for admin (`all=true`) requests.
+    const embedPopulate = showAll ? 'embedIds' : { path: 'embedIds', select: 'title type' };
     const magazines = await Magazine.find(filter)
       .sort({ publishedAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .populate(embedPopulate);
 
     res.json({
       magazines,
