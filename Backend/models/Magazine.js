@@ -12,11 +12,11 @@ const magazineSchema = new mongoose.Schema({
   pdfUrl: { type: String, default: '' },
   category: { type: String, default: '' },
 
-  // For contentType 'text' only: which of pdfUrl / readLinkUrl / readEmbedUrl
-  // actually holds this text's content — mutually exclusive by construction,
-  // so "Read the text" on the public site knows whether to auth-download a
-  // PDF, open an external link in a new tab, or render an embed inline on
-  // the page. Issues/comics ignore this and always use pdfUrl.
+  // Which of pdfUrl / readLinkUrl / readEmbedUrl actually holds this
+  // document's content — mutually exclusive by construction, so "Read"
+  // on the public site knows whether to auth-download a PDF, open an
+  // external link in a new tab, or (texts only) render an embed inline on
+  // the page. Issues and comics only ever use 'pdf' or 'link'.
   readSourceType: { type: String, enum: ['pdf', 'link', 'embed'], default: 'pdf' },
   readLinkUrl: { type: String, default: '' },
   readEmbedUrl: { type: String, default: '' },

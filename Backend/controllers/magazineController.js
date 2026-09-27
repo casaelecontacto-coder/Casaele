@@ -120,19 +120,16 @@ export const createMagazine = async (req, res) => {
       return res.status(400).json({ message: 'Title and cover image are required' });
     }
 
-    // Issues and comics always read from a PDF. A text picks exactly one of
-    // pdf/link/embed via readSourceType, so only that one field is required.
+    // Every type picks exactly one source via readSourceType, so only that
+    // field is required. HTML embed is only available for texts; issues and
+    // comics choose between pdf and link.
     const isText = (contentType || 'issue') === 'text';
-    const finalReadSourceType = isText && ['pdf', 'link', 'embed'].includes(readSourceType) ? readSourceType : 'pdf';
-    if (!isText && !pdfUrl) {
-      return res.status(400).json({ message: 'PDF is required' });
-    }
-    if (isText) {
-      const value = finalReadSourceType === 'link' ? readLinkUrl : finalReadSourceType === 'embed' ? readEmbedUrl : pdfUrl;
-      if (!value) {
-        const label = finalReadSourceType === 'link' ? 'link' : finalReadSourceType === 'embed' ? 'HTML embed' : 'PDF';
-        return res.status(400).json({ message: `Please provide a ${label} for this text.` });
-      }
+    const allowedSources = isText ? ['pdf', 'link', 'embed'] : ['pdf', 'link'];
+    const finalReadSourceType = allowedSources.includes(readSourceType) ? readSourceType : 'pdf';
+    const sourceValue = finalReadSourceType === 'link' ? readLinkUrl : finalReadSourceType === 'embed' ? readEmbedUrl : pdfUrl;
+    if (!sourceValue) {
+      const label = finalReadSourceType === 'link' ? 'link' : finalReadSourceType === 'embed' ? 'HTML embed' : 'PDF';
+      return res.status(400).json({ message: `Please provide a ${label}.` });
     }
 
     // Handle inline embed creation
@@ -163,7 +160,7 @@ export const createMagazine = async (req, res) => {
       category: category || '',
       contentType: contentType || 'issue',
       readSourceType: finalReadSourceType,
-      readLinkUrl: isText ? (readLinkUrl || '') : '',
+      readLinkUrl: finalReadSourceType === 'link' ? (readLinkUrl || '') : '',
       readEmbedUrl: isText ? (readEmbedUrl || '') : '',
       accessType: accessType || 'free',
       price: price || 0,

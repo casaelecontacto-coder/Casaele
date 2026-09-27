@@ -25,6 +25,8 @@ const Comics = () => {
     description: '',
     coverImageUrl: '',
     pdfUrl: '',
+    readSourceType: 'pdf',
+    readLinkUrl: '',
     category: '',
     accessType: 'free',
     isActive: true,
@@ -37,6 +39,8 @@ const Comics = () => {
       description: '',
       coverImageUrl: '',
       pdfUrl: '',
+      readSourceType: 'pdf',
+      readLinkUrl: '',
       category: '',
       accessType: 'free',
       isActive: true,
@@ -61,6 +65,17 @@ const Comics = () => {
   useEffect(() => {
     fetchComics();
   }, []);
+
+  // Switching source type clears the other field so a stale value can't be
+  // saved alongside the new choice.
+  const setSourceType = (type) => {
+    setFormData(prev => ({
+      ...prev,
+      readSourceType: type,
+      pdfUrl: type === 'pdf' ? prev.pdfUrl : '',
+      readLinkUrl: type === 'link' ? prev.readLinkUrl : '',
+    }));
+  };
 
   const handleCoverUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -144,8 +159,13 @@ const Comics = () => {
         setIsSaving(false);
         return;
       }
-      if (!formData.pdfUrl) {
+      if (formData.readSourceType === 'pdf' && !formData.pdfUrl) {
         alert('Please upload a PDF file.');
+        setIsSaving(false);
+        return;
+      }
+      if (formData.readSourceType === 'link' && !formData.readLinkUrl.trim()) {
+        alert('Please enter a link.');
         setIsSaving(false);
         return;
       }
@@ -182,6 +202,8 @@ const Comics = () => {
       description: comic.description || '',
       coverImageUrl: comic.coverImageUrl || '',
       pdfUrl: comic.pdfUrl || '',
+      readSourceType: comic.readSourceType === 'link' ? 'link' : 'pdf',
+      readLinkUrl: comic.readLinkUrl || '',
       category: comic.category || '',
       accessType: comic.accessType || 'free',
       isActive: comic.isActive !== false,
@@ -299,11 +321,15 @@ const Comics = () => {
                         <FiTrash2 className="w-4 h-4" />
                       </button>
                     </div>
-                    {comic.pdfUrl && (
+                    {comic.readSourceType === 'link' && comic.readLinkUrl ? (
+                      <a href={comic.readLinkUrl} target="_blank" rel="noopener noreferrer" className="text-casa-red hover:text-casa-redDark text-xs font-medium">
+                        Open link
+                      </a>
+                    ) : comic.pdfUrl ? (
                       <a href={comic.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-casa-red hover:text-casa-redDark text-xs font-medium">
                         View PDF
                       </a>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -378,21 +404,51 @@ const Comics = () => {
                   {uploadingCover && <p className="text-sm text-casa-ink/50 mt-1 animate-pulse">Uploading cover image...</p>}
                 </div>
 
-                {/* PDF Upload */}
+                {/* Content Source */}
                 <div>
-                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">Comic PDF *</label>
-                  {formData.pdfUrl ? (
-                    <div className="flex items-center gap-3 mb-2 p-3 bg-green-50 border border-green-200 rounded-xl">
-                      <FiFile className="w-5 h-5 text-green-600" />
-                      <span className="text-sm text-green-800 flex-1 truncate">PDF uploaded</span>
-                      <a href={formData.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-green-700 underline">Preview</a>
-                      <button type="button" onClick={() => setFormData(prev => ({ ...prev, pdfUrl: '' }))} className="text-red-500 hover:text-casa-redDark">
-                        <FiX className="w-4 h-4" />
-                      </button>
+                  <label className="block text-sm font-medium text-casa-ink/75 mb-1">Comic Source *</label>
+                  <p className="text-xs text-casa-ink/50 mb-2">How readers access this comic — pick exactly one.</p>
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    {[
+                      { value: 'pdf', label: 'PDF file' },
+                      { value: 'link', label: 'Link' },
+                    ].map((opt) => (
+                      <label key={opt.value} className={`flex items-center gap-2 px-4 py-2 rounded-xl border cursor-pointer transition-colors ${formData.readSourceType === opt.value ? 'bg-casa-red/8 border-red-300 text-casa-red' : 'bg-white border-casa-ink/20 text-casa-ink/65'}`}>
+                        <input type="radio" name="readSourceType" value={opt.value} checked={formData.readSourceType === opt.value} onChange={() => setSourceType(opt.value)} className="accent-red-600" />
+                        {opt.label}
+                      </label>
+                    ))}
+                  </div>
+
+                  {formData.readSourceType === 'pdf' && (
+                    <div>
+                      {formData.pdfUrl ? (
+                        <div className="flex items-center gap-3 mb-2 p-3 bg-green-50 border border-green-200 rounded-xl">
+                          <FiFile className="w-5 h-5 text-green-600" />
+                          <span className="text-sm text-green-800 flex-1 truncate">PDF uploaded</span>
+                          <a href={formData.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-green-700 underline">Preview</a>
+                          <button type="button" onClick={() => setFormData(prev => ({ ...prev, pdfUrl: '' }))} className="text-red-500 hover:text-casa-redDark">
+                            <FiX className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : null}
+                      <input type="file" accept="application/pdf" onChange={handlePdfUpload} className="w-full text-sm text-casa-ink/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
+                      {uploadingPdf && <p className="text-sm text-casa-ink/50 mt-1 animate-pulse">Uploading PDF...</p>}
                     </div>
-                  ) : null}
-                  <input type="file" accept="application/pdf" onChange={handlePdfUpload} className="w-full text-sm text-casa-ink/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
-                  {uploadingPdf && <p className="text-sm text-casa-ink/50 mt-1 animate-pulse">Uploading PDF...</p>}
+                  )}
+
+                  {formData.readSourceType === 'link' && (
+                    <div>
+                      <input
+                        type="url"
+                        value={formData.readLinkUrl}
+                        onChange={(e) => setFormData({ ...formData, readLinkUrl: e.target.value })}
+                        placeholder="https://..."
+                        className="w-full px-3 py-2 border border-casa-ink/20 rounded-xl text-sm focus:ring-casa-red focus:border-casa-red"
+                      />
+                      <p className="mt-1 text-xs text-casa-ink/50">Opens in a new tab. Readers still need to be logged in.</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Access Type Toggle */}
