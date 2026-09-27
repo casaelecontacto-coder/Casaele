@@ -125,15 +125,11 @@ const Magazines = () => {
     fetchMagazines();
   }, []);
 
-  // Switching source type clears the other field so a stale value can't be
-  // saved alongside the new choice.
+  // Switching source type only changes which one is active — it does not
+  // clear the other field, so an already-uploaded PDF isn't lost by trying
+  // "Link" and switching back.
   const setSourceType = (type) => {
-    setFormData(prev => ({
-      ...prev,
-      readSourceType: type,
-      pdfUrl: type === 'pdf' ? prev.pdfUrl : '',
-      readLinkUrl: type === 'link' ? prev.readLinkUrl : '',
-    }));
+    setFormData(prev => ({ ...prev, readSourceType: type }));
   };
 
   const handleCoverUpload = async (e) => {
