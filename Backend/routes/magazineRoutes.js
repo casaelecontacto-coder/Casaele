@@ -7,6 +7,7 @@ import {
   updateMagazine,
   deleteMagazine,
   serveMagazinePdf,
+  getMagazinePdfUrl,
   checkMagazineAccess,
 } from '../controllers/magazineController.js';
 
@@ -18,6 +19,11 @@ router.route('/')
 
 // PDF proxy endpoint must come before /:id to avoid route conflict
 router.get('/:id/pdf', serveMagazinePdf);
+
+// Same access rules as /:id/pdf, but returns { url } for the client to
+// navigate straight to (Drive or the original URL) instead of streaming the
+// bytes through this server — see openPdf() in El Desvelo.dc.html.
+router.get('/:id/pdf-url', getMagazinePdfUrl);
 
 // Access check endpoint (requires auth)
 router.get('/:id/access', verifyFirebaseToken, checkMagazineAccess);

@@ -1,5 +1,5 @@
 import { Readable } from 'stream'
-import { getDriveClient, DRIVE_FOLDER_ID } from '../config/googleDriveConfig.js'
+import { getDriveClient, getDriveAccessToken, DRIVE_FOLDER_ID } from '../config/googleDriveConfig.js'
 
 /**
  * Upload a file buffer to Google Drive
@@ -73,6 +73,24 @@ export async function getFileStreamFromDrive(fileId) {
     size: parseInt(metadata.data.size, 10) || 0,
     fileName: metadata.data.name
   }
+}
+
+/**
+ * A short-lived URL that downloads the file directly from Google — no
+ * metadata round trip, no proxying through our server. The browser (or
+ * whatever fetches it) does a plain GET and gets a native, streamed
+ * response, unlike getFileStreamFromDrive's piped-through-Node stream.
+ * The URL embeds a live OAuth access token (typically ~1hr lifetime); treat
+ * it like any other presigned URL — don't log it or persist it anywhere.
+ * @param {string} fileId - Google Drive file ID
+ * @returns {string}
+ */
+export async function getSignedDriveUrl(fileId) {
+  const token = await getDriveAccessToken()
+  if (!token) {
+    throw new Error('Google Drive is not configured.')
+  }
+  return `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media&access_token=${encodeURIComponent(token)}`
 }
 
 /**
