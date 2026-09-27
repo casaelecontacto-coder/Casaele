@@ -1,7 +1,7 @@
 import Magazine from '../models/Magazine.js';
 import Order from '../models/Order.js';
 import mongoose from 'mongoose';
-import { getFileStreamFromDrive } from '../services/googleDriveService.js';
+import { getFileStreamFromDrive, getSignedDriveUrl } from '../services/googleDriveService.js';
 
 function generateSlug(text) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -310,118 +310,122 @@ export const deleteMagazine = async (req, res) => {
   }
 };
 
+// Shared by serveMagazinePdf and getMagazinePdfUrl: looks up the magazine
+// (falling back to a paid order's PDF snapshot if it was deleted), then
+// applies the same login/purchase rules either endpoint needs. Returns
+// { ok: true, pdfUrl } — pdfUrl may be a `gdrive://<fileId>` or a plain URL —
+// or { ok: false, status, message } for the caller to respond with directly.
+// Doesn't touch `res` itself so both a stream and a JSON response can reuse it.
+async function resolveMagazinePdfAccess(req) {
+  let magazine;
+  if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+    magazine = await Magazine.findById(req.params.id);
+  }
+  if (!magazine) {
+    magazine = await Magazine.findOne({ slug: req.params.id });
+  }
+  // If magazine was deleted, try to serve from order snapshot
+  if (!magazine) {
+    const header = req.headers.authorization || '';
+    const [scheme, token] = header.split(' ');
+    if (scheme === 'Bearer' && token && mongoose.Types.ObjectId.isValid(req.params.id)) {
+      try {
+        const { auth: firebaseAuth } = await import('../config/firebaseAdmin.js');
+        const decoded = await firebaseAuth.verifyIdToken(token);
+        const snapEmailRegex = new RegExp(`^${decoded.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+        const order = await Order.findOne({
+          $or: [
+            { 'shippingAddress.email': snapEmailRegex },
+            { userEmail: snapEmailRegex },
+            { 'paymentResult.email_address': snapEmailRegex }
+          ],
+          isPaid: true,
+          'orderItems.product': req.params.id
+        });
+        if (order) {
+          const item = order.orderItems.find(i => i.product.toString() === req.params.id);
+          if (item?.pdfUrl) {
+            return { ok: true, pdfUrl: item.pdfUrl };
+          }
+        }
+      } catch (e) { /* fall through to 404 */ }
+    }
+    return { ok: false, status: 404, message: 'Magazine not found' };
+  }
+
+  // Free standalone texts are public reading material: anyone can open one
+  // without an account. Everything else — issues, comics, and any paid
+  // entry — needs a logged-in user, and paid ones a verified purchase.
+  const isOpenText = magazine.contentType === 'text' && magazine.accessType !== 'paid';
+
+  if (!isOpenText) {
+    const header = req.headers.authorization || '';
+    const [scheme, token] = header.split(' ');
+    if (scheme !== 'Bearer' || !token) {
+      return { ok: false, status: 401, message: 'Login required to access this content.' };
+    }
+
+    let decoded;
+    try {
+      const { auth: firebaseAuth } = await import('../config/firebaseAdmin.js');
+      decoded = await firebaseAuth.verifyIdToken(token);
+    } catch (authErr) {
+      console.error('Auth verification error in PDF serve:', authErr?.message);
+      return { ok: false, status: 401, message: 'Authentication failed.' };
+    }
+
+    // Paid magazines additionally require a verified purchase.
+    if (magazine.accessType === 'paid') {
+      const userEmail = decoded.email;
+      const userUid = decoded.uid;
+
+      if (!userEmail && !userUid) {
+        return { ok: false, status: 401, message: 'Could not verify your identity.' };
+      }
+
+      // Check if user has a paid order containing this magazine
+      const pdfOrConditions = [];
+      if (userEmail) {
+        const emailRegex = new RegExp(`^${userEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+        pdfOrConditions.push({ 'shippingAddress.email': emailRegex });
+        pdfOrConditions.push({ userEmail: emailRegex });
+        pdfOrConditions.push({ 'paymentResult.email_address': emailRegex });
+      }
+      if (userUid) {
+        pdfOrConditions.push({ firebaseUid: userUid });
+      }
+
+      const hasPurchased = await Order.findOne({
+        $or: pdfOrConditions,
+        isPaid: true,
+        'orderItems.product': magazine._id
+      });
+
+      if (!hasPurchased) {
+        return { ok: false, status: 403, message: 'Please purchase this magazine to access it.' };
+      }
+    }
+  }
+
+  const pdfUrl = magazine.pdfUrl;
+  if (!pdfUrl) {
+    return { ok: false, status: 404, message: 'No PDF available for this magazine' };
+  }
+
+  return { ok: true, pdfUrl };
+}
+
 // @desc    Serve magazine PDF (proxy from Google Drive)
 // @route   GET /api/magazines/:id/pdf
 // @access  Requires a logged-in user for any magazine; paid ones additionally
 // require a verified purchase.
 export const serveMagazinePdf = async (req, res) => {
   try {
-    let magazine;
-    if (mongoose.Types.ObjectId.isValid(req.params.id)) {
-      magazine = await Magazine.findById(req.params.id);
+    const access = await resolveMagazinePdfAccess(req);
+    if (!access.ok) {
+      return res.status(access.status).json({ message: access.message });
     }
-    if (!magazine) {
-      magazine = await Magazine.findOne({ slug: req.params.id });
-    }
-    // If magazine was deleted, try to serve from order snapshot
-    if (!magazine) {
-      const header = req.headers.authorization || '';
-      const [scheme, token] = header.split(' ');
-      if (scheme === 'Bearer' && token && mongoose.Types.ObjectId.isValid(req.params.id)) {
-        try {
-          const { auth: firebaseAuth } = await import('../config/firebaseAdmin.js');
-          const decoded = await firebaseAuth.verifyIdToken(token);
-          const snapEmailRegex = new RegExp(`^${decoded.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
-          const order = await Order.findOne({
-            $or: [
-              { 'shippingAddress.email': snapEmailRegex },
-              { userEmail: snapEmailRegex },
-              { 'paymentResult.email_address': snapEmailRegex }
-            ],
-            isPaid: true,
-            'orderItems.product': req.params.id
-          });
-          if (order) {
-            const item = order.orderItems.find(i => i.product.toString() === req.params.id);
-            if (item?.pdfUrl) {
-              // Serve from snapshot
-              const snapshotUrl = item.pdfUrl;
-              if (snapshotUrl.startsWith('gdrive://')) {
-                const fileId = snapshotUrl.replace('gdrive://', '');
-                const { stream, size, fileName } = await getFileStreamFromDrive(fileId);
-                res.setHeader('Content-Type', 'application/pdf');
-                res.setHeader('Content-Disposition', `inline; filename="${fileName || 'magazine.pdf'}"`);
-                if (size) res.setHeader('Content-Length', size);
-                res.setHeader('Access-Control-Allow-Origin', '*');
-                return stream.pipe(res);
-              } else {
-                return res.redirect(snapshotUrl);
-              }
-            }
-          }
-        } catch (e) { /* fall through to 404 */ }
-      }
-      return res.status(404).json({ message: 'Magazine not found' });
-    }
-
-    // Free standalone texts are public reading material: anyone can open one
-    // without an account. Everything else — issues, comics, and any paid
-    // entry — needs a logged-in user, and paid ones a verified purchase.
-    const isOpenText = magazine.contentType === 'text' && magazine.accessType !== 'paid';
-
-    if (!isOpenText) {
-      const header = req.headers.authorization || '';
-      const [scheme, token] = header.split(' ');
-      if (scheme !== 'Bearer' || !token) {
-        return res.status(401).json({ message: 'Login required to access this content.' });
-      }
-
-      let decoded;
-      try {
-        const { auth: firebaseAuth } = await import('../config/firebaseAdmin.js');
-        decoded = await firebaseAuth.verifyIdToken(token);
-      } catch (authErr) {
-        console.error('Auth verification error in PDF serve:', authErr?.message);
-        return res.status(401).json({ message: 'Authentication failed.' });
-      }
-
-      // Paid magazines additionally require a verified purchase.
-      if (magazine.accessType === 'paid') {
-        const userEmail = decoded.email;
-        const userUid = decoded.uid;
-
-        if (!userEmail && !userUid) {
-          return res.status(401).json({ message: 'Could not verify your identity.' });
-        }
-
-        // Check if user has a paid order containing this magazine
-        const pdfOrConditions = [];
-        if (userEmail) {
-          const emailRegex = new RegExp(`^${userEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
-          pdfOrConditions.push({ 'shippingAddress.email': emailRegex });
-          pdfOrConditions.push({ userEmail: emailRegex });
-          pdfOrConditions.push({ 'paymentResult.email_address': emailRegex });
-        }
-        if (userUid) {
-          pdfOrConditions.push({ firebaseUid: userUid });
-        }
-
-        const hasPurchased = await Order.findOne({
-          $or: pdfOrConditions,
-          isPaid: true,
-          'orderItems.product': magazine._id
-        });
-
-        if (!hasPurchased) {
-          return res.status(403).json({ message: 'Please purchase this magazine to access it.' });
-        }
-      }
-    }
-
-    const pdfUrl = magazine.pdfUrl;
-    if (!pdfUrl) {
-      return res.status(404).json({ message: 'No PDF available for this magazine' });
-    }
+    const { pdfUrl } = access;
 
     if (pdfUrl.startsWith('gdrive://')) {
       const fileId = pdfUrl.replace('gdrive://', '');
@@ -439,6 +443,33 @@ export const serveMagazinePdf = async (req, res) => {
   } catch (error) {
     console.error('Error serving magazine PDF:', error);
     res.status(500).json({ message: 'Server error serving PDF' });
+  }
+};
+
+// @desc    Get a short-lived signed URL for a magazine's PDF, so the reader
+// can navigate straight to Google Drive (or the original URL) instead of the
+// client buffering the whole file via fetch()+blob first — see El Desvelo's
+// openPdf(). Same access rules as serveMagazinePdf; this only changes how
+// the already-authorized file is handed to the client.
+// @route   GET /api/magazines/:id/pdf-url
+// @access  Same as serveMagazinePdf
+export const getMagazinePdfUrl = async (req, res) => {
+  try {
+    const access = await resolveMagazinePdfAccess(req);
+    if (!access.ok) {
+      return res.status(access.status).json({ message: access.message });
+    }
+    const { pdfUrl } = access;
+
+    if (pdfUrl.startsWith('gdrive://')) {
+      const fileId = pdfUrl.replace('gdrive://', '');
+      const url = await getSignedDriveUrl(fileId);
+      return res.json({ url });
+    }
+    return res.json({ url: pdfUrl });
+  } catch (error) {
+    console.error('Error signing magazine PDF URL:', error);
+    res.status(500).json({ message: 'Server error preparing PDF link' });
   }
 };
 
