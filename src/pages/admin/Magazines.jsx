@@ -225,10 +225,15 @@ const Magazines = () => {
         return;
       }
 
-      // Filter new embeds (without _id)
-      const newEmbedsToCreate = magazineEmbeds.filter(
-        e => !e._id && e.title.trim() && e.embedCode.trim()
-      );
+      // Filter new embeds (without _id). Title used to be required here too
+      // (and still is, server-side) — so an embed uploaded via the HTML file
+      // picker without anyone typing a title got silently dropped on save,
+      // with no error at all: it just wasn't there when you reopened the
+      // magazine. The embed code is what actually matters; default a title
+      // instead of discarding the embed over a missing label.
+      const newEmbedsToCreate = magazineEmbeds
+        .filter(e => !e._id && e.embedCode.trim())
+        .map((e, i) => ({ ...e, title: e.title.trim() || `Embed ${i + 1}` }));
       const existingEmbedIds = magazineEmbeds.filter(e => e._id).map(e => e._id);
 
       const payload = {

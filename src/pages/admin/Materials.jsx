@@ -167,10 +167,15 @@ export default function Materials() {
       setErrorMsg('');
       setSaving(true);
       
-      // FIX: Filter out embeds that already have an _id so they aren't created again
-      const newEmbedsToCreate = materialEmbeds.filter(
-        embed => !embed._id && embed.title.trim() && embed.embedCode.trim()
-      );
+      // FIX: Filter out embeds that already have an _id so they aren't created again.
+      // Title used to be required here too (and still is, server-side) — so an
+      // embed uploaded via the HTML file picker without anyone typing a title
+      // got silently dropped on save, with no error: it just wasn't there when
+      // you reopened the chapter. The embed code is what actually matters;
+      // default a title instead of discarding the embed over a missing label.
+      const newEmbedsToCreate = materialEmbeds
+        .filter(embed => !embed._id && embed.embedCode.trim())
+        .map((embed, i) => ({ ...embed, title: embed.title.trim() || `Embed ${i + 1}` }));
 
       const payload = {
         ...form,
