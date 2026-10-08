@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiPlus, FiEdit, FiTrash2, FiImage, FiX, FiFile, FiEye, FiEyeOff } from 'react-icons/fi';
-import { apiGet, apiSend } from '../../utils/api';
+import { apiGet, apiSend, getFreshAuthToken } from '../../utils/api';
 import LazyTinyMCE from '../../components/Admin/LazyTinyMCE';
 import Spinner from '../../components/Common/Spinner';
 
@@ -122,7 +122,7 @@ const Comics = () => {
       const uploadFormData = new FormData();
       uploadFormData.append('file', file);
 
-      const token = localStorage.getItem('authToken');
+      const token = await getFreshAuthToken();
       const response = await fetch(`${apiBaseUrl}/api/uploads/magazine-pdf`, {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
