@@ -55,6 +55,7 @@ const Subscribers = lazy(() => import("./pages/admin/Subscribers"));
 const Embeds = lazy(() => import("./pages/admin/Embeds"));
 const DigitalDownloads = lazy(() => import("./pages/admin/DigitalDownloads"));
 const TestimonialsManager = lazy(() => import("./pages/admin/TestimonialsManager"));
+const ChapterComments = lazy(() => import("./pages/admin/ChapterComments"));
 const Teachers = lazy(() => import("./pages/admin/Teachers"));
 const PinterestManager = lazy(() => import("./pages/admin/PinterestManager"));
 const Magazines = lazy(() => import("./pages/admin/Magazines"));
@@ -136,6 +137,7 @@ function AppWrapper() {
               <Route path="digital-downloads" element={<DigitalDownloads />} />
               <Route path="testimonials" element={<TestimonialsManager />} />
               <Route path="comments" element={<Navigate to="/admin/feedback" replace />} />
+              <Route path="chapter-comments" element={<ChapterComments />} />
               <Route path="teachers" element={<Teachers />} />
               <Route path="pinterest" element={<PinterestManager />} />
               <Route path="magazines" element={<Magazines />} />

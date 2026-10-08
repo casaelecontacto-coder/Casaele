@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import ChapterComment from '../models/ChapterComment.js'
 import Material from '../models/Material.js'
 import { auth } from '../config/firebaseAdmin.js'
+import { verifyVerifiedAdmin } from '../middleware/auth.js'
 
 const router = express.Router()
 
@@ -67,6 +68,7 @@ const toPublic = (c, viewerUid) => ({
   photoUrl: c.photoUrl || '',
   replyToName: c.replyToName || '',
   text: c.text,
+  pinned: !!c.pinned,
   createdAt: c.createdAt,
   mine: !!viewerUid && c.uid === viewerUid,
 })
@@ -139,6 +141,59 @@ router.post('/', async (req, res) => {
   } catch (e) {
     console.error('Error posting chapter comment:', e)
     res.status(500).json({ message: 'Failed to post comment' })
+  }
+})
+
+// GET /api/chapter-comments/admin/all
+// Admin panel: every comment on every chapter, newest first, with the chapter
+// it belongs to. Defined before the /:id routes so "admin" isn't read as an id.
+router.get('/admin/all', verifyVerifiedAdmin, async (req, res) => {
+  try {
+    const comments = await ChapterComment.find({})
+      .sort({ createdAt: -1 })
+      .limit(2000)
+      .populate('material', 'title slug level')
+      .lean()
+    res.json({
+      comments: comments.map((c) => ({
+        _id: c._id,
+        parent: c.parent || null,
+        name: c.name,
+        photoUrl: c.photoUrl || '',
+        replyToName: c.replyToName || '',
+        text: c.text,
+        pinned: !!c.pinned,
+        createdAt: c.createdAt,
+        chapter: c.material ? { _id: c.material._id, title: c.material.title, slug: c.material.slug, level: c.material.level } : null,
+      })),
+    })
+  } catch (e) {
+    console.error('Error listing chapter comments for admin:', e)
+    res.status(500).json({ message: 'Failed to load comments' })
+  }
+})
+
+// PATCH /api/chapter-comments/:id/pin  { pinned: boolean }
+// Admin only. Only top-level comments can be pinned, and a chapter has at most
+// one pinned comment — pinning one unpins whichever was pinned before.
+router.patch('/:id/pin', verifyVerifiedAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ message: 'Invalid comment id' })
+    if (typeof req.body?.pinned !== 'boolean') return res.status(400).json({ message: 'pinned (boolean) is required' })
+
+    const comment = await ChapterComment.findById(req.params.id)
+    if (!comment) return res.status(404).json({ message: 'Comment not found' })
+    if (comment.parent) return res.status(400).json({ message: 'Only top-level comments can be pinned.' })
+
+    if (req.body.pinned) {
+      await ChapterComment.updateMany({ material: comment.material, pinned: true, _id: { $ne: comment._id } }, { $set: { pinned: false } })
+    }
+    comment.pinned = req.body.pinned
+    await comment.save()
+    res.json({ _id: comment._id, pinned: comment.pinned })
+  } catch (e) {
+    console.error('Error pinning chapter comment:', e)
+    res.status(500).json({ message: 'Failed to update comment' })
   }
 })
 

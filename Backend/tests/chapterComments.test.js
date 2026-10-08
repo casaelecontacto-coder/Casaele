@@ -20,12 +20,14 @@ vi.mock('../models/ChapterComment.js', () => ({
   default: {
     find: vi.fn((q) => {
       const rows = q.parent ? db.comments.filter((c) => String(c.parent) === String(q.parent)) : db.comments
-      return { sort: async () => rows, select: async () => rows }
+      const chain = { sort: () => chain, limit: () => chain, populate: () => chain, lean: async () => rows, then: (r) => Promise.resolve(rows).then(r), select: async () => rows }
+      return chain
     }),
     countDocuments: vi.fn(async () => db.recent),
     findById: vi.fn(async (id) => db.comments.find((c) => String(c._id) === String(id)) || null),
     create: vi.fn(async (doc) => ({ _id: 'new1', createdAt: new Date(), ...doc })),
     deleteMany: vi.fn(async () => ({})),
+    updateMany: vi.fn(async (q) => { db.unpinned = q; return {} }),
   },
 }))
 
@@ -58,8 +60,8 @@ afterAll(() => server.close())
 beforeEach(() => {
   db.recent = 0
   db.comments = [
-    { _id: ROOT_ID, material: MATERIAL_ID, parent: null, uid: 'alice-uid', name: 'Alice', text: 'First!', createdAt: new Date() },
-    { _id: REPLY_ID, material: MATERIAL_ID, parent: ROOT_ID, uid: 'bob-uid', name: 'Bob', text: 'Hi Alice', createdAt: new Date() },
+    { _id: ROOT_ID, material: MATERIAL_ID, parent: null, uid: 'alice-uid', name: 'Alice', text: 'First!', createdAt: new Date(), save: async function () {} },
+    { _id: REPLY_ID, material: MATERIAL_ID, parent: ROOT_ID, uid: 'bob-uid', name: 'Bob', text: 'Hi Alice', createdAt: new Date(), save: async function () {} },
   ]
 })
 
@@ -145,5 +147,31 @@ describe('DELETE /:id', () => {
 
   it('lets an admin delete anyone\'s comment', async () => {
     expect((await call(`/${REPLY_ID}`, { method: 'DELETE', token: 'admin' })).status).toBe(200)
+  })
+})
+
+describe('admin moderation: list + pin', () => {
+  it('lists all comments for admins only', async () => {
+    expect((await call('/admin/all')).status).toBe(401)
+    expect((await call('/admin/all', { token: 'alice' })).status).toBe(403)
+    const res = await call('/admin/all', { token: 'admin' })
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body.comments).toHaveLength(2)
+    expect(body.comments[0]).not.toHaveProperty('uid')
+  })
+
+  it('lets an admin pin a top-level comment, unpinning others in the chapter', async () => {
+    const res = await call(`/${ROOT_ID}/pin`, { method: 'PATCH', token: 'admin', body: { pinned: true } })
+    expect(res.status).toBe(200)
+    expect((await res.json()).pinned).toBe(true)
+    expect(db.unpinned.material).toBe(MATERIAL_ID)
+    expect(db.comments[0].pinned).toBe(true)
+  })
+
+  it('refuses non-admins, replies, and bad bodies', async () => {
+    expect((await call(`/${ROOT_ID}/pin`, { method: 'PATCH', token: 'alice', body: { pinned: true } })).status).toBe(403)
+    expect((await call(`/${REPLY_ID}/pin`, { method: 'PATCH', token: 'admin', body: { pinned: true } })).status).toBe(400)
+    expect((await call(`/${ROOT_ID}/pin`, { method: 'PATCH', token: 'admin', body: {} })).status).toBe(400)
   })
 })
