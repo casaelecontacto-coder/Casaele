@@ -20,6 +20,9 @@ const ChapterCommentSchema = new mongoose.Schema(
     photoUrl: { type: String, default: '' },
     replyToName: { type: String, default: '', maxlength: 60 },
     text: { type: String, required: true, trim: true, maxlength: 2000 },
+    // Admin-pinned top-level comment, shown first on the chapter. At most one
+    // per chapter (pinning another unpins the previous).
+    pinned: { type: Boolean, default: false },
   },
   { timestamps: true }
 )
