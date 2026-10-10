@@ -1,8 +1,30 @@
 import express from 'express'
 import WaitlistEntry from '../models/WaitlistEntry.js'
 import { verifyAdminAccess } from '../middleware/superAdminAuth.js'
+import { sendEmail } from '../config/nodemailer.js'
 
 const router = express.Router()
+
+const NOTIFY_EMAIL = process.env.WAITLIST_NOTIFY_EMAIL || 'casaelecontacto@gmail.com'
+
+const esc = (v) => String(v || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+
+// Fire-and-forget: a mail failure must never fail the visitor's signup.
+const notifyNewEntry = (entry) => {
+  sendEmail({
+    from: process.env.EMAIL_USER,
+    to: NOTIFY_EMAIL,
+    subject: `New waiting list signup: ${entry.name}${entry.course ? ` (${entry.course})` : ''}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 520px;">
+        <h2 style="color:#AD1518;margin:0 0 12px">New waiting list signup</h2>
+        <p style="margin:4px 0"><strong>Name:</strong> ${esc(entry.name)}</p>
+        <p style="margin:4px 0"><strong>Email:</strong> ${esc(entry.email)}</p>
+        <p style="margin:4px 0"><strong>Course:</strong> ${esc(entry.course) || '-'}</p>
+        <p style="margin:16px 0 0;color:#666;font-size:13px">See everyone in the admin panel under Waiting List.</p>
+      </div>`
+  }).catch((e) => console.error('Waitlist notify error:', e?.message || e))
+}
 
 // Public: join the waiting list
 router.post('/', async (req, res) => {
@@ -20,6 +42,7 @@ router.post('/', async (req, res) => {
       email: String(email).trim().slice(0, 200),
       course: String(course || '').trim().slice(0, 120)
     })
+    notifyNewEntry(created)
     res.status(201).json({ success: true, id: created._id })
   } catch (e) {
     console.error('Waitlist submit error:', e?.message || e)
