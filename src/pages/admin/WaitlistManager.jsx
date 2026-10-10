@@ -66,11 +66,16 @@ export default function WaitlistManager() {
                 <td className="px-4 py-3 text-casa-ink/75">{new Date(x.createdAt).toLocaleDateString()}</td>
                 <td className="px-4 py-3"><span className={`px-2 py-1 text-xs rounded-full ${x.status === 'contacted' ? 'bg-green-50 text-green-700' : 'bg-casa-cream/60 text-casa-ink/75'}`}>{x.status === 'contacted' ? 'contacted' : 'waiting'}</span></td>
                 <td className="px-4 py-3 space-x-2 whitespace-nowrap">
-                  {x.status === 'contacted' ? (
-                    <button disabled={actingId === x._id} onClick={() => setStatus(x._id, 'waiting')} className="px-3 py-1 rounded bg-yellow-50 text-yellow-700 hover:bg-yellow-100 disabled:opacity-60">Back to waiting</button>
-                  ) : (
-                    <button disabled={actingId === x._id} onClick={() => setStatus(x._id, 'contacted')} className="px-3 py-1 rounded bg-green-50 text-green-700 hover:bg-green-100 disabled:opacity-60">Mark contacted</button>
-                  )}
+                  <label className="inline-flex items-center gap-2 cursor-pointer select-none text-casa-ink/80">
+                    <input
+                      type="checkbox"
+                      checked={x.status === 'contacted'}
+                      disabled={actingId === x._id}
+                      onChange={(e) => setStatus(x._id, e.target.checked ? 'contacted' : 'waiting')}
+                      className="w-4 h-4 accent-green-600"
+                    />
+                    Contacted
+                  </label>
                   <button disabled={actingId === x._id} onClick={() => { if (confirm('Remove this person from the waiting list?')) remove(x._id) }} className="px-3 py-1 rounded bg-casa-red/8 text-casa-red hover:bg-red-100 disabled:opacity-60">Delete</button>
                 </td>
               </tr>
