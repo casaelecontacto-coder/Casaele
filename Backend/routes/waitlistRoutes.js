@@ -7,7 +7,7 @@ const router = express.Router()
 // Public: join the waiting list
 router.post('/', async (req, res) => {
   try {
-    const { name, email, phone, course } = req.body || {}
+    const { name, email, course } = req.body || {}
     if (!name || !email) {
       return res.status(400).json({ message: 'name and email are required' })
     }
@@ -18,7 +18,6 @@ router.post('/', async (req, res) => {
     const created = await WaitlistEntry.create({
       name: String(name).trim().slice(0, 120),
       email: String(email).trim().slice(0, 200),
-      phone: String(phone || '').trim().slice(0, 40),
       course: String(course || '').trim().slice(0, 120)
     })
     res.status(201).json({ success: true, id: created._id })

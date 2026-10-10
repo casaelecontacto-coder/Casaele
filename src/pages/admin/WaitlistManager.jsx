@@ -47,7 +47,6 @@ export default function WaitlistManager() {
             <tr>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Email</th>
-              <th className="px-4 py-3">Phone</th>
               <th className="px-4 py-3">Course</th>
               <th className="px-4 py-3">Joined</th>
               <th className="px-4 py-3">Status</th>
@@ -56,14 +55,13 @@ export default function WaitlistManager() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {loading ? (
-              <tr><td className="px-4 py-3" colSpan={7}>Loading...</td></tr>
+              <tr><td className="px-4 py-3" colSpan={6}>Loading...</td></tr>
             ) : items.length === 0 ? (
-              <tr><td className="px-4 py-3 text-casa-ink/65" colSpan={7}>No one on the waiting list yet.</td></tr>
+              <tr><td className="px-4 py-3 text-casa-ink/65" colSpan={6}>No one on the waiting list yet.</td></tr>
             ) : items.map((x) => (
               <tr key={x._id} className="hover:bg-casa-cream/40">
                 <td className="px-4 py-3 font-medium text-casa-ink">{x.name}</td>
                 <td className="px-4 py-3 text-casa-ink/75"><a href={`mailto:${x.email}`} className="hover:underline">{x.email}</a></td>
-                <td className="px-4 py-3 text-casa-ink/75">{x.phone || '-'}</td>
                 <td className="px-4 py-3 text-casa-ink/75">{x.course || '-'}</td>
                 <td className="px-4 py-3 text-casa-ink/75">{new Date(x.createdAt).toLocaleDateString()}</td>
                 <td className="px-4 py-3"><span className={`px-2 py-1 text-xs rounded-full ${x.status === 'contacted' ? 'bg-green-50 text-green-700' : 'bg-casa-cream/60 text-casa-ink/75'}`}>{x.status === 'contacted' ? 'contacted' : 'waiting'}</span></td>
