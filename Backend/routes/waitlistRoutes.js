@@ -40,16 +40,16 @@ router.post('/', async (req, res) => {
     const cleanEmail = String(email).trim().slice(0, 200).toLowerCase()
     const cleanCourse = String(course || '').trim().slice(0, 120)
 
-    // Same person + same course already on the list: don't add a duplicate
-    // row or send another notification, just confirm to the visitor.
-    const existing = await WaitlistEntry.findOne({ email: cleanEmail, course: cleanCourse })
+    // One signup per email, whatever the course: no duplicate row and no
+    // second notification.
+    const existing = await WaitlistEntry.findOne({ email: cleanEmail })
     if (existing) {
-      return res.status(200).json({ success: true, id: existing._id, duplicate: true })
+      return res.status(409).json({ message: 'This email is already on the waiting list.' })
     }
 
     const created = await WaitlistEntry.create({
       name: String(name).trim().slice(0, 120),
-      email: String(email).trim().slice(0, 200),
+      email: cleanEmail,
       course: String(course || '').trim().slice(0, 120)
     })
     notifyNewEntry(created)
