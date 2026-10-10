@@ -37,6 +37,16 @@ router.post('/', async (req, res) => {
     if (!emailRegex.test(String(email).trim())) {
       return res.status(400).json({ message: 'Please provide a valid email address' })
     }
+    const cleanEmail = String(email).trim().slice(0, 200).toLowerCase()
+    const cleanCourse = String(course || '').trim().slice(0, 120)
+
+    // Same person + same course already on the list: don't add a duplicate
+    // row or send another notification, just confirm to the visitor.
+    const existing = await WaitlistEntry.findOne({ email: cleanEmail, course: cleanCourse })
+    if (existing) {
+      return res.status(200).json({ success: true, id: existing._id, duplicate: true })
+    }
+
     const created = await WaitlistEntry.create({
       name: String(name).trim().slice(0, 120),
       email: String(email).trim().slice(0, 200),
