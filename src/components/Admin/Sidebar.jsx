@@ -14,6 +14,7 @@ const links = [
   { to: '/admin/coupons', label: 'Coupons', icon: FiTag },
   { to: '/admin/manage-admins', label: 'Manage Admins', icon: FiUsers },
   { to: '/admin/subscribers', label: 'Subscribers', icon: FiMail },
+  { to: '/admin/waitlist', label: 'Waiting List', icon: FiUsers },
   { to: '/admin/embeds', label: 'Embeds & Chapters', icon: FiCpu },
   { to: '/admin/digital-downloads', label: 'Digital Downloads', icon: FiDownload },
   { to: '/admin/pinterest', label: 'Pinterest Manager', icon: FiShare2 },

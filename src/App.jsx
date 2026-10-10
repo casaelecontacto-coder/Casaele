@@ -52,6 +52,7 @@ const Forms = lazy(() => import("./pages/admin/Forms"));
 const Coupons = lazy(() => import("./pages/admin/Coupons"));
 const ManageAdmins = lazy(() => import("./pages/admin/ManageAdmins"));
 const Subscribers = lazy(() => import("./pages/admin/Subscribers"));
+const WaitlistManager = lazy(() => import("./pages/admin/WaitlistManager"));
 const Embeds = lazy(() => import("./pages/admin/Embeds"));
 const DigitalDownloads = lazy(() => import("./pages/admin/DigitalDownloads"));
 const TestimonialsManager = lazy(() => import("./pages/admin/TestimonialsManager"));
@@ -133,6 +134,7 @@ function AppWrapper() {
               <Route path="coupons" element={<Coupons />} />
               <Route path="manage-admins" element={<ManageAdmins />} />
               <Route path="subscribers" element={<Subscribers />} />
+              <Route path="waitlist" element={<WaitlistManager />} />
               <Route path="embeds" element={<Embeds />} />
               <Route path="digital-downloads" element={<DigitalDownloads />} />
               <Route path="testimonials" element={<TestimonialsManager />} />
