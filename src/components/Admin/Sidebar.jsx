@@ -15,6 +15,8 @@ const links = [
   { to: '/admin/manage-admins', label: 'Manage Admins', icon: FiUsers },
   { to: '/admin/subscribers', label: 'Subscribers', icon: FiMail },
   { to: '/admin/waitlist', label: 'Waiting List', icon: FiUsers },
+  { to: '/admin/club-signups', label: 'Conversation Club', icon: FiMessageSquare },
+  { to: '/admin/consultations', label: '1:1 Consultations', icon: FiMessageSquare },
   { to: '/admin/embeds', label: 'Embeds & Chapters', icon: FiCpu },
   { to: '/admin/digital-downloads', label: 'Digital Downloads', icon: FiDownload },
   { to: '/admin/pinterest', label: 'Pinterest Manager', icon: FiShare2 },
