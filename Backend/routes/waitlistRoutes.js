@@ -2,6 +2,7 @@ import express from 'express'
 import WaitlistEntry from '../models/WaitlistEntry.js'
 import { verifyAdminAccess } from '../middleware/superAdminAuth.js'
 import { sendEmail } from '../config/nodemailer.js'
+import { sendSignupConfirmation } from '../services/signupConfirmationEmail.js'
 
 const router = express.Router()
 
@@ -53,6 +54,12 @@ router.post('/', async (req, res) => {
       course: String(course || '').trim().slice(0, 120)
     })
     notifyNewEntry(created)
+    sendSignupConfirmation({
+      to: created.email,
+      name: created.name,
+      subject: "You're on the waiting list",
+      message: `You're on the waiting list${created.course ? ` for ${created.course}` : ''}. We will reach out only when we have seats left, and we will contact you within a week.`
+    })
     res.status(201).json({ success: true, id: created._id })
   } catch (e) {
     console.error('Waitlist submit error:', e?.message || e)

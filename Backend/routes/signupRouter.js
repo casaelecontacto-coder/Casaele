@@ -1,6 +1,7 @@
 import express from 'express'
 import { verifyAdminAccess } from '../middleware/superAdminAuth.js'
 import { sendEmail } from '../config/nodemailer.js'
+import { sendSignupConfirmation, firstName } from '../services/signupConfirmationEmail.js'
 
 const NOTIFY_EMAIL = process.env.WAITLIST_NOTIFY_EMAIL || 'casaelecontacto@gmail.com'
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -16,7 +17,7 @@ const esc = (v) => String(v || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
  *
  * Every new entry also emails the team (fire-and-forget).
  */
-export function makeSignupRouter({ Model, title, adminLabel, fields = [], dedupeBy = [] }) {
+export function makeSignupRouter({ Model, title, adminLabel, fields = [], dedupeBy = [], confirmation }) {
   const router = express.Router()
 
   const notify = (entry) => {
@@ -58,6 +59,10 @@ export function makeSignupRouter({ Model, title, adminLabel, fields = [], dedupe
 
       const created = await Model.create(data)
       notify(created)
+      if (confirmation) {
+        const c = confirmation(created, { firstName })
+        sendSignupConfirmation({ to: created.email, name: created.name, subject: c.subject, message: c.message })
+      }
       res.status(201).json({ success: true, id: created._id })
     } catch (e) {
       console.error(`${title} submit error:`, e?.message || e)

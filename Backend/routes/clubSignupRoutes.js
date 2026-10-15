@@ -10,5 +10,9 @@ export default makeSignupRouter({
     { key: 'plan', label: 'Plan' }
   ],
   // The same person can't sign up twice for the same club and plan.
-  dedupeBy: ['club', 'plan']
+  dedupeBy: ['club', 'plan'],
+  confirmation: (e) => ({
+    subject: 'You\'re signed up for Club de Conversación',
+    message: `Thanks for signing up for the ${e.club || 'Club de Conversación'} club${e.plan ? `, ${e.plan} plan` : ''}. We'll be in touch with the next steps.`
+  })
 })

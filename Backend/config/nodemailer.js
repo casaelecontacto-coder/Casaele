@@ -42,6 +42,9 @@ const sendViaBrevoApi = async (emailOptions) => {
 
   sendSmtpEmail.sender = { email: fromEmail, name: fromName };
   sendSmtpEmail.to = [{ email: emailOptions.to }];
+  if (emailOptions.replyTo) {
+    sendSmtpEmail.replyTo = { email: emailOptions.replyTo };
+  }
 
   try {
     const result = await api.sendTransacEmail(sendSmtpEmail);
