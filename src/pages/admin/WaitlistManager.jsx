@@ -6,6 +6,7 @@ export default function WaitlistManager() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actingId, setActingId] = useState('')
+  const [viewing, setViewing] = useState(null)
 
   useEffect(() => {
     apiGet('/api/waitlist')
@@ -47,6 +48,7 @@ export default function WaitlistManager() {
             <tr>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Email</th>
+              <th className="px-4 py-3">WhatsApp</th>
               <th className="px-4 py-3">Course</th>
               <th className="px-4 py-3">Joined</th>
               <th className="px-4 py-3">Status</th>
@@ -55,13 +57,14 @@ export default function WaitlistManager() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {loading ? (
-              <tr><td className="px-4 py-3" colSpan={6}>Loading...</td></tr>
+              <tr><td className="px-4 py-3" colSpan={7}>Loading...</td></tr>
             ) : items.length === 0 ? (
-              <tr><td className="px-4 py-3 text-casa-ink/65" colSpan={6}>No one on the waiting list yet.</td></tr>
+              <tr><td className="px-4 py-3 text-casa-ink/65" colSpan={7}>No one on the waiting list yet.</td></tr>
             ) : items.map((x) => (
               <tr key={x._id} className="hover:bg-casa-cream/40">
                 <td className="px-4 py-3 font-medium text-casa-ink">{x.name}</td>
                 <td className="px-4 py-3 text-casa-ink/75"><a href={`mailto:${x.email}`} className="hover:underline">{x.email}</a></td>
+                <td className="px-4 py-3 text-casa-ink/75">{x.whatsapp || '-'}</td>
                 <td className="px-4 py-3 text-casa-ink/75">{x.course || '-'}</td>
                 <td className="px-4 py-3 text-casa-ink/75">{new Date(x.createdAt).toLocaleDateString()}</td>
                 <td className="px-4 py-3"><span className={`px-2 py-1 text-xs rounded-full ${x.status === 'contacted' ? 'bg-green-50 text-green-700' : 'bg-casa-cream/60 text-casa-ink/75'}`}>{x.status === 'contacted' ? 'contacted' : 'waiting'}</span></td>
@@ -76,6 +79,7 @@ export default function WaitlistManager() {
                     />
                     Contacted
                   </label>
+                  <button onClick={() => setViewing(x)} className="px-3 py-1 rounded bg-casa-cream/60 text-casa-ink hover:bg-casa-cream">Answers</button>
                   <button disabled={actingId === x._id} onClick={() => { if (confirm('Remove this person from the waiting list?')) remove(x._id) }} className="px-3 py-1 rounded bg-casa-red/8 text-casa-red hover:bg-red-100 disabled:opacity-60">Delete</button>
                 </td>
               </tr>
@@ -83,6 +87,36 @@ export default function WaitlistManager() {
           </tbody>
         </table>
       </div>
+
+      {viewing && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setViewing(null)}>
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 border-b border-casa-ink/12 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-casa-ink">{viewing.name}</h2>
+              <button onClick={() => setViewing(null)} aria-label="Close" className="inline-flex items-center justify-center w-8 h-8 rounded-xl text-casa-ink/50 hover:bg-casa-cream/60"><span className="text-xl leading-none">×</span></button>
+            </div>
+            <div className="p-6 space-y-4">
+              {[
+                ['Email', viewing.email],
+                ['WhatsApp', viewing.whatsapp],
+                ['Age', viewing.age],
+                ['Course', viewing.course],
+                ['Relationship with Spanish', viewing.relationship],
+                ['How Spanish entered their life', [...(viewing.origin || []), ...(viewing.originOther ? [`Other: ${viewing.originOther}`] : [])].join(' · ')],
+                ['In six months they want to', [...(viewing.goals || []), ...(viewing.goalsOther ? [`Other: ${viewing.goalsOther}`] : [])].join(' · ')],
+                ['Biggest struggle', [...(viewing.struggles || []), ...(viewing.strugglesOther ? [`Other: ${viewing.strugglesOther}`] : [])].join(' · ')],
+                ['About them', viewing.about],
+                ['Joined', new Date(viewing.createdAt).toLocaleString()]
+              ].map(([k, v]) => (
+                <div key={k}>
+                  <p className="text-sm text-casa-ink/65">{k}</p>
+                  <p className="text-casa-ink whitespace-pre-wrap">{v || '-'}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

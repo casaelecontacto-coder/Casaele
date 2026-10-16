@@ -10,27 +10,43 @@ const NOTIFY_EMAIL = process.env.WAITLIST_NOTIFY_EMAIL || 'casaelecontacto@gmail
 
 const esc = (v) => String(v || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
 
+const list = (arr, other) => [...(arr || []), ...(other ? [`Other: ${other}`] : [])].join(' · ')
+
 // Fire-and-forget: a mail failure must never fail the visitor's signup.
 const notifyNewEntry = (entry) => {
+  const rows = [
+    ['Name', entry.name],
+    ['Email', entry.email],
+    ['WhatsApp', entry.whatsapp],
+    ['Age', entry.age],
+    ['Course', entry.course],
+    ['Relationship with Spanish', entry.relationship],
+    ['How Spanish entered their life', list(entry.origin, entry.originOther)],
+    ['In six months they want to', list(entry.goals, entry.goalsOther)],
+    ['Biggest struggle', list(entry.struggles, entry.strugglesOther)],
+    ['About them', entry.about]
+  ]
   sendEmail({
     from: process.env.EMAIL_USER,
     to: NOTIFY_EMAIL,
     subject: `New waiting list signup: ${entry.name}${entry.course ? ` (${entry.course})` : ''}`,
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 520px;">
+      <div style="font-family: Arial, sans-serif; max-width: 560px;">
         <h2 style="color:#AD1518;margin:0 0 12px">New waiting list signup</h2>
-        <p style="margin:4px 0"><strong>Name:</strong> ${esc(entry.name)}</p>
-        <p style="margin:4px 0"><strong>Email:</strong> ${esc(entry.email)}</p>
-        <p style="margin:4px 0"><strong>Course:</strong> ${esc(entry.course) || '-'}</p>
+        ${rows.map(([k, v]) => `<p style="margin:6px 0"><strong>${esc(k)}:</strong> ${esc(v) || '-'}</p>`).join('')}
         <p style="margin:16px 0 0;color:#666;font-size:13px">See everyone in the admin panel under Waiting List.</p>
       </div>`
   }).catch((e) => console.error('Waitlist notify error:', e?.message || e))
 }
 
+const str = (v, max = 200) => String(v || '').trim().slice(0, max)
+const strList = (v) => (Array.isArray(v) ? v : []).map((x) => str(x, 200)).filter(Boolean).slice(0, 12)
+
 // Public: join the waiting list
 router.post('/', async (req, res) => {
   try {
-    const { name, email, course } = req.body || {}
+    const body = req.body || {}
+    const { name, email, course } = body
     if (!name || !email) {
       return res.status(400).json({ message: 'name and email are required' })
     }
@@ -51,14 +67,24 @@ router.post('/', async (req, res) => {
     const created = await WaitlistEntry.create({
       name: String(name).trim().slice(0, 120),
       email: cleanEmail,
-      course: String(course || '').trim().slice(0, 120)
+      course: String(course || '').trim().slice(0, 120),
+      whatsapp: str(body.whatsapp, 40),
+      age: str(body.age, 10),
+      relationship: str(body.relationship),
+      origin: strList(body.origin),
+      originOther: str(body.originOther, 1000),
+      goals: strList(body.goals),
+      goalsOther: str(body.goalsOther, 1000),
+      struggles: strList(body.struggles),
+      strugglesOther: str(body.strugglesOther, 1000),
+      about: str(body.about, 3000)
     })
     notifyNewEntry(created)
     sendSignupConfirmation({
       to: created.email,
       name: created.name,
       subject: "You're on the waiting list",
-      message: `You're on the waiting list${created.course ? ` for ${created.course}` : ''}. We will reach out only when we have seats left, and we will contact you within a week.`
+      message: `You're on the waiting list${created.course ? ` for the Casa de ELE ${created.course} course` : ''}. Keep an eye on your inbox. We'll be in touch with updates about the course and what's coming next.`
     })
     res.status(201).json({ success: true, id: created._id })
   } catch (e) {
