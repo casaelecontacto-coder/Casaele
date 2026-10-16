@@ -6,6 +6,11 @@ const ClubSignupSchema = new mongoose.Schema(
     email: { type: String, required: true, trim: true, lowercase: true },
     club: { type: String, default: '', trim: true },
     plan: { type: String, default: '', trim: true },
+    whatsapp: { type: String, default: '', trim: true },
+    age: { type: String, default: '', trim: true },
+    superpower: { type: String, default: '', trim: true },
+    confidence: { type: String, default: '', trim: true },
+    culture: { type: String, default: '', trim: true },
     status: { type: String, enum: ['new', 'contacted'], default: 'new' }
   },
   { timestamps: true }

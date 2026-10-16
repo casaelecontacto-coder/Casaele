@@ -48,7 +48,7 @@ export function makeSignupRouter({ Model, title, adminLabel, fields = [], dedupe
       if (!EMAIL_RE.test(email)) return res.status(400).json({ message: 'Please provide a valid email address' })
 
       const data = { name, email }
-      for (const f of fields) data[f.key] = String(body[f.key] || '').trim().slice(0, 120)
+      for (const f of fields) data[f.key] = String(body[f.key] || '').trim().slice(0, f.max || 120)
 
       if (dedupeBy.length) {
         const query = { email }

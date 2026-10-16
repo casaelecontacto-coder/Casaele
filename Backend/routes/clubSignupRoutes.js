@@ -7,7 +7,12 @@ export default makeSignupRouter({
   adminLabel: 'Conversation Club',
   fields: [
     { key: 'club', label: 'Club' },
-    { key: 'plan', label: 'Plan' }
+    { key: 'plan', label: 'Plan' },
+    { key: 'whatsapp', label: 'WhatsApp', max: 40 },
+    { key: 'age', label: 'Age', max: 10 },
+    { key: 'superpower', label: 'If Spanish were a superpower', max: 2000 },
+    { key: 'confidence', label: 'What would help them speak confidently', max: 2000 },
+    { key: 'culture', label: 'Into Spanish-speaking cultures', max: 2000 }
   ],
   // The same person can't sign up twice for the same club and plan.
   dedupeBy: ['club', 'plan'],

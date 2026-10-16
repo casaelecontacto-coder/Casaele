@@ -3,11 +3,12 @@ import { apiGet, apiSend } from '../../utils/api'
 
 // Shared admin table for "someone signed up" collections (club signups,
 // 1:1 consultation requests). Each page passes its endpoint and extra columns.
-export default function SignupsManager({ title, endpoint, columns, hint }) {
+export default function SignupsManager({ title, endpoint, columns, hint, details }) {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actingId, setActingId] = useState('')
+  const [viewing, setViewing] = useState(null)
 
   useEffect(() => {
     apiGet(endpoint)
@@ -79,6 +80,7 @@ export default function SignupsManager({ title, endpoint, columns, hint }) {
                     />
                     Contacted
                   </label>
+                  {details && <button onClick={() => setViewing(x)} className="px-3 py-1 rounded bg-casa-cream/60 text-casa-ink hover:bg-casa-cream">Answers</button>}
                   <button disabled={actingId === x._id} onClick={() => { if (confirm('Delete this entry?')) remove(x._id) }} className="px-3 py-1 rounded bg-casa-red/8 text-casa-red hover:bg-red-100 disabled:opacity-60">Delete</button>
                 </td>
               </tr>
@@ -86,6 +88,25 @@ export default function SignupsManager({ title, endpoint, columns, hint }) {
           </tbody>
         </table>
       </div>
+
+      {viewing && details && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setViewing(null)}>
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 border-b border-casa-ink/12 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-casa-ink">{viewing.name}</h2>
+              <button onClick={() => setViewing(null)} aria-label="Close" className="inline-flex items-center justify-center w-8 h-8 rounded-xl text-casa-ink/50 hover:bg-casa-cream/60"><span className="text-xl leading-none">×</span></button>
+            </div>
+            <div className="p-6 space-y-4">
+              {[['Email', 'email'], ...details.map((d) => [d.label, d.key])].map(([label, key]) => (
+                <div key={key}>
+                  <p className="text-sm text-casa-ink/65">{label}</p>
+                  <p className="text-casa-ink whitespace-pre-wrap">{viewing[key] || '-'}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
