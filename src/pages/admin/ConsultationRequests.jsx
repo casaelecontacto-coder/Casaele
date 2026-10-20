@@ -5,7 +5,15 @@ export default function ConsultationRequests() {
     <SignupsManager
       title="1:1 Consultations"
       endpoint="/api/consultations"
-      columns={[{ key: 'duration', label: 'Length' }, { key: 'role', label: 'Role' }, { key: 'situation', label: 'Situation' }]}
+      columns={[{ key: 'duration', label: 'Length' }, { key: 'role', label: 'Role' }, { key: 'situation', label: 'Situation' }, { key: 'paymentStatus', label: 'Payment' }]}
+      details={[
+        { key: 'duration', label: 'Length' },
+        { key: 'role', label: 'Role' },
+        { key: 'situation', label: 'Situation' },
+        { key: 'paymentStatus', label: 'Payment' },
+        { key: 'amountPaid', label: 'Amount paid (INR)' },
+        { key: 'paymentId', label: 'Razorpay payment id' }
+      ]}
     />
   )
 }
