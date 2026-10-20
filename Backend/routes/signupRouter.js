@@ -17,7 +17,7 @@ const esc = (v) => String(v || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
  *
  * Every new entry also emails the team (fire-and-forget).
  */
-export function makeSignupRouter({ Model, title, adminLabel, fields = [], dedupeBy = [], confirmation }) {
+export function makeSignupRouter({ Model, title, adminLabel, fields = [], dedupeBy = [], confirmation, deferEmails = false }) {
   const router = express.Router()
 
   const notify = (entry) => {
@@ -39,6 +39,17 @@ export function makeSignupRouter({ Model, title, adminLabel, fields = [], dedupe
     }).catch((e) => console.error(`${title} notify error:`, e?.message || e))
   }
 
+  // Team alert + confirmation email to the person. Sent on creation, or (with
+  // deferEmails) later, once whatever the signup is waiting for (payment) is done.
+  const sendEmails = (entry) => {
+    notify(entry)
+    if (confirmation) {
+      const c = confirmation(entry, { firstName })
+      sendSignupConfirmation({ to: entry.email, name: entry.name, subject: c.subject, message: c.message })
+    }
+  }
+  router.sendEmails = sendEmails
+
   router.post('/', async (req, res) => {
     try {
       const body = req.body || {}
@@ -58,11 +69,7 @@ export function makeSignupRouter({ Model, title, adminLabel, fields = [], dedupe
       }
 
       const created = await Model.create(data)
-      notify(created)
-      if (confirmation) {
-        const c = confirmation(created, { firstName })
-        sendSignupConfirmation({ to: created.email, name: created.name, subject: c.subject, message: c.message })
-      }
+      if (!deferEmails) sendEmails(created)
       res.status(201).json({ success: true, id: created._id })
     } catch (e) {
       console.error(`${title} submit error:`, e?.message || e)

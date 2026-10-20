@@ -11,7 +11,14 @@ const ClubSignupSchema = new mongoose.Schema(
     superpower: { type: String, default: '', trim: true },
     confidence: { type: String, default: '', trim: true },
     culture: { type: String, default: '', trim: true },
-    status: { type: String, enum: ['new', 'contacted'], default: 'new' }
+    status: { type: String, enum: ['new', 'contacted'], default: 'new' },
+    // Payment is checked server-side against Razorpay, never trusted from the browser.
+    paymentStatus: { type: String, enum: ['unpaid', 'paid'], default: 'unpaid' },
+    paymentLinkId: { type: String, default: '' },
+    paymentLinkUrl: { type: String, default: '' },
+    paymentId: { type: String, default: '' },
+    amountPaid: { type: Number, default: 0 },
+    paidAt: { type: Date }
   },
   { timestamps: true }
 );
