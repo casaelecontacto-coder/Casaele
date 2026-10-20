@@ -1,8 +1,34 @@
 // Use VITE_API_BASE_URL if set, otherwise default to production backend
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://amrit-project-lms.onrender.com';
 
+// localStorage's `authToken` is kept in sync by App.jsx's onIdTokenChanged
+// listener, but that only fires when Firebase decides to refresh — if the
+// tab sat idle/backgrounded a while, the cached copy can go stale (Firebase
+// ID tokens expire after 1hr) well before that listener notices, and a
+// request built from it fails admin auth with a generic "Authentication
+// failed". Raw-fetch upload handlers that build their own Authorization
+// header (they can't use apiGet/apiSend, since those don't send FormData
+// the way file uploads need) should call this instead of reading
+// localStorage directly — it asks Firebase for the current token, which
+// transparently refreshes if it's expired, and re-syncs localStorage too.
+// Falls back to the possibly-stale cached value if Firebase's own current
+// user isn't available yet (e.g. this fires before the SDK rehydrates).
+export async function getFreshAuthToken() {
+  try {
+    const { auth } = await import('../firebase');
+    if (auth.currentUser) {
+      const token = await auth.currentUser.getIdToken();
+      if (typeof window !== 'undefined') localStorage.setItem('authToken', token);
+      return token;
+    }
+  } catch (e) {
+    console.error('Failed to refresh auth token:', e);
+  }
+  return typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+}
+
 export async function apiGet(path) {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+  const token = await getFreshAuthToken();
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
   // Admin data-fetching requests should bypass browser cache
@@ -30,8 +56,8 @@ export async function apiGet(path) {
 }
 
 export async function apiSend(path, method, body) {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
-  
+  const token = await getFreshAuthToken();
+
   const headers = {};
   let payload = body;
 

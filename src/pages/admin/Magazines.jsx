@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiPlus, FiEdit, FiTrash2, FiImage, FiX, FiFile, FiDollarSign, FiEye, FiEyeOff, FiStar } from 'react-icons/fi';
-import { apiGet, apiSend } from '../../utils/api';
+import { apiGet, apiSend, getFreshAuthToken } from '../../utils/api';
 import LazyTinyMCE from '../../components/Admin/LazyTinyMCE';
 import Spinner from '../../components/Common/Spinner';
 
@@ -45,17 +45,22 @@ const Magazines = () => {
   const removeMagazineEmbed = (index) => setMagazineEmbeds(prev => prev.filter((_, i) => i !== index));
 
   // HTML file upload for embed items
+  const [uploadedEmbedHtmlName, setUploadedEmbedHtmlName] = useState({});
   const handleEmbedHtmlUpload = async (index, file) => {
     if (!file || !file.name.endsWith('.html')) {
       alert('Please select a valid HTML file');
       return;
     }
     setUploadingEmbedHtml(index);
+    setUploadedEmbedHtmlName(prev => ({ ...prev, [index]: null }));
     try {
       const fd = new FormData();
       fd.append('htmlFile', file);
       const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-      const token = localStorage.getItem('authToken');
+      // A fresh token, not the possibly-stale localStorage copy — otherwise
+      // this fails with a bare "Authentication failed" if the tab had been
+      // idle long enough for the cached token to expire.
+      const token = await getFreshAuthToken();
       const response = await fetch(`${apiBaseUrl}/api/uploads/html-file`, {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -65,6 +70,9 @@ const Magazines = () => {
       if (!result.success) throw new Error(result.message || 'Upload failed');
       updateMagazineEmbed(index, 'embedCode', result.url);
       updateMagazineEmbed(index, 'type', 'HTML');
+      // The embed code textarea filling in is easy to miss — spell out that
+      // the upload actually succeeded.
+      setUploadedEmbedHtmlName(prev => ({ ...prev, [index]: file.name }));
     } catch (e) {
       alert(e?.message || 'HTML upload failed');
     } finally {
@@ -103,6 +111,7 @@ const Magazines = () => {
     setPricesEUR({ price: 0, discountPrice: 0 });
     setPricesINR({ price: 0, discountPrice: 0 });
     setMagazineEmbeds([]);
+    setUploadedEmbedHtmlName({});
     setEditingMagazine(null);
   };
 
@@ -181,7 +190,7 @@ const Magazines = () => {
       const uploadFormData = new FormData();
       uploadFormData.append('file', file);
 
-      const token = localStorage.getItem('authToken');
+      const token = await getFreshAuthToken();
       const response = await fetch(`${apiBaseUrl}/api/uploads/magazine-pdf`, {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -611,7 +620,7 @@ const Magazines = () => {
                       try {
                         const uploadFormData = new FormData();
                         uploadFormData.append('file', file);
-                        const token = localStorage.getItem('authToken');
+                        const token = await getFreshAuthToken();
                         const response = await fetch(`${apiBaseUrl}/api/uploads/magazine-material`, {
                           method: 'POST',
                           headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -700,7 +709,11 @@ const Magazines = () => {
                                 />
                                 {uploadingEmbedHtml === index && <span className="text-xs text-casa-ink/50 animate-pulse">Uploading...</span>}
                               </div>
-                              <p className="text-xs text-casa-ink/40 mt-1">Upload an HTML file to auto-fill the embed code field</p>
+                              {uploadedEmbedHtmlName[index] && uploadingEmbedHtml !== index ? (
+                                <p className="text-xs text-green-700 font-medium mt-1">✓ Uploaded: {uploadedEmbedHtmlName[index]} — embed code filled in below</p>
+                              ) : (
+                                <p className="text-xs text-casa-ink/40 mt-1">Upload an HTML file to auto-fill the embed code field</p>
+                              )}
                             </div>
                           )}
                           <div className="mt-2">
