@@ -5,6 +5,8 @@ const ConsultationRequestSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true, lowercase: true },
     duration: { type: String, default: '', trim: true },
+    role: { type: String, default: '', trim: true },
+    situation: { type: String, default: '', trim: true },
     status: { type: String, enum: ['new', 'contacted'], default: 'new' }
   },
   { timestamps: true }

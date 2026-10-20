@@ -5,7 +5,7 @@ export default function ConsultationRequests() {
     <SignupsManager
       title="1:1 Consultations"
       endpoint="/api/consultations"
-      columns={[{ key: 'duration', label: 'Length' }]}
+      columns={[{ key: 'duration', label: 'Length' }, { key: 'role', label: 'Role' }, { key: 'situation', label: 'Situation' }]}
     />
   )
 }

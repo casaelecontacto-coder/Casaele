@@ -5,7 +5,11 @@ export default makeSignupRouter({
   Model: ConsultationRequest,
   title: 'New 1:1 consultation request',
   adminLabel: '1:1 Consultations',
-  fields: [{ key: 'duration', label: 'Length' }],
+  fields: [
+    { key: 'duration', label: 'Length' },
+    { key: 'role', label: 'Who they are', max: 200 },
+    { key: 'situation', label: 'Where they are with Spanish', max: 200 }
+  ],
   confirmation: (e) => {
     const len = String(e.duration || '').replace(/\s*minutes?/i, '-minute').trim()
     return {
