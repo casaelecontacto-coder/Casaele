@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FiEye, FiEyeOff, FiTrash2 } from 'react-icons/fi';
-import { apiGet, apiSend } from '../../utils/api';
+import { apiGet, apiSend, getFreshAuthToken } from '../../utils/api';
 
 export default function Materials() {
   const [items, setItems] = useState([])
@@ -53,7 +53,7 @@ export default function Materials() {
       const formData = new FormData();
       formData.append('htmlFile', file);
       const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-      const token = localStorage.getItem('authToken');
+      const token = await getFreshAuthToken();
       const response = await fetch(`${apiBaseUrl}/api/uploads/html-file`, {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
