@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach, afterAll } from 'vitest'
 import express from 'express'
 
 const mocks = vi.hoisted(() => ({
-  findById: vi.fn(), findOneAndUpdate: vi.fn(), linkFetch: vi.fn(), linkCreate: vi.fn(),
+  findById: vi.fn(), findOneAndUpdate: vi.fn(), create: vi.fn(), linkFetch: vi.fn(), linkCreate: vi.fn(),
   sendEmail: vi.fn(() => Promise.resolve()), sendConfirmation: vi.fn()
 }))
 
@@ -13,7 +13,7 @@ vi.mock('razorpay', () => ({
   default: function () { this.paymentLink = { fetch: mocks.linkFetch, create: mocks.linkCreate } }
 }))
 vi.mock('../models/ConsultationRequest.js', () => ({
-  default: { findById: mocks.findById, findOneAndUpdate: mocks.findOneAndUpdate, findOne: vi.fn(), create: vi.fn() }
+  default: { findById: mocks.findById, findOneAndUpdate: mocks.findOneAndUpdate, findOne: vi.fn(), create: mocks.create }
 }))
 vi.mock('../config/nodemailer.js', () => ({ sendEmail: mocks.sendEmail }))
 vi.mock('../services/signupConfirmationEmail.js', () => ({ sendSignupConfirmation: mocks.sendConfirmation, firstName: (n) => n }))
@@ -81,5 +81,20 @@ describe('consultation payment', () => {
     const r = await post('/c1/verify')
     expect(r.body.paid).toBe(true)
     expect(mocks.sendConfirmation).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('consultation request details', () => {
+  it('saves the extra context questions and holds the emails until payment', async () => {
+    mocks.create.mockImplementation(async (d) => ({ _id: 'new1', ...d }))
+    const r = await post('/', {
+      name: 'Test', email: 't@example.com', duration: '30 minutes', role: 'Student', situation: 'I feel stuck',
+      whatsapp: '+91 98765 43210', age: '29', dream: 'Move to Madrid', gremlin: 'Blank brain', notes: 'Prefer evenings'
+    })
+    expect(r.status).toBe(201)
+    expect(mocks.create).toHaveBeenCalledWith(expect.objectContaining({
+      whatsapp: '+91 98765 43210', age: '29', dream: 'Move to Madrid', gremlin: 'Blank brain', notes: 'Prefer evenings'
+    }))
+    expect(mocks.sendConfirmation).not.toHaveBeenCalled()
   })
 })

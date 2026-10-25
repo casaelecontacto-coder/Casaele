@@ -13,7 +13,12 @@ const router = makeSignupRouter({
   fields: [
     { key: 'duration', label: 'Length' },
     { key: 'role', label: 'Who they are', max: 200 },
-    { key: 'situation', label: 'Where they are with Spanish', max: 200 }
+    { key: 'situation', label: 'Where they are with Spanish', max: 200 },
+    { key: 'whatsapp', label: 'WhatsApp', max: 40 },
+    { key: 'age', label: 'Age', max: 10 },
+    { key: 'dream', label: 'Why they are learning Spanish and what they want to achieve', max: 2000 },
+    { key: 'gremlin', label: 'What stops them speaking confidently (the gremlin)', max: 2000 },
+    { key: 'notes', label: 'Anything else to know before the call', max: 2000 }
   ],
   // The team alert and the confirmation email go out once the payment is confirmed.
   deferEmails: true,
